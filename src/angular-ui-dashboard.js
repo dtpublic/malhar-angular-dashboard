@@ -3,23 +3,22 @@
 angular.module('ui.dashboard', ['ui.bootstrap', 'ui.sortable']);
 
 angular.module('ui.dashboard')
-  .controller('DashboardController', function ($scope) {
-    //TODO store active widgets in local storage on add/remove/reorder
-    $scope.sortableOptions = {
-      stop: function () {
-        var titles = _.map($scope.widgets, function (widget) {
-          return widget.title;
-        });
-        console.log(titles);
-      }
-    };
-  })
   .directive('dashboard', function () {
     return {
       restrict: 'A',
       templateUrl: 'template/dashboard.html',
       scope: true,
-      controller: 'DashboardController',
+      controller: function ($scope) {
+        $scope.sortableOptions = {
+          stop: function () {
+            //TODO store active widgets in local storage on add/remove/reorder
+            //var titles = _.map($scope.widgets, function (widget) {
+            //  return widget.title;
+            //});
+            //console.log(titles);
+          }
+        };
+      },
       link: function (scope, element, attrs) {
         scope.options = scope.$eval(attrs.dashboard);
 
