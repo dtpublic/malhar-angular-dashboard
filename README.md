@@ -15,6 +15,8 @@ Dashboard/Widgets functionality with AngularJS.
 
  - Any directive can be a widget (e.g. AngularUI directives)
 
+![AngularJS Dashboard](docs/AngularJSDashboard.png "AngularJS Dashboard")
+
 ## Build
 
  Project is built with Grunt.
