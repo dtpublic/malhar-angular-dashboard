@@ -1,0 +1,32 @@
+.list {
+    list-style: none outside none;
+    margin: 10px 0 30px;
+    padding-left: 0;
+}
+
+.widget-container {
+    float:left;
+    display: inline-block;
+    width: 33%;
+}
+
+.widget {
+    margin: 0 1em 1em 0;
+    background-color: white;
+    border: 2px solid #444;
+    border-radius: 5px;
+}
+
+.widget-header {
+    padding-bottom: 4px; padding-left: 0.2em;
+    background-color: #F3F3F3;
+}
+
+.widget-header .glyphicon {
+    cursor: pointer;
+    float: right;
+}
+
+.widget-content {
+    padding: 0.4em;
+}

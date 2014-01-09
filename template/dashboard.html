@@ -1,0 +1,34 @@
+<div>
+    <div class="btn-group">
+        <button type="button" class="dropdown-toggle btn btn-primary" data-toggle="dropdown">Add Widget <span
+                class="caret"></span></button>
+        <ul class="dropdown-menu" role="menu">
+            <li ng-repeat="widget in options.widgetDefinitions">
+                <a href="#" ng-click="addWidgetInternal($event, widget);"><span class="label label-primary">{{widget.directive}}</span></a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="btn-group">
+    <button ng-repeat="widget in options.widgetDefinitions"
+            ng-click="addWidgetInternal($event, widget);" type="button" class="btn btn-primary">
+        {{widget.directive}}
+    </button>
+    </div>
+
+    <button ng-click="clear();" type="button" class="btn btn-info">Clear</button>
+
+    <div ui-sortable="sortableOptions" ng-model="widgets" class="list">
+        <div ng-repeat="widget in widgets" ng-style="widget.style" class="widget-container">
+            <div class="widget" widget>
+                <div class="widget-header">
+                    {{widget.title}} <span class="label label-primary">{{widget.directive}}</span>
+                    <span ng-click="removeWidget(widget);" class="glyphicon glyphicon-remove"></span>
+                </div>
+                <div class="widget-content">
+                    <div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
