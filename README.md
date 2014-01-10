@@ -17,6 +17,8 @@ Dashboard/Widgets functionality with AngularJS.
 
 ![AngularJS Dashboard](docs/AngularJSDashboard.png "AngularJS Dashboard")
 
+Demo application [angular-dashboard](https://github.com/nickholub/angular-dashboard)
+
 ## Build
 
  Project is built with Grunt.
