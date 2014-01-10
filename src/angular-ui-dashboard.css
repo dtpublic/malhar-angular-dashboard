@@ -1,7 +1,5 @@
-.list {
-    list-style: none outside none;
+.dashboard-widget-area {
     margin: 10px 0 30px;
-    padding-left: 0;
 }
 
 .widget-container {
