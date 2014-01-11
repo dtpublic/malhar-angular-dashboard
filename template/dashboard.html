@@ -20,7 +20,7 @@
         <button ng-click="clear();" type="button" class="btn btn-info">Clear</button>
     </div>
 
-    <div ui-sortable="sortableOptions" ng-model="widgets" class="list">
+    <div ui-sortable="sortableOptions" ng-model="widgets" class="dashboard-widget-area">
         <div ng-repeat="widget in widgets" ng-style="widget.style" class="widget-container">
             <div class="widget panel panel-default" widget>
                 <div class="widget-header panel-heading">

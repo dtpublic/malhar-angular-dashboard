@@ -23,7 +23,7 @@ angular.module("ui.dashboard").run(["$templateCache", function($templateCache) {
     "        <button ng-click=\"clear();\" type=\"button\" class=\"btn btn-info\">Clear</button>\n" +
     "    </div>\n" +
     "\n" +
-    "    <div ui-sortable=\"sortableOptions\" ng-model=\"widgets\" class=\"list\">\n" +
+    "    <div ui-sortable=\"sortableOptions\" ng-model=\"widgets\" class=\"dashboard-widget-area\">\n" +
     "        <div ng-repeat=\"widget in widgets\" ng-style=\"widget.style\" class=\"widget-container\">\n" +
     "            <div class=\"widget panel panel-default\" widget>\n" +
     "                <div class=\"widget-header panel-heading\">\n" +
