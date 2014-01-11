@@ -20,14 +20,17 @@
         <button ng-click="clear();" type="button" class="btn btn-info">Clear</button>
     </div>
 
-    <div ui-sortable="sortableOptions" ng-model="widgets" class="dashboard-widget-area">
+    <div ui-sortable="sortableOptions" ng-model="widgets" class="list">
         <div ng-repeat="widget in widgets" ng-style="widget.style" class="widget-container">
-            <div class="widget" widget>
-                <div class="widget-header">
-                    {{widget.title}} <span class="label label-primary">{{widget.directive}}</span>
-                    <span ng-click="removeWidget(widget);" class="glyphicon glyphicon-remove"></span>
+            <div class="widget panel panel-default" widget>
+                <div class="widget-header panel-heading">
+                    <h3 class="panel-title">
+                        {{widget.title}} <span class="label label-primary">{{widget.directive}}</span>
+                        <span ng-click="removeWidget(widget);" class="glyphicon glyphicon-remove"></span>
+                    </h3>
+                    
                 </div>
-                <div class="widget-content">
+                <div class="widget-content panel-body">
                     <div></div>
                 </div>
             </div>

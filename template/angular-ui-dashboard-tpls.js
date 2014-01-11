@@ -23,14 +23,17 @@ angular.module("ui.dashboard").run(["$templateCache", function($templateCache) {
     "        <button ng-click=\"clear();\" type=\"button\" class=\"btn btn-info\">Clear</button>\n" +
     "    </div>\n" +
     "\n" +
-    "    <div ui-sortable=\"sortableOptions\" ng-model=\"widgets\" class=\"dashboard-widget-area\">\n" +
+    "    <div ui-sortable=\"sortableOptions\" ng-model=\"widgets\" class=\"list\">\n" +
     "        <div ng-repeat=\"widget in widgets\" ng-style=\"widget.style\" class=\"widget-container\">\n" +
-    "            <div class=\"widget\" widget>\n" +
-    "                <div class=\"widget-header\">\n" +
-    "                    {{widget.title}} <span class=\"label label-primary\">{{widget.directive}}</span>\n" +
-    "                    <span ng-click=\"removeWidget(widget);\" class=\"glyphicon glyphicon-remove\"></span>\n" +
+    "            <div class=\"widget panel panel-default\" widget>\n" +
+    "                <div class=\"widget-header panel-heading\">\n" +
+    "                    <h3 class=\"panel-title\">\n" +
+    "                        {{widget.title}} <span class=\"label label-primary\">{{widget.directive}}</span>\n" +
+    "                        <span ng-click=\"removeWidget(widget);\" class=\"glyphicon glyphicon-remove\"></span>\n" +
+    "                    </h3>\n" +
+    "                    \n" +
     "                </div>\n" +
-    "                <div class=\"widget-content\">\n" +
+    "                <div class=\"widget-content panel-body\">\n" +
     "                    <div></div>\n" +
     "                </div>\n" +
     "            </div>\n" +
