@@ -14,6 +14,12 @@ module.exports = function (grunt) {
         dest: 'template/angular-ui-dashboard-tpls.js'
       }
     },
+    karma: {
+      unit: {
+        configFile: 'karma.conf.js',
+        singleRun: true
+      }
+    },
     watch: {
       dashboard: {
         files: ['template/dashboard.html'],
@@ -31,8 +37,13 @@ module.exports = function (grunt) {
     }
   });
 
+  grunt.registerTask('test', [
+    'karma'
+  ]);
+
   grunt.registerTask('default', [
     'jshint',
-    'ngtemplates'
+    'ngtemplates',
+    'test'
   ]);
 };
