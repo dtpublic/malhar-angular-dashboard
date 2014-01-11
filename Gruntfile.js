@@ -14,6 +14,12 @@ module.exports = function (grunt) {
         dest: 'template/angular-ui-dashboard-tpls.js'
       }
     },
+    watch: {
+      dashboard: {
+        files: ['template/dashboard.html'],
+        tasks: ['ngtemplates:dashboard']
+      }
+    },
     jshint: {
       options: {
         jshintrc: '.jshintrc'
