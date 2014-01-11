@@ -48,7 +48,7 @@ angular.module('ui.dashboard')
 
         scope.addWidgetInternal = function (event, widget) {
           event.preventDefault();
-          scope.addWidget(widget.directive, widget.attrs);
+          scope.addWidget(widget.directive, widget.attrs, widget.style);
         };
 
         // allow adding widgets externally
