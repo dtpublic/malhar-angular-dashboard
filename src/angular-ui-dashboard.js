@@ -25,13 +25,23 @@ angular.module('ui.dashboard')
         var count = 1;
 
         scope.addWidget = function (widgetDef) {
-          scope.widgets.push({
+          var widget = {
             title: 'Widget ' + count++,
+            name: widgetDef.name,
             template: widgetDef.template,
-            directive: widgetDef.directive,
+            directive: directive,
             attrs: widgetDef.attrs,
             style: widgetDef.style
-          });
+          };
+
+          if (widget.template) {
+            widget.template = widgetDef.template;
+          } else {
+            var directive = widgetDef.directive ? widgetDef.directive : widgetDef.name;
+            widget.directive = directive;
+          }
+
+          scope.widgets.push(widget);
         };
 
         scope.removeWidget = function (widget) {

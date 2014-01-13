@@ -8,7 +8,7 @@ angular.module("ui.dashboard").run(["$templateCache", function($templateCache) {
     "                    class=\"caret\"></span></button>\n" +
     "            <ul class=\"dropdown-menu\" role=\"menu\">\n" +
     "                <li ng-repeat=\"widget in options.widgetDefinitions\">\n" +
-    "                    <a href=\"#\" ng-click=\"addWidgetInternal($event, widget);\"><span class=\"label label-primary\">{{widget.directive}}</span></a>\n" +
+    "                    <a href=\"#\" ng-click=\"addWidgetInternal($event, widget);\"><span class=\"label label-primary\">{{widget.name}}</span></a>\n" +
     "                </li>\n" +
     "            </ul>\n" +
     "        </div>\n" +
@@ -16,7 +16,7 @@ angular.module("ui.dashboard").run(["$templateCache", function($templateCache) {
     "        <div class=\"btn-group\" ng-if=\"options.widgetButtons\">\n" +
     "            <button ng-repeat=\"widget in options.widgetDefinitions\"\n" +
     "                    ng-click=\"addWidgetInternal($event, widget);\" type=\"button\" class=\"btn btn-primary\">\n" +
-    "                {{widget.directive}}\n" +
+    "                {{widget.name}}\n" +
     "            </button>\n" +
     "        </div>\n" +
     "\n" +
@@ -28,7 +28,7 @@ angular.module("ui.dashboard").run(["$templateCache", function($templateCache) {
     "            <div class=\"widget panel panel-default\" widget>\n" +
     "                <div class=\"widget-header panel-heading\">\n" +
     "                    <h3 class=\"panel-title\">\n" +
-    "                        {{widget.title}} <span class=\"label label-primary\">{{widget.directive}}</span>\n" +
+    "                        {{widget.title}} <span class=\"label label-primary\">{{widget.name}}</span>\n" +
     "                        <span ng-click=\"removeWidget(widget);\" class=\"glyphicon glyphicon-remove\"></span>\n" +
     "                    </h3>\n" +
     "                    \n" +

@@ -5,7 +5,7 @@
                     class="caret"></span></button>
             <ul class="dropdown-menu" role="menu">
                 <li ng-repeat="widget in options.widgetDefinitions">
-                    <a href="#" ng-click="addWidgetInternal($event, widget);"><span class="label label-primary">{{widget.directive}}</span></a>
+                    <a href="#" ng-click="addWidgetInternal($event, widget);"><span class="label label-primary">{{widget.name}}</span></a>
                 </li>
             </ul>
         </div>
@@ -13,7 +13,7 @@
         <div class="btn-group" ng-if="options.widgetButtons">
             <button ng-repeat="widget in options.widgetDefinitions"
                     ng-click="addWidgetInternal($event, widget);" type="button" class="btn btn-primary">
-                {{widget.directive}}
+                {{widget.name}}
             </button>
         </div>
 
@@ -25,7 +25,7 @@
             <div class="widget panel panel-default" widget>
                 <div class="widget-header panel-heading">
                     <h3 class="panel-title">
-                        {{widget.title}} <span class="label label-primary">{{widget.directive}}</span>
+                        {{widget.title}} <span class="label label-primary">{{widget.name}}</span>
                         <span ng-click="removeWidget(widget);" class="glyphicon glyphicon-remove"></span>
                     </h3>
                     
