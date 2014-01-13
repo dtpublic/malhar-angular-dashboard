@@ -24,12 +24,13 @@ angular.module('ui.dashboard')
 
         var count = 1;
 
-        scope.addWidget = function (directive, attrs, style) {
+        scope.addWidget = function (widgetDef) {
           scope.widgets.push({
             title: 'Widget ' + count++,
-            directive: directive,
-            attrs: attrs,
-            style: style
+            template: widgetDef.template,
+            directive: widgetDef.directive,
+            attrs: widgetDef.attrs,
+            style: widgetDef.style
           });
         };
 
@@ -42,13 +43,13 @@ angular.module('ui.dashboard')
         };
 
         scope.widgets = [];
-        _.each(scope.options.defaultWidgets, function (widgetDefinition) {
-          scope.addWidget(widgetDefinition.directive, widgetDefinition.attrs, widgetDefinition.style);
+        _.each(scope.options.defaultWidgets, function (widgetDef) {
+          scope.addWidget(widgetDef);
         });
 
-        scope.addWidgetInternal = function (event, widget) {
+        scope.addWidgetInternal = function (event, widgetDef) {
           event.preventDefault();
-          scope.addWidget(widget.directive, widget.attrs, widget.style);
+          scope.addWidget(widgetDef);
         };
 
         // allow adding widgets externally
@@ -57,19 +58,30 @@ angular.module('ui.dashboard')
     };
   })
   .directive('widget', ['$compile', function ($compile) {
+    function findWidgetPlaceholder(element) {
+      // widget placeholder is the first (and only) child of .widget-content
+      return angular.element(element.find('.widget-content').children()[0]);
+    }
+
     return {
       require: '^dashboard',
       link: function (scope, element) {
-        var elm = element.find('.widget-content > div');
-
+        var elm = findWidgetPlaceholder(element);
         var widget = scope.widget;
-        elm.attr(widget.directive, '');
 
-        if (widget.attrs) {
-          _.each(widget.attrs, function (value, attr) {
-            elm.attr(attr, value);
-          });
+        if (widget.template) {
+          elm.replaceWith(widget.template);
+          elm = findWidgetPlaceholder(element);
+        } else {
+          elm.attr(widget.directive, '');
+
+          if (widget.attrs) {
+            _.each(widget.attrs, function (value, attr) {
+              elm.attr(attr, value);
+            });
+          }
         }
+
 
         $compile(elm)(scope);
       }
