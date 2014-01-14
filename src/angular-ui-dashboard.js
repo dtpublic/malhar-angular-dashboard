@@ -25,7 +25,6 @@ angular.module('ui.dashboard')
         var count = 1;
 
         scope.addWidget = function (widgetDef) {
-          console.log(widgetDef);
           var widget = {
             title: 'Widget ' + count++,
             name: widgetDef.name,
@@ -33,7 +32,7 @@ angular.module('ui.dashboard')
             style: widgetDef.style
           };
 
-          if (widget.template) {
+          if (widgetDef.template) {
             widget.template = widgetDef.template;
           } else {
             var directive = widgetDef.directive ? widgetDef.directive : widgetDef.name;
