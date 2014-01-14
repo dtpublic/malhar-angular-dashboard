@@ -17,12 +17,12 @@ describe('Directive: dashboard', function () {
 
     var widgetDefinitions = [
       {
-        name: 'div',
-        template: '<div class="value">{{value}}</div>'
+        name: 'wt-one',
+        template: '<div class="wt-one-value">{{2 + 2}}</div>'
       },
       {
-        name: 'span',
-        template: '<span></span>'
+        name: 'wt-two',
+        template: '<span class="wt-two-value">{{value}}</span>'
       }
     ];
     var defaultWidgets = _.clone(widgetDefinitions);
@@ -54,7 +54,12 @@ describe('Directive: dashboard', function () {
   });
 
   it('should evaluate widget expressions', function () {
-    var divWidget = element.find('.value');
-    expect(divWidget.html()).toEqual('10');
+    var divWidget = element.find('.wt-one-value');
+    expect(divWidget.html()).toEqual('4');
+  });
+
+  it('should evaluate scope expressions', function () {
+    var spanWidget = element.find('.wt-two-value');
+    expect(spanWidget.html()).toEqual('10');
   });
 });
