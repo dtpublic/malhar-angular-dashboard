@@ -32,7 +32,7 @@ module.exports = function (grunt) {
           'src/*.*',
           'template/dashboard.html'
         ],
-        tasks: ['ngtemplates', 'concat', 'copy:dist']
+        tasks: ['ngtemplates', 'concat', 'copy:dist', 'clean:templates']
       }
     },
     jshint: {
