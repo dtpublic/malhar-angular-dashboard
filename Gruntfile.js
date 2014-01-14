@@ -32,7 +32,7 @@ module.exports = function (grunt) {
           'src/*.*',
           'template/dashboard.html'
         ],
-        tasks: ['ngtemplates', 'concat', 'copy:dist', 'clean:templates']
+        tasks: ['ngtemplates', 'concat', 'copy:dist']
       }
     },
     jshint: {
@@ -69,6 +69,7 @@ module.exports = function (grunt) {
   });
 
   grunt.registerTask('test', [
+    'ngtemplates',
     'karma'
   ]);
 
@@ -76,7 +77,7 @@ module.exports = function (grunt) {
     'clean:dist',
     'jshint',
     'ngtemplates',
-    'test',
+    'karma',
     'concat',
     'copy:dist',
     'clean:templates'

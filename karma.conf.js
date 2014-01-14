@@ -15,10 +15,9 @@ module.exports = function(config) {
       'bower_components/underscore/underscore.js',
       'bower_components/angular/angular.js',
       'bower_components/angular-mocks/angular-mocks.js',
-      'bower_components/angular-ui-sortable/src/sortable.js',
       'bower_components/angular-bootstrap/ui-bootstrap-tpls.js',
       'src/*.js',
-      'src/**/*.js',
+      'template/*.js',
       'test/mock/**/*.js',
       'test/spec/**/*.js'
     ],

@@ -72,7 +72,6 @@ angular.module('ui.dashboard')
     }
 
     return {
-      require: '^dashboard',
       link: function (scope, element) {
         var elm = findWidgetPlaceholder(element);
         var widget = scope.widget;
