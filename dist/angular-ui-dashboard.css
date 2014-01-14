@@ -15,11 +15,6 @@
     border-radius: 5px;
 }
 
-.widget-header {
-    padding-bottom: 4px; padding-left: 0.2em;
-    background-color: #F3F3F3;
-}
-
 .widget-header .glyphicon {
     cursor: pointer;
     float: right;
