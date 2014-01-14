@@ -25,6 +25,7 @@ angular.module('ui.dashboard')
         var count = 1;
 
         scope.addWidget = function (widgetDef) {
+          console.log(widgetDef);
           var widget = {
             title: 'Widget ' + count++,
             name: widgetDef.name,

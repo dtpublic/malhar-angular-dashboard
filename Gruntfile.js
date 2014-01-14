@@ -11,7 +11,7 @@ module.exports = function (grunt) {
           module: 'ui.dashboard'
         },
         src: ['template/dashboard.html'],
-        dest: 'template/angular-ui-dashboard-tpls.js'
+        dest: 'template/dashboard.js'
       }
     },
     karma: {
@@ -20,10 +20,19 @@ module.exports = function (grunt) {
         singleRun: true
       }
     },
+    concat: {
+      dist: {
+        src: ['src/angular-ui-dashboard.js', 'template/dashboard.js'],
+        dest: 'dist/angular-ui-dashboard.js'
+      }
+    },
     watch: {
       dashboard: {
-        files: ['template/dashboard.html'],
-        tasks: ['ngtemplates:dashboard']
+        files: [
+          'src/*.*',
+          'template/dashboard.html'
+        ],
+        tasks: ['ngtemplates', 'concat', 'copy:dist']
       }
     },
     jshint: {
@@ -34,6 +43,28 @@ module.exports = function (grunt) {
         'Gruntfile.js',
         'src/{,*/}*.js'
       ]
+    },
+    copy: {
+      dist: {
+        files: [{
+          expand: true,
+          flatten: true,
+          src: ['src/angular-ui-dashboard.css'],
+          dest: 'dist'
+        }]
+      }
+    },
+    clean: {
+      dist: {
+        files: [{
+          src: [
+            'dist/*'
+          ]
+        }]
+      },
+      templates: {
+        src: ['<%= ngtemplates.dashboard.dest %>']
+      }
     }
   });
 
@@ -42,8 +73,12 @@ module.exports = function (grunt) {
   ]);
 
   grunt.registerTask('default', [
+    'clean:dist',
     'jshint',
     'ngtemplates',
-    'test'
+    'test',
+    'concat',
+    'copy:dist',
+    'clean:templates'
   ]);
 };
