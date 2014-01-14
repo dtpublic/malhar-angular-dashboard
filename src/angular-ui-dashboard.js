@@ -28,8 +28,6 @@ angular.module('ui.dashboard')
           var widget = {
             title: 'Widget ' + count++,
             name: widgetDef.name,
-            template: widgetDef.template,
-            directive: directive,
             attrs: widgetDef.attrs,
             style: widgetDef.style
           };
