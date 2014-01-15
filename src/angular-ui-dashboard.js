@@ -90,6 +90,51 @@ angular.module('ui.dashboard')
           }
         }
 
+        scope.grabResizer = function(e) {
+          
+          e.stopPropagation();
+          e.originalEvent.preventDefault();
+
+          // the resizer
+          var $resizer = elm.find('.widget-ew-resizer');
+          
+          // get the starting horizontal position
+          var initX = e.clientX;
+          
+          // Get the current width of the widget and dashboard
+          var pixelWidth = elm.width();
+          var percentWidth = parseFloat(widget.style.width);
+          // console.log('pixelWidth', pixelWidth);
+          // console.log('percentWidth', percentWidth);
+
+          // determine the percentage/pixel ratio
+          var percent2pixel = percentWidth / pixelWidth;
+          // console.log('percent2pixel', percent2pixel);
+
+          // Calculate change and apply new width on mousemove
+          var mousemove = function(e) {
+            var curX = e.clientX;
+            var change = curX - initX;
+            // console.log('change: ', change);
+            var pChange = Math.round( change * percent2pixel * 10 ) / 10;
+            // console.log('pChange: ', pChange);
+            var newWidth = percentWidth * 1 + pChange;
+            // console.log('newWidth: ', newWidth);
+            widget.style.width = newWidth + '%';
+          };
+          
+          var mouseup = function(e) {
+            $(window).off('mousemove', mousemove);
+            $resizer.removeClass('widget-resizing');
+          };
+          
+          $resizer.addClass('widget-resizing');
+          
+          $(window)
+            .on('mousemove', mousemove)
+            .one('mouseup', mouseup);
+
+        }
 
         $compile(elm)(scope);
       }
