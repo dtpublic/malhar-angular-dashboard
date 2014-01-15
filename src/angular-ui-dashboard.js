@@ -16,7 +16,8 @@ angular.module('ui.dashboard')
             //  return widget.title;
             //});
             //console.log(titles);
-          }
+          },
+          handle: '.widget-header'
         };
       },
       link: function (scope, element, attrs) {
