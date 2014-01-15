@@ -120,8 +120,8 @@ angular.module("ui.dashboard").run(["$templateCache", function($templateCache) {
     "    </div>\n" +
     "\n" +
     "    <div ui-sortable=\"sortableOptions\" ng-model=\"widgets\" class=\"dashboard-widget-area\">\n" +
-    "        <div ng-repeat=\"widget in widgets\" ng-style=\"widget.style\" class=\"widget-container\">\n" +
-    "            <div class=\"widget panel panel-default\" widget>\n" +
+    "        <div ng-repeat=\"widget in widgets\" ng-style=\"widget.style\" class=\"widget-container\" widget>\n" +
+    "            <div class=\"widget panel panel-default\">\n" +
     "                <div class=\"widget-header panel-heading\">\n" +
     "                    <h3 class=\"panel-title\">\n" +
     "                        {{widget.title}} <span class=\"label label-primary\">{{widget.name}}</span>\n" +
