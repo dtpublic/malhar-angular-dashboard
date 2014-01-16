@@ -98,12 +98,14 @@ angular.module('ui.dashboard')
       };
     }])
   .directive('widget', ['$compile', function ($compile) {
+
     function findWidgetPlaceholder(element) {
       // widget placeholder is the first (and only) child of .widget-content
       return angular.element(element.find('.widget-content').children()[0]);
     }
 
     return {
+
       link: function (scope, element) {
         var elm = findWidgetPlaceholder(element);
         var widget = scope.widget;
@@ -131,9 +133,6 @@ angular.module('ui.dashboard')
 
           e.stopPropagation();
           e.originalEvent.preventDefault();
-
-          // the resizer
-          var $resizer = elm.find('.widget-ew-resizer');
           
           // get the starting horizontal position
           var initX = e.clientX;
@@ -153,7 +152,7 @@ angular.module('ui.dashboard')
           // determine the unit/pixel ratio
           var transformMultiplier = unitWidth / pixelWidth;
 
-          // Calculate change and apply new width on mousemove
+          // updates marquee with preview of new width
           var mousemove = function(e) {
             var curX = e.clientX;
             var pixelChange = curX - initX;
@@ -161,25 +160,38 @@ angular.module('ui.dashboard')
             $marquee.css('width', newWidth + 'px');
           };
           
-          // Set new widget width on mouseup
+          // sets new widget width on mouseup
           var mouseup = function(e) {
+            // remove listener and marquee
             jQuery(window).off('mousemove', mousemove);
-            $resizer.removeClass('widget-resizing');
             $marquee.remove();
+
+            // calculate change in units
             var curX = e.clientX;
             var pixelChange = curX - initX;
             var unitChange = Math.round( pixelChange * transformMultiplier * 100 ) / 100;
+
+            // add to initial unit width
             var newWidth = unitWidth * 1 + unitChange;
             widget.setWidth(newWidth + widthUnits);
             scope.$apply();
           };
           
-          $resizer.addClass('widget-resizing');
-          
-          jQuery(window)
-            .on('mousemove', mousemove)
-            .one('mouseup', mouseup);
+          jQuery(window).on('mousemove', mousemove).one('mouseup', mouseup);
 
+        };
+
+        // replaces widget title with input
+        scope.editTitle = function(widget) {
+          widget.editingTitle = true;
+          // HACK: get the input to focus after being displayed.
+          setTimeout(function() {widgetElm.find('form.widget-title input:eq(0)').focus()[0].setSelectionRange(0, 9999);}, 0);
+        };
+
+        // saves whatever is in the title input as the new title
+        scope.saveTitleEdit = function(widget) {
+
+          widget.editingTitle = false;
         };
 
         $compile(elm)(scope);

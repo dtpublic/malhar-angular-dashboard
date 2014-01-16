@@ -21,6 +21,15 @@
     float: right;
 }
 
+.widget-header form.widget-title {
+    display: inline;
+}
+
+.widget-header form.widget-title input.form-control {
+    width: auto;
+    display: inline-block;
+}
+
 .widget-content {
     padding: 0.4em;
     overflow: hidden;
