@@ -14,11 +14,11 @@ angular.module('ui.dashboard')
 
     WidgetModel.prototype = {
 
-      // sets the width (and width_units)
+      // sets the width (and widthUnits)
       setWidth: function(width, units) {
         width = width.toString();
         units = units || width.replace(/^[-\.\d]+/, '') || '%';
-        this.width_units = units;
+        this.widthUnits = units;
         width = parseFloat(width);
         if (units === '%') {
           width = Math.min(100, width);
@@ -27,7 +27,7 @@ angular.module('ui.dashboard')
         this.style.width = width + '' + units;
       },
 
-      width_units: '%'
+      widthUnits: '%'
 
     };
 
@@ -135,29 +135,29 @@ angular.module('ui.dashboard')
           // console.log('initX', initX);
           
           // Get the current width of the widget and dashboard
-          var pixel_width = widgetElm.width();
-          var pixel_height = widgetElm.height();
-          var widget_style_width = widget.style.width;
-          var width_units = widget.width_units;
-          var unit_width = parseFloat(widget_style_width);
-          // console.log('widget_style_width', widget_style_width);
-          // console.log('pixel_width', pixel_width);
-          // console.log('unit_width', unit_width);
+          var pixelWidth = widgetElm.width();
+          var pixelHeight = widgetElm.height();
+          var widgetStyleWidth = widget.style.width;
+          var widthUnits = widget.widthUnits;
+          var unitWidth = parseFloat(widgetStyleWidth);
+          // console.log('widgetStyleWidth', widgetStyleWidth);
+          // console.log('pixelWidth', pixelWidth);
+          // console.log('unitWidth', unitWidth);
           
           // create marquee element for resize action
-          var $marquee = angular.element('<div class="widget-resizer-marquee" style="height: ' + pixel_height + 'px; width: ' + pixel_width + 'px;"></div>');
+          var $marquee = angular.element('<div class="widget-resizer-marquee" style="height: ' + pixelHeight + 'px; width: ' + pixelWidth + 'px;"></div>');
           widgetElm.append($marquee);
 
           // determine the unit/pixel ratio
-          var transformMultiplier = unit_width / pixel_width;
+          var transformMultiplier = unitWidth / pixelWidth;
           // console.log('transformMultiplier', transformMultiplier);
 
           // Calculate change and apply new width on mousemove
           var mousemove = function(e) {
             var curX = e.clientX;
-            var pixel_change = curX - initX;
-            var new_width = pixel_width + pixel_change;
-            $marquee.css('width', new_width + 'px');
+            var pixelChange = curX - initX;
+            var newWidth = pixelWidth + pixelChange;
+            $marquee.css('width', newWidth + 'px');
           };
           
           var mouseup = function(e) {
@@ -166,13 +166,13 @@ angular.module('ui.dashboard')
             $marquee.remove();
             var curX = e.clientX;
             // console.log('curX', curX);
-            var pixel_change = curX - initX;
-            // console.log('pixel_change', pixel_change);
-            var unit_change = Math.round( pixel_change * transformMultiplier * 10 ) / 10;
-            // console.log('unit_change', pChange);
-            var new_width = unit_width * 1 + unit_change;
-            // console.log('new_width', new_width);
-            widget.setWidth(new_width + width_units);
+            var pixelChange = curX - initX;
+            // console.log('pixelChange', pixelChange);
+            var unitChange = Math.round( pixelChange * transformMultiplier * 100 ) / 100;
+            // console.log('unitChange', pChange);
+            var newWidth = unitWidth * 1 + unitChange;
+            // console.log('newWidth', newWidth);
+            widget.setWidth(newWidth + widthUnits);
             scope.$apply();
           };
           
