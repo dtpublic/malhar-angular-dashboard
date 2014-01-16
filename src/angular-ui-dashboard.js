@@ -123,18 +123,18 @@ angular.module('ui.dashboard')
             widget.style.width = newWidth + '%';
           };
           
-          var mouseup = function(e) {
-            $(window).off('mousemove', mousemove);
+          var mouseup = function() {
+            jQuery(window).off('mousemove', mousemove);
             $resizer.removeClass('widget-resizing');
           };
           
           $resizer.addClass('widget-resizing');
           
-          $(window)
+          jQuery(window)
             .on('mousemove', mousemove)
             .one('mouseup', mouseup);
 
-        }
+        };
 
         $compile(elm)(scope);
       }
