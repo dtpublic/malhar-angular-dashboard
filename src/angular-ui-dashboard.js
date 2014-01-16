@@ -124,6 +124,11 @@ angular.module('ui.dashboard')
 
         scope.grabResizer = function(e) {
           
+          // ignore middle- and right-click
+          if (e.which !== 1) {
+            return;
+          }
+
           e.stopPropagation();
           e.originalEvent.preventDefault();
 
@@ -140,9 +145,6 @@ angular.module('ui.dashboard')
           var widgetStyleWidth = widget.style.width;
           var widthUnits = widget.widthUnits;
           var unitWidth = parseFloat(widgetStyleWidth);
-          // console.log('widgetStyleWidth', widgetStyleWidth);
-          // console.log('pixelWidth', pixelWidth);
-          // console.log('unitWidth', unitWidth);
           
           // create marquee element for resize action
           var $marquee = angular.element('<div class="widget-resizer-marquee" style="height: ' + pixelHeight + 'px; width: ' + pixelWidth + 'px;"></div>');
@@ -150,7 +152,6 @@ angular.module('ui.dashboard')
 
           // determine the unit/pixel ratio
           var transformMultiplier = unitWidth / pixelWidth;
-          // console.log('transformMultiplier', transformMultiplier);
 
           // Calculate change and apply new width on mousemove
           var mousemove = function(e) {
@@ -160,18 +161,15 @@ angular.module('ui.dashboard')
             $marquee.css('width', newWidth + 'px');
           };
           
+          // Set new widget width on mouseup
           var mouseup = function(e) {
             jQuery(window).off('mousemove', mousemove);
             $resizer.removeClass('widget-resizing');
             $marquee.remove();
             var curX = e.clientX;
-            // console.log('curX', curX);
             var pixelChange = curX - initX;
-            // console.log('pixelChange', pixelChange);
             var unitChange = Math.round( pixelChange * transformMultiplier * 100 ) / 100;
-            // console.log('unitChange', pChange);
             var newWidth = unitWidth * 1 + unitChange;
-            // console.log('newWidth', newWidth);
             widget.setWidth(newWidth + widthUnits);
             scope.$apply();
           };
