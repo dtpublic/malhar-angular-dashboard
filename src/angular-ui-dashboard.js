@@ -25,9 +25,7 @@ angular.module('ui.dashboard')
           width = Math.max(0, width);
         }
         this.style.width = width + '' + units;
-      },
-
-      widthUnits: '%'
+      }
 
     };
 
@@ -107,10 +105,16 @@ angular.module('ui.dashboard')
     return {
 
       link: function (scope, element) {
+        // first child of .widget-content
         var elm = findWidgetPlaceholder(element);
+
+        // the widget model/definition object
         var widget = scope.widget;
+
+        // .widget element (element is .widget-container)
         var widgetElm = element.find('.widget');
 
+        // check for a template in widget def
         if (widget.template) {
           elm.replaceWith(widget.template);
           elm = findWidgetPlaceholder(element);
