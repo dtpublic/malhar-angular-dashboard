@@ -20,11 +20,17 @@ angular.module('ui.dashboard')
         units = units || width.replace(/^[-\.\d]+/, '') || '%';
         this.widthUnits = units;
         width = parseFloat(width);
+
+        if (width < 0) {
+          return false;
+        }
+
         if (units === '%') {
           width = Math.min(100, width);
           width = Math.max(0, width);
         }
         this.style.width = width + '' + units;
+        return true;
       }
 
     };

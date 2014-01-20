@@ -20,11 +20,17 @@ angular.module('ui.dashboard')
         units = units || width.replace(/^[-\.\d]+/, '') || '%';
         this.widthUnits = units;
         width = parseFloat(width);
+
+        if (width < 0) {
+          return false;
+        }
+
         if (units === '%') {
           width = Math.min(100, width);
           width = Math.max(0, width);
         }
         this.style.width = width + '' + units;
+        return true;
       }
 
     };
@@ -244,6 +250,7 @@ angular.module("ui.dashboard").run(["$templateCache", function($templateCache) {
     "                        </form>\n" +
     "                        <span class=\"label label-primary\">{{widget.name}}</span>\n" +
     "                        <span ng-click=\"removeWidget(widget);\" class=\"glyphicon glyphicon-remove\"></span>\n" +
+    "                        <span ng-click=\"openWidgetDialog(widget);\" class=\"glyphicon glyphicon-cog\"></span>\n" +
     "                    </h3>\n" +
     "                </div>\n" +
     "                <div class=\"widget-content panel-body\">\n" +
