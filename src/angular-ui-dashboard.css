@@ -16,12 +16,25 @@
     position: relative;
     height: 100%;
 }
-
+.widget-header {
+    overflow: hidden;
+}
+.widget-header .label {
+    display: inline-block;
+    vertical-align: middle;
+}
 .widget-header .glyphicon {
     cursor: pointer;
     float: right;
+    opacity: 0.5;
+    margin-left: 5px;
 }
-
+.widget-header .glyphicon:hover {
+    opacity: 1;
+}
+.widget-header .widget-title {
+    vertical-align: middle;
+}
 .widget-header form.widget-title {
     display: inline;
 }
