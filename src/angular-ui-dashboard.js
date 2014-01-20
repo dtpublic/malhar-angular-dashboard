@@ -61,8 +61,10 @@ angular.module('ui.dashboard')
               attrs: widgetDef.attrs,
               style: widgetDef.style
             });
-  
-            if (widgetDef.template) {
+
+            if (widgetDef.templateUrl) {
+              widget.templateUrl = widgetDef.templateUrl;
+            } else if (widgetDef.template) {
               widget.template = widgetDef.template;
             } else {
               var directive = widgetDef.directive ? widgetDef.directive : widgetDef.name;
@@ -115,7 +117,11 @@ angular.module('ui.dashboard')
         var widgetElm = element.find('.widget');
 
         // check for a template in widget def
-        if (widget.template) {
+        if (widget.templateUrl) {
+          var templateElm = angular.element('<div ng-include="\'' + widget.templateUrl + '\'"></div>');
+          elm.replaceWith(templateElm);
+          elm = templateElm;
+        } else if (widget.template) {
           elm.replaceWith(widget.template);
           elm = findWidgetPlaceholder(element);
         } else {
