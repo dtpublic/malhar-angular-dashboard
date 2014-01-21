@@ -38,7 +38,7 @@ angular.module('ui.dashboard')
     return WidgetModel;
 
   })
-  .directive('dashboard', ['WidgetModel', function (WidgetModel) {
+  .directive('dashboard', ['WidgetModel','$modal', function (WidgetModel, $modal) {
       return {
         restrict: 'A',
         templateUrl: 'template/dashboard.html',
@@ -82,6 +82,26 @@ angular.module('ui.dashboard')
   
           scope.removeWidget = function (widget) {
             scope.widgets.splice(_.indexOf(scope.widgets, widget), 1);
+          };
+
+          scope.openWidgetDialog = function(widget) {
+            var options = widget.editModalOptions;
+            if (!options) {
+              options = {
+                templateUrl: 'template/widget-default-modal.html',
+                resolve: {
+                  // this does not work
+                  widget: function() {
+                    return widget;
+                  }
+                }
+              };
+
+              // but this works
+              options.scope = scope.$new(true);
+              options.scope.widget = widget;
+            }
+            $modal.open(options);
           };
   
           scope.clear = function () {
