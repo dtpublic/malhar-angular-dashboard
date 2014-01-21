@@ -43,7 +43,12 @@ angular.module('ui.dashboard')
     $scope.widget = widget;
 
     // set up result object
-    $scope.result = {};
+    $scope.result = {
+      title: widget.title
+    };
+
+    // look for templateUrl on widget
+    $scope.templateUrl = widget.templateUrl || 'template/widget-default-content.html'
 
     $scope.ok = function () {
       $modalInstance.close($scope.result);
@@ -105,7 +110,7 @@ angular.module('ui.dashboard')
             // use default options when none are supplied by widget
             if (!options) {
               options = {
-                templateUrl: 'template/widget-default-modal.html',
+                templateUrl: 'template/widget-template.html',
                 resolve: {
                   widget: function() {
                     return widget;
@@ -116,7 +121,18 @@ angular.module('ui.dashboard')
             }
             var modalInstance = $modal.open(options);
 
-            
+            // Set resolve and reject callbacks for the result promise
+            modalInstance.result.then(
+              function(result) {
+                console.log('widget dialog closed');
+                console.log('result: ', result);
+                widget.title = result.title;
+              },
+              function(reason) {
+                console.log('widget dialog dismissed: ', reason);
+
+              }
+            );
 
           };
   

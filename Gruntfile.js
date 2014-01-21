@@ -10,7 +10,7 @@ module.exports = function (grunt) {
         options: {
           module: 'ui.dashboard'
         },
-        src: ['template/dashboard.html', 'template/widget-default-modal.html'],
+        src: ['template/*.html'],
         dest: 'template/dashboard.js'
       }
     },
