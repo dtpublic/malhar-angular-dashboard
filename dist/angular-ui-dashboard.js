@@ -38,6 +38,21 @@ angular.module('ui.dashboard')
     return WidgetModel;
 
   })
+  .controller('WidgetDialogCtrl', function($scope, $modalInstance, widget) {
+    // add widget to scope
+    $scope.widget = widget;
+
+    // set up result object
+    $scope.result = {};
+
+    $scope.ok = function () {
+      $modalInstance.close($scope.result);
+    };
+
+    $scope.cancel = function () {
+      $modalInstance.dismiss('cancel');
+    };
+  })
   .directive('dashboard', ['WidgetModel','$modal', function (WidgetModel, $modal) {
       return {
         restrict: 'A',
@@ -86,22 +101,23 @@ angular.module('ui.dashboard')
 
           scope.openWidgetDialog = function(widget) {
             var options = widget.editModalOptions;
+
+            // use default options when none are supplied by widget
             if (!options) {
               options = {
                 templateUrl: 'template/widget-default-modal.html',
                 resolve: {
-                  // this does not work
                   widget: function() {
                     return widget;
                   }
-                }
+                },
+                controller: 'WidgetDialogCtrl'
               };
-
-              // but this works
-              options.scope = scope.$new(true);
-              options.scope.widget = widget;
             }
-            $modal.open(options);
+            var modalInstance = $modal.open(options);
+
+            
+
           };
   
           scope.clear = function () {
@@ -285,13 +301,15 @@ angular.module("ui.dashboard").run(["$templateCache", function($templateCache) {
 
   $templateCache.put("template/widget-default-modal.html",
     "<div class=\"modal-header\">\n" +
+    "    <button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-hidden=\"true\" ng-click=\"cancel()\">&times;</button>\n" +
     "    <h4 class=\"modal-title\">{{widget.title}}</h4>\n" +
     "</div>\n" +
     "<div class=\"modal-body\">\n" +
     "    No options available for this widget.\n" +
     "</div>\n" +
     "<div class=\"modal-footer\">\n" +
-    "    \n" +
+    "    <button type=\"button\" class=\"btn btn-default\" ng-click=\"cancel()\">Cancel</button>\n" +
+    "    <button type=\"button\" class=\"btn btn-primary\" ng-click=\"ok()\">OK</button>\n" +
     "</div>"
   );
 

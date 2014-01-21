@@ -38,6 +38,21 @@ angular.module('ui.dashboard')
     return WidgetModel;
 
   })
+  .controller('WidgetDialogCtrl', function($scope, $modalInstance, widget) {
+    // add widget to scope
+    $scope.widget = widget;
+
+    // set up result object
+    $scope.result = {};
+
+    $scope.ok = function () {
+      $modalInstance.close($scope.result);
+    };
+
+    $scope.cancel = function () {
+      $modalInstance.dismiss('cancel');
+    };
+  })
   .directive('dashboard', ['WidgetModel','$modal', function (WidgetModel, $modal) {
       return {
         restrict: 'A',
@@ -86,22 +101,23 @@ angular.module('ui.dashboard')
 
           scope.openWidgetDialog = function(widget) {
             var options = widget.editModalOptions;
+
+            // use default options when none are supplied by widget
             if (!options) {
               options = {
                 templateUrl: 'template/widget-default-modal.html',
                 resolve: {
-                  // this does not work
                   widget: function() {
                     return widget;
                   }
-                }
+                },
+                controller: 'WidgetDialogCtrl'
               };
-
-              // but this works
-              options.scope = scope.$new(true);
-              options.scope.widget = widget;
             }
-            $modal.open(options);
+            var modalInstance = $modal.open(options);
+
+            
+
           };
   
           scope.clear = function () {
