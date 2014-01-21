@@ -10,7 +10,7 @@ module.exports = function (grunt) {
         options: {
           module: 'ui.dashboard'
         },
-        src: ['template/dashboard.html'],
+        src: ['template/*.html'],
         dest: 'template/dashboard.js'
       }
     },
@@ -30,7 +30,7 @@ module.exports = function (grunt) {
       dashboard: {
         files: [
           'src/*.*',
-          'template/dashboard.html'
+          'template/*.html'
         ],
         tasks: ['ngtemplates', 'concat', 'copy:dist']
       }

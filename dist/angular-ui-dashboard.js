@@ -38,7 +38,27 @@ angular.module('ui.dashboard')
     return WidgetModel;
 
   })
-  .directive('dashboard', ['WidgetModel', function (WidgetModel) {
+  .controller('WidgetDialogCtrl', function($scope, $modalInstance, widget) {
+    // add widget to scope
+    $scope.widget = widget;
+
+    // set up result object
+    $scope.result = {
+      title: widget.title
+    };
+
+    // look for templateUrl on widget
+    $scope.templateUrl = widget.templateUrl || 'template/widget-default-content.html'
+
+    $scope.ok = function () {
+      $modalInstance.close($scope.result);
+    };
+
+    $scope.cancel = function () {
+      $modalInstance.dismiss('cancel');
+    };
+  })
+  .directive('dashboard', ['WidgetModel','$modal', function (WidgetModel, $modal) {
       return {
         restrict: 'A',
         templateUrl: 'template/dashboard.html',
@@ -82,6 +102,38 @@ angular.module('ui.dashboard')
   
           scope.removeWidget = function (widget) {
             scope.widgets.splice(_.indexOf(scope.widgets, widget), 1);
+          };
+
+          scope.openWidgetDialog = function(widget) {
+            var options = widget.editModalOptions;
+
+            // use default options when none are supplied by widget
+            if (!options) {
+              options = {
+                templateUrl: 'template/widget-template.html',
+                resolve: {
+                  widget: function() {
+                    return widget;
+                  }
+                },
+                controller: 'WidgetDialogCtrl'
+              };
+            }
+            var modalInstance = $modal.open(options);
+
+            // Set resolve and reject callbacks for the result promise
+            modalInstance.result.then(
+              function(result) {
+                console.log('widget dialog closed');
+                console.log('result: ', result);
+                widget.title = result.title;
+              },
+              function(reason) {
+                console.log('widget dialog dismissed: ', reason);
+
+              }
+            );
+
           };
   
           scope.clear = function () {
@@ -260,6 +312,34 @@ angular.module("ui.dashboard").run(["$templateCache", function($templateCache) {
     "            </div>\n" +
     "        </div>\n" +
     "    </div>\n" +
+    "</div>"
+  );
+
+  $templateCache.put("template/widget-default-content.html",
+    "No edit template specified for this widget ({{widget.name}})."
+  );
+
+  $templateCache.put("template/widget-template.html",
+    "<div class=\"modal-header\">\n" +
+    "    <button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-hidden=\"true\" ng-click=\"cancel()\">&times;</button>\n" +
+    "  <h3>Widget Editor <small>{{widget.title}}</small></h3>\n" +
+    "</div>\n" +
+    "\n" +
+    "<div class=\"modal-body\">\n" +
+    "    <form name=\"form\" novalidate class=\"form-horizontal\">\n" +
+    "        <div class=\"form-group\">\n" +
+    "            <label for=\"widgetTitle\" class=\"col-sm-2 control-label\">Title</label>\n" +
+    "            <div class=\"col-sm-10\">\n" +
+    "                <input type=\"text\" class=\"form-control\" id=\"widgetTitle\" ng-model=\"result.title\">\n" +
+    "            </div>\n" +
+    "        </div>\n" +
+    "        <div ng-include=\"templateUrl\"></div>\n" +
+    "    </form>\n" +
+    "</div>\n" +
+    "\n" +
+    "<div class=\"modal-footer\">\n" +
+    "    <button type=\"button\" class=\"btn btn-default\" ng-click=\"cancel()\">Cancel</button>\n" +
+    "    <button type=\"button\" class=\"btn btn-primary\" ng-click=\"ok()\">OK</button>\n" +
     "</div>"
   );
 

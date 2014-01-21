@@ -38,7 +38,27 @@ angular.module('ui.dashboard')
     return WidgetModel;
 
   })
-  .directive('dashboard', ['WidgetModel', function (WidgetModel) {
+  .controller('WidgetDialogCtrl', function($scope, $modalInstance, widget) {
+    // add widget to scope
+    $scope.widget = widget;
+
+    // set up result object
+    $scope.result = {
+      title: widget.title
+    };
+
+    // look for templateUrl on widget
+    $scope.templateUrl = widget.templateUrl || 'template/widget-default-content.html'
+
+    $scope.ok = function () {
+      $modalInstance.close($scope.result);
+    };
+
+    $scope.cancel = function () {
+      $modalInstance.dismiss('cancel');
+    };
+  })
+  .directive('dashboard', ['WidgetModel','$modal', function (WidgetModel, $modal) {
       return {
         restrict: 'A',
         templateUrl: 'template/dashboard.html',
@@ -82,6 +102,38 @@ angular.module('ui.dashboard')
   
           scope.removeWidget = function (widget) {
             scope.widgets.splice(_.indexOf(scope.widgets, widget), 1);
+          };
+
+          scope.openWidgetDialog = function(widget) {
+            var options = widget.editModalOptions;
+
+            // use default options when none are supplied by widget
+            if (!options) {
+              options = {
+                templateUrl: 'template/widget-template.html',
+                resolve: {
+                  widget: function() {
+                    return widget;
+                  }
+                },
+                controller: 'WidgetDialogCtrl'
+              };
+            }
+            var modalInstance = $modal.open(options);
+
+            // Set resolve and reject callbacks for the result promise
+            modalInstance.result.then(
+              function(result) {
+                console.log('widget dialog closed');
+                console.log('result: ', result);
+                widget.title = result.title;
+              },
+              function(reason) {
+                console.log('widget dialog dismissed: ', reason);
+
+              }
+            );
+
           };
   
           scope.clear = function () {
