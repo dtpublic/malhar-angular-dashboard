@@ -48,7 +48,7 @@ angular.module('ui.dashboard')
     };
 
     // look for templateUrl on widget
-    $scope.templateUrl = widget.templateUrl || 'template/widget-default-content.html'
+    $scope.templateUrl = widget.templateUrl || 'template/widget-default-content.html';
 
     $scope.ok = function () {
       $modalInstance.close($scope.result);

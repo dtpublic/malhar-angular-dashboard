@@ -48,7 +48,7 @@ angular.module('ui.dashboard')
     };
 
     // look for templateUrl on widget
-    $scope.templateUrl = widget.templateUrl || 'template/widget-default-content.html'
+    $scope.templateUrl = widget.templateUrl || 'template/widget-default-content.html';
 
     $scope.ok = function () {
       $modalInstance.close($scope.result);
@@ -176,7 +176,8 @@ angular.module('ui.dashboard')
 
         // check for a template in widget def
         if (widget.templateUrl) {
-          var templateElm = angular.element('<div ng-include="\'' + widget.templateUrl + '\'"></div>');
+          var includeTemplate = '<div ng-include="\'' + widget.templateUrl + '\'"></div>';
+          var templateElm = angular.element(includeTemplate);
           elm.replaceWith(templateElm);
           elm = templateElm;
         } else if (widget.template) {
