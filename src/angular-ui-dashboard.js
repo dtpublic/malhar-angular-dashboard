@@ -47,8 +47,8 @@ angular.module('ui.dashboard')
       title: widget.title
     };
 
-    // look for templateUrl on widget
-    $scope.templateUrl = widget.templateUrl || 'template/widget-default-content.html';
+    // look for optionsTemplateUrl on widget
+    $scope.optionsTemplateUrl = widget.optionsTemplateUrl || 'template/widget-default-content.html';
 
     $scope.ok = function () {
       $modalInstance.close($scope.result);
@@ -85,6 +85,8 @@ angular.module('ui.dashboard')
               title: 'Widget ' + count++,
               name: widgetDef.name,
               attrs: widgetDef.attrs,
+              dataSource: widgetDef.dataSource,
+              optionsTemplateUrl: widgetDef.optionsTemplateUrl,
               style: widgetDef.style
             });
 
