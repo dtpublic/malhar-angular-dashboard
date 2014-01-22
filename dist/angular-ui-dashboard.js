@@ -333,7 +333,7 @@ angular.module("ui.dashboard").run(["$templateCache", function($templateCache) {
     "        <div class=\"form-group\">\n" +
     "            <label for=\"widgetTitle\" class=\"col-sm-2 control-label\">Title</label>\n" +
     "            <div class=\"col-sm-10\">\n" +
-    "                <input type=\"text\" class=\"form-control\" id=\"widgetTitle\" ng-model=\"result.title\">\n" +
+    "                <input type=\"text\" class=\"form-control\" name=\"widgetTitle\" ng-model=\"result.title\">\n" +
     "            </div>\n" +
     "        </div>\n" +
     "        <div ng-include=\"optionsTemplateUrl\"></div>\n" +
