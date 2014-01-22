@@ -3,6 +3,32 @@
 angular.module('ui.dashboard', ['ui.bootstrap', 'ui.sortable']);
 
 angular.module('ui.dashboard')
+  .service('dashboardState', function() {
+    return {
+      // Takes array of widgets, saves by some mechanism.
+      // (currently localStorage)
+      save: function(widgets) {
+        var serialized = JSON.stringify(widgets);
+        localStorage.setItem('widgets', serialized);
+        return true;
+      },
+      // Returns widget array (as an array-object) or
+      // false if none is found
+      load: function() {
+        var serialized = localStorage.getItem('widgets');
+        var response = false;
+        if (serialized) {
+          try {
+            response = JSON.parse(serialized);
+          } catch (e) {
+            // bad JSON, clear localStorage
+            localStorage.removeItem('widgets');
+          }
+        }
+        return response;
+      }
+    };
+  })
   .factory('WidgetModel', function() {
     
     // constructor for widget model instances
@@ -36,7 +62,6 @@ angular.module('ui.dashboard')
     };
 
     return WidgetModel;
-
   })
   .controller('WidgetDialogCtrl', function($scope, $modalInstance, widget) {
     // add widget to scope
@@ -58,7 +83,7 @@ angular.module('ui.dashboard')
       $modalInstance.dismiss('cancel');
     };
   })
-  .directive('dashboard', ['WidgetModel','$modal', function (WidgetModel, $modal) {
+  .directive('dashboard', ['WidgetModel','$modal', 'dashboardState', function (WidgetModel, $modal, dashboardState) {
       return {
         restrict: 'A',
         templateUrl: 'template/dashboard.html',
@@ -67,10 +92,7 @@ angular.module('ui.dashboard')
           $scope.sortableOptions = {
             stop: function () {
               //TODO store active widgets in local storage on add/remove/reorder
-              //var titles = _.map($scope.widgets, function (widget) {
-              //  return widget.title;
-              //});
-              //console.log(titles);
+              dashboardState.save($scope.widgets);
             },
             handle: '.widget-header'
           };
@@ -141,12 +163,17 @@ angular.module('ui.dashboard')
           scope.clear = function () {
             scope.widgets = [];
           };
-  
-          scope.widgets = [];
-          _.each(scope.options.defaultWidgets, function (widgetDef) {
-            scope.addWidget(widgetDef);
-          });
-  
+
+          if (!(scope.widgets = dashboardState.load())) {
+            console.log('no dashboard state loaded');
+            scope.widgets = [];
+            _.each(scope.options.defaultWidgets, function (widgetDef) {
+              scope.addWidget(widgetDef);
+            });  
+          } else {
+            console.log('dashboard state loaded');
+          }
+          
           scope.addWidgetInternal = function (event, widgetDef) {
             event.preventDefault();
             scope.addWidget(widgetDef);
@@ -156,7 +183,8 @@ angular.module('ui.dashboard')
           scope.options.addWidget = scope.addWidget;
         }
       };
-    }])
+    }
+  ])
   .directive('widget', ['$compile', function ($compile) {
 
     function findWidgetPlaceholder(element) {
