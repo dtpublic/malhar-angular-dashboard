@@ -63,7 +63,7 @@ angular.module('ui.dashboard')
 
     return WidgetModel;
   })
-  .controller('WidgetDialogCtrl', function($scope, $modalInstance, widget) {
+  .controller('WidgetDialogCtrl', function($scope, $modalInstance, widget, optionsTemplateUrl) {
     // add widget to scope
     $scope.widget = widget;
 
@@ -73,7 +73,7 @@ angular.module('ui.dashboard')
     };
 
     // look for optionsTemplateUrl on widget
-    $scope.optionsTemplateUrl = widget.optionsTemplateUrl || 'template/widget-default-content.html';
+    $scope.optionsTemplateUrl = optionsTemplateUrl || 'template/widget-default-content.html';
 
     $scope.ok = function () {
       $modalInstance.close($scope.result);
@@ -92,7 +92,7 @@ angular.module('ui.dashboard')
           $scope.sortableOptions = {
             stop: function () {
               //TODO store active widgets in local storage on add/remove/reorder
-              dashboardState.save($scope.widgets);
+              //dashboardState.save($scope.widgets);
             },
             handle: '.widget-header'
           };
@@ -101,14 +101,13 @@ angular.module('ui.dashboard')
           scope.options = scope.$eval(attrs.dashboard);
   
           var count = 1;
-  
+
           scope.addWidget = function (widgetDef) {
             var widget = new WidgetModel({
               title: 'Widget ' + count++,
               name: widgetDef.name,
               attrs: widgetDef.attrs,
               dataSource: widgetDef.dataSource,
-              optionsTemplateUrl: widgetDef.optionsTemplateUrl,
               style: widgetDef.style
             });
 
@@ -138,6 +137,9 @@ angular.module('ui.dashboard')
                 resolve: {
                   widget: function() {
                     return widget;
+                  },
+                  optionsTemplateUrl: function () {
+                    return scope.options.optionsTemplateUrl;
                   }
                 },
                 controller: 'WidgetDialogCtrl'
@@ -169,7 +171,7 @@ angular.module('ui.dashboard')
             scope.widgets = [];
             _.each(scope.options.defaultWidgets, function (widgetDef) {
               scope.addWidget(widgetDef);
-            });  
+            });
           } else {
             console.log('dashboard state loaded');
           }
