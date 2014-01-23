@@ -122,10 +122,12 @@ angular.module('ui.dashboard')
             }
   
             scope.widgets.push(widget);
+            scope.saveDashboard();
           };
   
           scope.removeWidget = function (widget) {
             scope.widgets.splice(_.indexOf(scope.widgets, widget), 1);
+            scope.saveDashboard();
           };
 
           scope.openWidgetDialog = function(widget) {
@@ -164,21 +166,30 @@ angular.module('ui.dashboard')
             scope.widgets = [];
           };
 
-          if (!(scope.widgets = dashboardState.load())) {
-            console.log('no dashboard state loaded');
-            scope.widgets = [];
-            _.each(scope.options.defaultWidgets, function (widgetDef) {
-              scope.addWidget(widgetDef);
-            });  
-          } else {
-            console.log('dashboard state loaded');
-          }
-          
           scope.addWidgetInternal = function (event, widgetDef) {
             event.preventDefault();
             scope.addWidget(widgetDef);
           };
+
+          scope.saveDashboard = function() {
+            dashboardState.save(scope.widgets);
+          }
+
+          scope.resetWidgetsToDefault = function() {
+            scope.clear();
+            _.each(scope.options.defaultWidgets, function (widgetDef) {
+              scope.addWidget(widgetDef);
+            });
+          }
   
+          // Set default widgets array
+          if (!(scope.widgets = dashboardState.load())) {
+            console.log('no dashboard state loaded');
+            scope.resetWidgetsToDefault();
+          } else {
+            console.log('dashboard state loaded');
+          }
+
           // allow adding widgets externally
           scope.options.addWidget = scope.addWidget;
         }
@@ -302,6 +313,7 @@ angular.module("ui.dashboard").run(["$templateCache", function($templateCache) {
   $templateCache.put("template/dashboard.html",
     "<div>\n" +
     "    <div class=\"btn-toolbar\">\n" +
+    "        <button class=\"btn btn-warning\" ng-click=\"resetWidgetsToDefault()\">Default Widgets</button>\n" +
     "        <div class=\"btn-group\" ng-if=\"!options.widgetButtons\">\n" +
     "            <button type=\"button\" class=\"dropdown-toggle btn btn-primary\" data-toggle=\"dropdown\">Add Widget <span\n" +
     "                    class=\"caret\"></span></button>\n" +
