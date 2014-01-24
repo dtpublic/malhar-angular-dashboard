@@ -3,18 +3,21 @@
 angular.module('ui.dashboard', ['ui.bootstrap', 'ui.sortable']);
 
 angular.module('ui.dashboard')
-  .service('dashboardState', function() {
+  .service('dashboardState', function () {
     return {
       // Takes array of widgets, saves by some mechanism.
       // (currently localStorage)
-      save: function(widgets) {
+      save: function (widgets) {
         var serialized = JSON.stringify(widgets);
         localStorage.setItem('widgets', serialized);
         return true;
       },
       // Returns widget array (as an array-object) or
       // false if none is found
-      load: function() {
+      load: function () {
+        if (true) {
+          return; //TODO
+        }
         var serialized = localStorage.getItem('widgets');
         var response = false;
         if (serialized) {
@@ -29,8 +32,34 @@ angular.module('ui.dashboard')
       }
     };
   })
-  .factory('WidgetModel', function() {
-    
+  .factory('WidgetDataSource', function () {
+    function WidgetDataSource() {
+    }
+
+    WidgetDataSource.prototype = {
+      setup: function (widget, scope) {
+        this.dataAttrName = widget.dataAttrName;
+        this.widgetScope = scope;
+      },
+
+      init: function () {
+        console.log('_init');
+        this.updateScope('initial scope value');
+      },
+
+      updateScope: function (data) {
+        this.widgetScope.widgetData = data;
+      },
+
+      destroy: function () {
+        console.log('_destroy');
+      }
+    };
+
+    return WidgetDataSource;
+  })
+  .factory('WidgetModel', function () {
+
     // constructor for widget model instances
     function WidgetModel(obj) {
       angular.extend(this, obj);
@@ -41,7 +70,7 @@ angular.module('ui.dashboard')
     WidgetModel.prototype = {
 
       // sets the width (and widthUnits)
-      setWidth: function(width, units) {
+      setWidth: function (width, units) {
         width = width.toString();
         units = units || width.replace(/^[-\.\d]+/, '') || '%';
         this.widthUnits = units;
@@ -63,7 +92,7 @@ angular.module('ui.dashboard')
 
     return WidgetModel;
   })
-  .controller('WidgetDialogCtrl', function($scope, $modalInstance, widget, optionsTemplateUrl) {
+  .controller('WidgetDialogCtrl', function ($scope, $modalInstance, widget, optionsTemplateUrl) {
     // add widget to scope
     $scope.widget = widget;
 
@@ -83,123 +112,125 @@ angular.module('ui.dashboard')
       $modalInstance.dismiss('cancel');
     };
   })
-  .directive('dashboard', ['WidgetModel','$modal', 'dashboardState', function (WidgetModel, $modal, dashboardState) {
-      return {
-        restrict: 'A',
-        templateUrl: 'template/dashboard.html',
-        scope: true,
-        controller: function ($scope) {
-          $scope.sortableOptions = {
-            stop: function () {
-              //TODO store active widgets in local storage on add/remove/reorder
-              //dashboardState.save($scope.widgets);
-            },
-            handle: '.widget-header'
-          };
-        },
-        link: function (scope, element, attrs) {
-          scope.options = scope.$eval(attrs.dashboard);
-  
-          var count = 1;
+  .directive('dashboard', ['WidgetModel', '$modal', 'dashboardState', function (WidgetModel, $modal, dashboardState) {
+    return {
+      restrict: 'A',
+      templateUrl: 'template/dashboard.html',
+      scope: true,
+      controller: function ($scope) {
+        $scope.sortableOptions = {
+          stop: function () {
+            //TODO store active widgets in local storage on add/remove/reorder
+            dashboardState.save($scope.widgets);
+          },
+          handle: '.widget-header'
+        };
+      },
+      link: function (scope, element, attrs) {
+        scope.options = scope.$eval(attrs.dashboard);
 
-          scope.addWidget = function (widgetDef) {
-            var widget = new WidgetModel({
-              title: 'Widget ' + count++,
-              name: widgetDef.name,
-              attrs: widgetDef.attrs,
-              dataSource: widgetDef.dataSource,
-              style: widgetDef.style
-            });
+        var count = 1;
 
-            if (widgetDef.templateUrl) {
-              widget.templateUrl = widgetDef.templateUrl;
-            } else if (widgetDef.template) {
-              widget.template = widgetDef.template;
-            } else {
-              var directive = widgetDef.directive ? widgetDef.directive : widgetDef.name;
-              widget.directive = directive;
-            }
-  
-            scope.widgets.push(widget);
-            scope.saveDashboard();
-          };
-  
-          scope.removeWidget = function (widget) {
-            scope.widgets.splice(_.indexOf(scope.widgets, widget), 1);
-            scope.saveDashboard();
-          };
+        scope.addWidget = function (widgetDef) {
+          var widget = new WidgetModel({
+            title: 'Widget ' + count++,
+            name: widgetDef.name,
+            attrs: widgetDef.attrs,
+            dataAttrName: widgetDef.dataAttrName,
+            ds: widgetDef.ds,
+            dataSourceType: widgetDef.dataSourceType,
+            dataSource: widgetDef.dataSource,
+            style: widgetDef.style
+          });
 
-          scope.openWidgetDialog = function(widget) {
-            var options = widget.editModalOptions;
-
-            // use default options when none are supplied by widget
-            if (!options) {
-              options = {
-                templateUrl: 'template/widget-template.html',
-                resolve: {
-                  widget: function() {
-                    return widget;
-                  },
-                  optionsTemplateUrl: function () {
-                    return scope.options.optionsTemplateUrl;
-                  }
-                },
-                controller: 'WidgetDialogCtrl'
-              };
-            }
-            var modalInstance = $modal.open(options);
-
-            // Set resolve and reject callbacks for the result promise
-            modalInstance.result.then(
-              function(result) {
-                console.log('widget dialog closed');
-                console.log('result: ', result);
-                widget.title = result.title;
-              },
-              function(reason) {
-                console.log('widget dialog dismissed: ', reason);
-
-              }
-            );
-
-          };
-  
-          scope.clear = function () {
-            scope.widgets = [];
-          };
-
-          scope.addWidgetInternal = function (event, widgetDef) {
-            event.preventDefault();
-            scope.addWidget(widgetDef);
-          };
-
-          scope.saveDashboard = function() {
-            dashboardState.save(scope.widgets);
-          }
-
-          scope.resetWidgetsToDefault = function() {
-            scope.clear();
-            _.each(scope.options.defaultWidgets, function (widgetDef) {
-              scope.addWidget(widgetDef);
-            });
-          }
-  
-          // Set default widgets array
-          if (!(scope.widgets = dashboardState.load())) {
-            console.log('no dashboard state loaded');
-            scope.resetWidgetsToDefault();
+          if (widgetDef.templateUrl) {
+            widget.templateUrl = widgetDef.templateUrl;
+          } else if (widgetDef.template) {
+            widget.template = widgetDef.template;
           } else {
-            console.log('dashboard state loaded');
+            var directive = widgetDef.directive ? widgetDef.directive : widgetDef.name;
+            widget.directive = directive;
           }
 
-          // allow adding widgets externally
-          scope.options.addWidget = scope.addWidget;
+          scope.widgets.push(widget);
+          scope.saveDashboard();
+        };
+
+        scope.removeWidget = function (widget) {
+          scope.widgets.splice(_.indexOf(scope.widgets, widget), 1);
+          scope.saveDashboard();
+        };
+
+        scope.openWidgetDialog = function (widget) {
+          var options = widget.editModalOptions;
+
+          // use default options when none are supplied by widget
+          if (!options) {
+            options = {
+              templateUrl: 'template/widget-template.html',
+              resolve: {
+                widget: function () {
+                  return widget;
+                },
+                optionsTemplateUrl: function () {
+                  return scope.options.optionsTemplateUrl;
+                }
+              },
+              controller: 'WidgetDialogCtrl'
+            };
+          }
+          var modalInstance = $modal.open(options);
+
+          // Set resolve and reject callbacks for the result promise
+          modalInstance.result.then(
+            function (result) {
+              console.log('widget dialog closed');
+              console.log('result: ', result);
+              widget.title = result.title;
+            },
+            function (reason) {
+              console.log('widget dialog dismissed: ', reason);
+
+            }
+          );
+
+        };
+
+        scope.clear = function () {
+          scope.widgets = [];
+        };
+
+        scope.addWidgetInternal = function (event, widgetDef) {
+          event.preventDefault();
+          scope.addWidget(widgetDef);
+        };
+
+        scope.saveDashboard = function () {
+          dashboardState.save(scope.widgets);
+        };
+
+        scope.resetWidgetsToDefault = function () {
+          scope.clear();
+          _.each(scope.options.defaultWidgets, function (widgetDef) {
+            scope.addWidget(widgetDef);
+          });
+        };
+
+        // Set default widgets array
+        if (!(scope.widgets = dashboardState.load())) {
+          console.log('no dashboard state loaded');
+          scope.resetWidgetsToDefault();
+        } else {
+          console.log('dashboard state loaded');
         }
-      };
-    }
+
+        // allow adding widgets externally
+        scope.options.addWidget = scope.addWidget;
+      }
+    };
+  }
   ])
   .directive('widget', ['$compile', function ($compile) {
-
     function findWidgetPlaceholder(element) {
       // widget placeholder is the first (and only) child of .widget-content
       return angular.element(element.find('.widget-content').children()[0]);
@@ -213,6 +244,16 @@ angular.module('ui.dashboard')
 
         // the widget model/definition object
         var widget = scope.widget;
+
+        // set up data source
+        if (widget.dataSourceType) {
+          //var ds = widget.ds;
+          var ds = new widget.dataSourceType();
+          widget.dataSource = ds;
+          ds.setup(widget, scope);
+          ds.init();
+          scope.$on('$destroy', ds.destroy.bind(ds));
+        }
 
         // .widget element (element is .widget-container)
         var widgetElm = element.find('.widget');
@@ -234,10 +275,14 @@ angular.module('ui.dashboard')
               elm.attr(attr, value);
             });
           }
+
+          if (widget.dataAttrName) {
+            elm.attr(widget.dataAttrName, 'widgetData');
+          }
         }
 
-        scope.grabResizer = function(e) {
-          
+        scope.grabResizer = function (e) {
+
           // ignore middle- and right-click
           if (e.which !== 1) {
             return;
@@ -245,18 +290,18 @@ angular.module('ui.dashboard')
 
           e.stopPropagation();
           e.originalEvent.preventDefault();
-          
+
           // get the starting horizontal position
           var initX = e.clientX;
           // console.log('initX', initX);
-          
+
           // Get the current width of the widget and dashboard
           var pixelWidth = widgetElm.width();
           var pixelHeight = widgetElm.height();
           var widgetStyleWidth = widget.style.width;
           var widthUnits = widget.widthUnits;
           var unitWidth = parseFloat(widgetStyleWidth);
-          
+
           // create marquee element for resize action
           var $marquee = angular.element('<div class="widget-resizer-marquee" style="height: ' + pixelHeight + 'px; width: ' + pixelWidth + 'px;"></div>');
           widgetElm.append($marquee);
@@ -265,15 +310,15 @@ angular.module('ui.dashboard')
           var transformMultiplier = unitWidth / pixelWidth;
 
           // updates marquee with preview of new width
-          var mousemove = function(e) {
+          var mousemove = function (e) {
             var curX = e.clientX;
             var pixelChange = curX - initX;
             var newWidth = pixelWidth + pixelChange;
             $marquee.css('width', newWidth + 'px');
           };
-          
+
           // sets new widget width on mouseup
-          var mouseup = function(e) {
+          var mouseup = function (e) {
             // remove listener and marquee
             jQuery(window).off('mousemove', mousemove);
             $marquee.remove();
@@ -281,27 +326,29 @@ angular.module('ui.dashboard')
             // calculate change in units
             var curX = e.clientX;
             var pixelChange = curX - initX;
-            var unitChange = Math.round( pixelChange * transformMultiplier * 100 ) / 100;
+            var unitChange = Math.round(pixelChange * transformMultiplier * 100) / 100;
 
             // add to initial unit width
             var newWidth = unitWidth * 1 + unitChange;
             widget.setWidth(newWidth + widthUnits);
             scope.$apply();
           };
-          
+
           jQuery(window).on('mousemove', mousemove).one('mouseup', mouseup);
 
         };
 
         // replaces widget title with input
-        scope.editTitle = function(widget) {
+        scope.editTitle = function (widget) {
           widget.editingTitle = true;
           // HACK: get the input to focus after being displayed.
-          setTimeout(function() {widgetElm.find('form.widget-title input:eq(0)').focus()[0].setSelectionRange(0, 9999);}, 0);
+          setTimeout(function () {
+            widgetElm.find('form.widget-title input:eq(0)').focus()[0].setSelectionRange(0, 9999);
+          }, 0);
         };
 
         // saves whatever is in the title input as the new title
-        scope.saveTitleEdit = function(widget) {
+        scope.saveTitleEdit = function (widget) {
 
           widget.editingTitle = false;
         };
