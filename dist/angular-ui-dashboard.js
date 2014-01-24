@@ -61,9 +61,17 @@ angular.module('ui.dashboard')
             // deserialized object
             var widgetObject = deserialized[i];
             // widget definition to use
-            var widgetDefinition = _.find(this.widgetDefinitions, function(def) {
-              return def.name === widgetObject.name;
-            });
+            var widgetDefinition = false;
+
+            // find definition with same name
+            for (var k = this.widgetDefinitions.length - 1; k >= 0; k--) {
+              var def = this.widgetDefinitions[k];
+              if (def.name === widgetObject.name) {
+                widgetDefinition = def;
+                break;
+              }
+            }
+
             // check for no widget
             if (!widgetDefinition) {
               // no widget definition found, remove and return false
@@ -116,9 +124,9 @@ angular.module('ui.dashboard')
         name: Class.name,
         attrs: Class.attrs,
         dataAttrName: Class.dataAttrName,
-        ds: Class.ds,
+        dataTypes: Class.dataTypes,
         dataSourceType: Class.dataSourceType,
-        dataSource: Class.dataSource,
+        dataSourceOptions: Class.dataSourceOptions,
         style: Class.style
       }, overrides);
       this.style = this.style || { width: '33%' };
