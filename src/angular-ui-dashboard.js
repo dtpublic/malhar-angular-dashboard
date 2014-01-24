@@ -42,17 +42,16 @@ angular.module('ui.dashboard')
         this.widgetScope = scope;
       },
 
-      init: function () {
-        console.log('_init');
-        this.updateScope('initial scope value');
-      },
-
       updateScope: function (data) {
         this.widgetScope.widgetData = data;
       },
 
+      init: function () {
+        // to be overridden by subclasses
+      },
+
       destroy: function () {
-        console.log('_destroy');
+        // to be overridden by subclasses
       }
     };
 
