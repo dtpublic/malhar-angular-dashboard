@@ -39,6 +39,7 @@ angular.module('ui.dashboard')
     WidgetDataSource.prototype = {
       setup: function (widget, scope) {
         this.dataAttrName = widget.dataAttrName;
+        this.dataSourceOptions = widget.dataSourceOptions;
         this.widgetScope = scope;
       },
 
@@ -136,8 +137,8 @@ angular.module('ui.dashboard')
             name: widgetDef.name,
             attrs: widgetDef.attrs,
             dataAttrName: widgetDef.dataAttrName,
-            ds: widgetDef.ds,
             dataSourceType: widgetDef.dataSourceType,
+            dataSourceOptions: widgetDef.dataSourceOptions,
             dataSource: widgetDef.dataSource,
             style: widgetDef.style
           });
