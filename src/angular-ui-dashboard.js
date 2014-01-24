@@ -116,9 +116,8 @@ angular.module('ui.dashboard')
         name: Class.name,
         attrs: Class.attrs,
         dataAttrName: Class.dataAttrName,
-        ds: Class.ds,
         dataSourceType: Class.dataSourceType,
-        dataSource: Class.dataSource,
+        dataSourceOptions: Class.dataSourceOptions,
         style: Class.style
       }, overrides);
       this.style = this.style || { width: '33%' };
