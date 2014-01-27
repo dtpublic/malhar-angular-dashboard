@@ -481,7 +481,7 @@ angular.module("ui.dashboard").run(["$templateCache", function($templateCache) {
   $templateCache.put("template/widget-template.html",
     "<div class=\"modal-header\">\n" +
     "    <button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-hidden=\"true\" ng-click=\"cancel()\">&times;</button>\n" +
-    "  <h3>Widget Editor <small>{{widget.title}}</small></h3>\n" +
+    "  <h3>Widget Options <small>{{widget.title}}</small></h3>\n" +
     "</div>\n" +
     "\n" +
     "<div class=\"modal-body\">\n" +
