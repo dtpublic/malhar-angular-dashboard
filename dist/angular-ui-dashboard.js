@@ -21,10 +21,13 @@ angular.module('ui.dashboard')
             lsKey = 'default';
           }
           var serialized = _.map(widgets, function(widget) {
-            var widgetObject = {};
-            _.each(['title', 'name', 'style'], function(key) {
-              widgetObject[key] = widget[key];
-            });
+            var widgetObject = {
+              title: widget.title,
+              name: widget.name,
+              style: widget.style,
+              dataSourceOptions: widget.dataSourceOptions
+            };
+
             return widgetObject;
           });
           serialized = JSON.stringify(serialized);
