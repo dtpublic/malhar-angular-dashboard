@@ -426,7 +426,6 @@ angular.module("ui.dashboard").run(["$templateCache", function($templateCache) {
   $templateCache.put("template/dashboard.html",
     "<div>\n" +
     "    <div class=\"btn-toolbar\">\n" +
-    "        <button class=\"btn btn-warning\" ng-click=\"resetWidgetsToDefault()\">Default Widgets</button>\n" +
     "        <div class=\"btn-group\" ng-if=\"!options.widgetButtons\">\n" +
     "            <button type=\"button\" class=\"dropdown-toggle btn btn-primary\" data-toggle=\"dropdown\">Add Widget <span\n" +
     "                    class=\"caret\"></span></button>\n" +
@@ -443,6 +442,8 @@ angular.module("ui.dashboard").run(["$templateCache", function($templateCache) {
     "                {{widget.name}}\n" +
     "            </button>\n" +
     "        </div>\n" +
+    "\n" +
+    "        <button class=\"btn btn-warning\" ng-click=\"resetWidgetsToDefault()\">Default Widgets</button>\n" +
     "\n" +
     "        <button ng-click=\"clear();\" type=\"button\" class=\"btn btn-info\">Clear</button>\n" +
     "    </div>\n" +
