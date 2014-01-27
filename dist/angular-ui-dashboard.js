@@ -211,8 +211,10 @@ angular.module('ui.dashboard')
         );
 
         scope.addWidget = function (widgetDef) {
+          var title = widgetDef.title ? widgetDef.title : ('Widget ' + count++);
+
           var widget = new WidgetModel(widgetDef, {
-            title: 'Widget ' + count++
+            title: title
           });
 
           scope.widgets.push(widget);
