@@ -32,13 +32,11 @@ module.exports = function (grunt) {
       }
     },
     watch: {
-      dashboard: {
-        files: [
-          'src/*.*',
-          'template/*.html'
-        ],
-        tasks: ['ngtemplates', 'concat', 'copy:dist']
-      }
+      files: [
+        'src/**/*.*',
+        'template/*.html'
+      ],
+      tasks: ['ngtemplates', 'concat', 'copy:dist']
     },
     jshint: {
       options: {

@@ -238,6 +238,8 @@ angular.module('ui.dashboard')
         };
 
         $compile(elm)(scope);
+
+        scope.$emit('widgetAdded', widget);
       }
     };
   }]);
