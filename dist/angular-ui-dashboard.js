@@ -3,193 +3,6 @@
 angular.module('ui.dashboard', ['ui.bootstrap', 'ui.sortable']);
 
 angular.module('ui.dashboard')
-  .factory('DashboardState', ['WidgetModel', function (WidgetModel) {
-      function DashboardState(useLocalStorage, widgetDefinitions) {
-        this.useLocalStorage = !!useLocalStorage;
-        this.widgetDefinitions = widgetDefinitions;
-      }
-      DashboardState.prototype = {
-        // Takes array of widgets, serializes, and saves state.
-        // (currently stored in localStorage)
-        save: function (lsKey, widgets) {
-          console.log('saving dash state');
-          if (!this.useLocalStorage) {
-            return true;
-          }
-          if (arguments.length === 1) {
-            widgets = lsKey;
-            lsKey = 'default';
-          }
-          var serialized = _.map(widgets, function(widget) {
-            var widgetObject = {
-              title: widget.title,
-              name: widget.name,
-              style: widget.style,
-              dataSourceOptions: widget.dataSourceOptions
-            };
-
-            return widgetObject;
-          });
-          serialized = JSON.stringify(serialized);
-          localStorage.setItem('widgets.' + lsKey, serialized);
-          return true;
-        },
-
-        // Returns array of instantiated widget objects
-        load: function (key) {
-
-          if (!this.useLocalStorage) {
-            return true;
-          }
-
-          var serialized, deserialized, result = [];
-          key = key || 'default';
-          
-          // try loading localStorage item
-          if (!(serialized = localStorage.getItem('widgets.' + key))) {
-            return false;
-          }
-
-          try { // to deserialize the string
-            deserialized = JSON.parse(serialized);
-          } catch (e) {
-            // bad JSON, clear localStorage
-            localStorage.removeItem('widgets.' + key);
-            return false;
-          }
-    
-          // instantiate widgets from stored data
-          for (var i = 0; i < deserialized.length; i++) {
-
-            // deserialized object
-            var widgetObject = deserialized[i];
-            // widget definition to use
-            var widgetDefinition = false;
-
-            // find definition with same name
-            for (var k = this.widgetDefinitions.length - 1; k >= 0; k--) {
-              var def = this.widgetDefinitions[k];
-              if (def.name === widgetObject.name) {
-                widgetDefinition = def;
-                break;
-              }
-            }
-
-            // check for no widget
-            if (!widgetDefinition) {
-              // no widget definition found, remove and return false
-              localStorage.removeItem('widgets.' + key);
-              return false;
-            }
-
-            // push instantiated widget to result array
-            result.push(new WidgetModel(widgetDefinition,widgetObject));
-          }
-  
-          return result;
-        }
-      };
-      return DashboardState;
-    }])
-  .factory('WidgetDataSource', function () {
-    function WidgetDataSource() {
-    }
-
-    WidgetDataSource.prototype = {
-      setup: function (widget, scope) {
-        this.dataAttrName = widget.dataAttrName;
-        this.dataSourceOptions = widget.dataSourceOptions;
-        this.widgetScope = scope;
-      },
-
-      updateScope: function (data) {
-        this.widgetScope.widgetData = data;
-      },
-
-      init: function () {
-        // to be overridden by subclasses
-      },
-
-      destroy: function () {
-        // to be overridden by subclasses
-      }
-    };
-
-    return WidgetDataSource;
-  })
-  .factory('WidgetModel', function () {
-
-    // constructor for widget model instances
-    function WidgetModel(Class, overrides) {
-      overrides = overrides || {};
-      angular.extend(this, {
-        title: 'Widget',
-        name: Class.name,
-        attrs: Class.attrs,
-        dataAttrName: Class.dataAttrName,
-        dataTypes: Class.dataTypes,
-        dataSourceType: Class.dataSourceType,
-        dataSourceOptions: Class.dataSourceOptions,
-        style: Class.style
-      }, overrides);
-      this.style = this.style || { width: '33%' };
-      this.setWidth(this.style.width);
-
-      if (Class.templateUrl) {
-        this.templateUrl = Class.templateUrl;
-      } else if (Class.template) {
-        this.template = Class.template;
-      } else {
-        var directive = Class.directive || Class.name;
-        this.directive = directive;
-      }
-    }
-
-    WidgetModel.prototype = {
-
-      // sets the width (and widthUnits)
-      setWidth: function (width, units) {
-        width = width.toString();
-        units = units || width.replace(/^[-\.\d]+/, '') || '%';
-        this.widthUnits = units;
-        width = parseFloat(width);
-
-        if (width < 0) {
-          return false;
-        }
-
-        if (units === '%') {
-          width = Math.min(100, width);
-          width = Math.max(0, width);
-        }
-        this.style.width = width + '' + units;
-        return true;
-      }
-
-    };
-
-    return WidgetModel;
-  })
-  .controller('WidgetDialogCtrl', function ($scope, $modalInstance, widget, optionsTemplateUrl) {
-    // add widget to scope
-    $scope.widget = widget;
-
-    // set up result object
-    $scope.result = {
-      title: widget.title
-    };
-
-    // look for optionsTemplateUrl on widget
-    $scope.optionsTemplateUrl = optionsTemplateUrl || 'template/widget-default-content.html';
-
-    $scope.ok = function () {
-      $modalInstance.close($scope.result);
-    };
-
-    $scope.cancel = function () {
-      $modalInstance.dismiss('cancel');
-    };
-  })
   .directive('dashboard', ['WidgetModel', '$modal', 'DashboardState', function (WidgetModel, $modal, DashboardState) {
     return {
       restrict: 'A',
@@ -294,11 +107,13 @@ angular.module('ui.dashboard')
 
         // allow adding widgets externally
         scope.options.addWidget = scope.addWidget;
-        
+
       }
     };
-  }
-  ])
+  }]);
+'use strict';
+
+angular.module('ui.dashboard')
   .directive('widget', ['$compile', function ($compile) {
     function findWidgetPlaceholder(element) {
       // widget placeholder is the first (and only) child of .widget-content
@@ -426,6 +241,205 @@ angular.module('ui.dashboard')
       }
     };
   }]);
+'use strict';
+
+angular.module('ui.dashboard')
+  .factory('DashboardState', ['WidgetModel', function (WidgetModel) {
+    function DashboardState(useLocalStorage, widgetDefinitions) {
+      this.useLocalStorage = !!useLocalStorage;
+      this.widgetDefinitions = widgetDefinitions;
+    }
+
+    DashboardState.prototype = {
+      // Takes array of widgets, serializes, and saves state.
+      // (currently stored in localStorage)
+      save: function (lsKey, widgets) {
+        console.log('saving dash state');
+        if (!this.useLocalStorage) {
+          return true;
+        }
+        if (arguments.length === 1) {
+          widgets = lsKey;
+          lsKey = 'default';
+        }
+        var serialized = _.map(widgets, function (widget) {
+          var widgetObject = {
+            title: widget.title,
+            name: widget.name,
+            style: widget.style,
+            dataSourceOptions: widget.dataSourceOptions
+          };
+
+          return widgetObject;
+        });
+        serialized = JSON.stringify(serialized);
+        localStorage.setItem('widgets.' + lsKey, serialized);
+        return true;
+      },
+
+      // Returns array of instantiated widget objects
+      load: function (key) {
+
+        if (!this.useLocalStorage) {
+          return true;
+        }
+
+        var serialized, deserialized, result = [];
+        key = key || 'default';
+
+        // try loading localStorage item
+        if (!(serialized = localStorage.getItem('widgets.' + key))) {
+          return false;
+        }
+
+        try { // to deserialize the string
+          deserialized = JSON.parse(serialized);
+        } catch (e) {
+          // bad JSON, clear localStorage
+          localStorage.removeItem('widgets.' + key);
+          return false;
+        }
+
+        // instantiate widgets from stored data
+        for (var i = 0; i < deserialized.length; i++) {
+
+          // deserialized object
+          var widgetObject = deserialized[i];
+          // widget definition to use
+          var widgetDefinition = false;
+
+          // find definition with same name
+          for (var k = this.widgetDefinitions.length - 1; k >= 0; k--) {
+            var def = this.widgetDefinitions[k];
+            if (def.name === widgetObject.name) {
+              widgetDefinition = def;
+              break;
+            }
+          }
+
+          // check for no widget
+          if (!widgetDefinition) {
+            // no widget definition found, remove and return false
+            localStorage.removeItem('widgets.' + key);
+            return false;
+          }
+
+          // push instantiated widget to result array
+          result.push(new WidgetModel(widgetDefinition, widgetObject));
+        }
+
+        return result;
+      }
+    };
+    return DashboardState;
+  }]);
+'use strict';
+
+angular.module('ui.dashboard')
+  .factory('WidgetDataSource', function () {
+    function WidgetDataSource() {
+    }
+
+    WidgetDataSource.prototype = {
+      setup: function (widget, scope) {
+        this.dataAttrName = widget.dataAttrName;
+        this.dataSourceOptions = widget.dataSourceOptions;
+        this.widgetScope = scope;
+      },
+
+      updateScope: function (data) {
+        this.widgetScope.widgetData = data;
+      },
+
+      init: function () {
+        // to be overridden by subclasses
+      },
+
+      destroy: function () {
+        // to be overridden by subclasses
+      }
+    };
+
+    return WidgetDataSource;
+  });
+'use strict';
+
+angular.module('ui.dashboard')
+  .factory('WidgetModel', function () {
+    // constructor for widget model instances
+    function WidgetModel(Class, overrides) {
+      overrides = overrides || {};
+      angular.extend(this, {
+        title: 'Widget',
+        name: Class.name,
+        attrs: Class.attrs,
+        dataAttrName: Class.dataAttrName,
+        dataTypes: Class.dataTypes,
+        dataSourceType: Class.dataSourceType,
+        dataSourceOptions: Class.dataSourceOptions,
+        style: Class.style
+      }, overrides);
+      this.style = this.style || { width: '33%' };
+      this.setWidth(this.style.width);
+
+      if (Class.templateUrl) {
+        this.templateUrl = Class.templateUrl;
+      } else if (Class.template) {
+        this.template = Class.template;
+      } else {
+        var directive = Class.directive || Class.name;
+        this.directive = directive;
+      }
+    }
+
+    WidgetModel.prototype = {
+
+      // sets the width (and widthUnits)
+      setWidth: function (width, units) {
+        width = width.toString();
+        units = units || width.replace(/^[-\.\d]+/, '') || '%';
+        this.widthUnits = units;
+        width = parseFloat(width);
+
+        if (width < 0) {
+          return false;
+        }
+
+        if (units === '%') {
+          width = Math.min(100, width);
+          width = Math.max(0, width);
+        }
+        this.style.width = width + '' + units;
+        return true;
+      }
+
+    };
+
+    return WidgetModel;
+  });
+'use strict';
+
+angular.module('ui.dashboard')
+  .controller('WidgetDialogCtrl', function ($scope, $modalInstance, widget, optionsTemplateUrl) {
+    // add widget to scope
+    $scope.widget = widget;
+
+    // set up result object
+    $scope.result = {
+      title: widget.title
+    };
+
+    // look for optionsTemplateUrl on widget
+    $scope.optionsTemplateUrl = optionsTemplateUrl || 'template/widget-default-content.html';
+
+    $scope.ok = function () {
+      $modalInstance.close($scope.result);
+    };
+
+    $scope.cancel = function () {
+      $modalInstance.dismiss('cancel');
+    };
+  });
 angular.module("ui.dashboard").run(["$templateCache", function($templateCache) {
 
   $templateCache.put("template/dashboard.html",

@@ -1,6 +1,6 @@
 {
   "name": "angular-ui-dashboard",
-  "main": "./src/angular-ui-dashboard.js",
+  "main": "./dist/angular-ui-dashboard.js",
   "version": "0.0.2",
   "license": "MIT",
   "dependencies": {

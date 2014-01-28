@@ -22,7 +22,12 @@ module.exports = function (grunt) {
     },
     concat: {
       dist: {
-        src: ['src/angular-ui-dashboard.js', 'template/dashboard.js'],
+        src: [
+          'src/directives/*.js',
+          'src/models/*.js',
+          'src/controllers/*.js',
+          'template/dashboard.js'
+        ],
         dest: 'dist/angular-ui-dashboard.js'
       }
     },
