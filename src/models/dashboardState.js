@@ -29,6 +29,7 @@ angular.module('ui.dashboard')
 
           return widgetObject;
         });
+
         serialized = JSON.stringify(serialized);
         localStorage.setItem('widgets.' + lsKey, serialized);
         return true;
@@ -36,9 +37,8 @@ angular.module('ui.dashboard')
 
       // Returns array of instantiated widget objects
       load: function (key) {
-
         if (!this.useLocalStorage) {
-          return true;
+          return null;
         }
 
         var serialized, deserialized, result = [];
@@ -46,7 +46,7 @@ angular.module('ui.dashboard')
 
         // try loading localStorage item
         if (!(serialized = localStorage.getItem('widgets.' + key))) {
-          return false;
+          return null;
         }
 
         try { // to deserialize the string
@@ -54,7 +54,7 @@ angular.module('ui.dashboard')
         } catch (e) {
           // bad JSON, clear localStorage
           localStorage.removeItem('widgets.' + key);
-          return false;
+          return null;
         }
 
         // instantiate widgets from stored data
@@ -78,7 +78,7 @@ angular.module('ui.dashboard')
           if (!widgetDefinition) {
             // no widget definition found, remove and return false
             localStorage.removeItem('widgets.' + key);
-            return false;
+            return null;
           }
 
           // push instantiated widget to result array

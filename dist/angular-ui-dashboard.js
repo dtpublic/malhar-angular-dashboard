@@ -21,8 +21,7 @@ angular.module('ui.dashboard')
         scope.options = scope.$eval(attrs.dashboard);
         var count = 1;
         var dashboardState = scope.dashboardState = new DashboardState(
-          // !!scope.options.useLocalStorage,
-          true,
+          !!scope.options.useLocalStorage,
           scope.options.defaultWidgets
         );
 
@@ -98,16 +97,16 @@ angular.module('ui.dashboard')
         };
 
         // Set default widgets array
-        if (!(scope.widgets = dashboardState.load())) {
-          console.log('no dashboard state loaded');
-          scope.resetWidgetsToDefault();
+        var savedWidgets = dashboardState.load();
+
+        if (savedWidgets) {
+          scope.widgets = savedWidgets;
         } else {
-          console.log('dashboard state loaded');
+          scope.resetWidgetsToDefault();
         }
 
         // allow adding widgets externally
         scope.options.addWidget = scope.addWidget;
-
       }
     };
   }]);
@@ -274,6 +273,7 @@ angular.module('ui.dashboard')
 
           return widgetObject;
         });
+
         serialized = JSON.stringify(serialized);
         localStorage.setItem('widgets.' + lsKey, serialized);
         return true;
@@ -281,9 +281,8 @@ angular.module('ui.dashboard')
 
       // Returns array of instantiated widget objects
       load: function (key) {
-
         if (!this.useLocalStorage) {
-          return true;
+          return null;
         }
 
         var serialized, deserialized, result = [];
@@ -291,7 +290,7 @@ angular.module('ui.dashboard')
 
         // try loading localStorage item
         if (!(serialized = localStorage.getItem('widgets.' + key))) {
-          return false;
+          return null;
         }
 
         try { // to deserialize the string
@@ -299,7 +298,7 @@ angular.module('ui.dashboard')
         } catch (e) {
           // bad JSON, clear localStorage
           localStorage.removeItem('widgets.' + key);
-          return false;
+          return null;
         }
 
         // instantiate widgets from stored data
@@ -323,7 +322,7 @@ angular.module('ui.dashboard')
           if (!widgetDefinition) {
             // no widget definition found, remove and return false
             localStorage.removeItem('widgets.' + key);
-            return false;
+            return null;
           }
 
           // push instantiated widget to result array

@@ -21,8 +21,7 @@ angular.module('ui.dashboard')
         scope.options = scope.$eval(attrs.dashboard);
         var count = 1;
         var dashboardState = scope.dashboardState = new DashboardState(
-          // !!scope.options.useLocalStorage,
-          true,
+          !!scope.options.useLocalStorage,
           scope.options.defaultWidgets
         );
 
@@ -98,16 +97,16 @@ angular.module('ui.dashboard')
         };
 
         // Set default widgets array
-        if (!(scope.widgets = dashboardState.load())) {
-          console.log('no dashboard state loaded');
-          scope.resetWidgetsToDefault();
+        var savedWidgets = dashboardState.load();
+
+        if (savedWidgets) {
+          scope.widgets = savedWidgets;
         } else {
-          console.log('dashboard state loaded');
+          scope.resetWidgetsToDefault();
         }
 
         // allow adding widgets externally
         scope.options.addWidget = scope.addWidget;
-
       }
     };
   }]);
