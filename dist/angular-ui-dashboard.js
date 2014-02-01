@@ -89,11 +89,15 @@ angular.module('ui.dashboard')
           dashboardState.save(scope.widgets);
         };
 
-        scope.resetWidgetsToDefault = function () {
+        scope.loadWidgets = function (widgets) {
           scope.clear();
-          _.each(scope.options.defaultWidgets, function (widgetDef) {
+          _.each(widgets, function (widgetDef) {
             scope.addWidget(widgetDef);
           });
+        };
+
+        scope.resetWidgetsToDefault = function () {
+          scope.loadWidgets(scope.options.defaultWidgets);
         };
 
         // Set default widgets array
@@ -101,12 +105,13 @@ angular.module('ui.dashboard')
 
         if (savedWidgets) {
           scope.widgets = savedWidgets;
-        } else {
+        } else if (scope.options.defaultWidgets) {
           scope.resetWidgetsToDefault();
         }
 
         // allow adding widgets externally
         scope.options.addWidget = scope.addWidget;
+        scope.options.loadWidgets = scope.loadWidgets;
       }
     };
   }]);
