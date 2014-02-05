@@ -19,10 +19,12 @@ angular.module('ui.dashboard')
       },
       link: function (scope, element, attrs) {
         scope.options = scope.$eval(attrs.dashboard);
+        scope.defaultWidgets = scope.options.defaultWidgets; // save widgets for reset
+
         var count = 1;
         var dashboardState = scope.dashboardState = new DashboardState(
           !!scope.options.useLocalStorage,
-          scope.options.defaultWidgets
+          scope.defaultWidgets
         );
 
         scope.addWidget = function (widgetDef) {
@@ -90,6 +92,7 @@ angular.module('ui.dashboard')
         };
 
         scope.loadWidgets = function (widgets) {
+          scope.defaultWidgets = widgets; // save widgets for reset
           scope.clear();
           _.each(widgets, function (widgetDef) {
             scope.addWidget(widgetDef);
@@ -97,7 +100,7 @@ angular.module('ui.dashboard')
         };
 
         scope.resetWidgetsToDefault = function () {
-          scope.loadWidgets(scope.options.defaultWidgets);
+          scope.loadWidgets(scope.defaultWidgets);
         };
 
         // Set default widgets array
@@ -105,7 +108,7 @@ angular.module('ui.dashboard')
 
         if (savedWidgets) {
           scope.widgets = savedWidgets;
-        } else if (scope.options.defaultWidgets) {
+        } else if (scope.defaultWidgets) {
           scope.resetWidgetsToDefault();
         }
 
