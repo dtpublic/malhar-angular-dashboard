@@ -1,11 +1,11 @@
 'use strict';
 
 angular.module('ui.dashboard')
-  .factory('WidgetDataSource', function () {
-    function WidgetDataSource() {
+  .factory('WidgetDataModel', function () {
+    function WidgetDataModel() {
     }
 
-    WidgetDataSource.prototype = {
+    WidgetDataModel.prototype = {
       setup: function (widget, scope) {
         this.dataAttrName = widget.dataAttrName;
         this.dataSourceOptions = widget.dataSourceOptions;
@@ -25,5 +25,5 @@ angular.module('ui.dashboard')
       }
     };
 
-    return WidgetDataSource;
+    return WidgetDataModel;
   });
