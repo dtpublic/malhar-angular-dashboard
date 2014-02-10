@@ -102,6 +102,7 @@ angular.module('ui.dashboard')
             // add to initial unit width
             var newWidth = unitWidth * 1 + unitChange;
             widget.setWidth(newWidth + widthUnits);
+            scope.$emit('widgetChanged', widget);
             scope.$apply();
           };
 

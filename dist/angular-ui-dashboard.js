@@ -115,6 +115,12 @@ angular.module('ui.dashboard')
         // allow adding widgets externally
         scope.options.addWidget = scope.addWidget;
         scope.options.loadWidgets = scope.loadWidgets;
+
+        // save state
+        scope.$on('widgetChanged', function (event) {
+          event.stopPropagation();
+          scope.saveDashboard();
+        });
       }
     };
   }]);
@@ -222,6 +228,7 @@ angular.module('ui.dashboard')
             // add to initial unit width
             var newWidth = unitWidth * 1 + unitChange;
             widget.setWidth(newWidth + widthUnits);
+            scope.$emit('widgetChanged', widget);
             scope.$apply();
           };
 
