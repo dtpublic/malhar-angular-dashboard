@@ -8,7 +8,7 @@ angular.module('ui.dashboard')
     WidgetDataModel.prototype = {
       setup: function (widget, scope) {
         this.dataAttrName = widget.dataAttrName;
-        this.dataSourceOptions = widget.dataSourceOptions;
+        this.dataModelOptions = widget.dataModelOptions;
         this.widgetScope = scope;
       },
 

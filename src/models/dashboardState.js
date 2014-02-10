@@ -24,7 +24,7 @@ angular.module('ui.dashboard')
             title: widget.title,
             name: widget.name,
             style: widget.style,
-            dataSourceOptions: widget.dataSourceOptions
+            dataModelOptions: widget.dataModelOptions
           };
 
           return widgetObject;

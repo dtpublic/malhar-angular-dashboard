@@ -17,10 +17,10 @@ angular.module('ui.dashboard')
         var widget = scope.widget;
 
         // set up data source
-        if (widget.dataSourceType) {
+        if (widget.dataModelType) {
           //var ds = widget.ds;
-          var ds = new widget.dataSourceType();
-          widget.dataSource = ds;
+          var ds = new widget.dataModelType();
+          widget.dataModel = ds;
           ds.setup(widget, scope);
           ds.init();
           scope.$on('$destroy', ds.destroy.bind(ds));
