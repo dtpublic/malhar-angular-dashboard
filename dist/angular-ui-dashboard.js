@@ -3,7 +3,7 @@
 angular.module('ui.dashboard', ['ui.bootstrap', 'ui.sortable']);
 
 angular.module('ui.dashboard')
-  .directive('dashboard', ['WidgetModel', '$modal', 'DashboardState', function (WidgetModel, $modal, DashboardState) {
+  .directive('dashboard', ['WidgetModel', 'WidgetDefCollection', '$modal', 'DashboardState', function (WidgetModel, WidgetDefCollection, $modal, DashboardState) {
     return {
       restrict: 'A',
       templateUrl: 'template/dashboard.html',
@@ -20,6 +20,9 @@ angular.module('ui.dashboard')
       link: function (scope, element, attrs) {
         scope.options = scope.$eval(attrs.dashboard);
         scope.defaultWidgets = scope.options.defaultWidgets; // save widgets for reset
+        //scope.widgetDefs = scope.options.widgetDefinitions;
+        scope.widgetDefs = new WidgetDefCollection(scope.options.widgetDefinitions);
+        console.log(scope.widgetDefs.getByName('Value'));
 
         var count = 1;
         var dashboardState = scope.dashboardState = new DashboardState(
@@ -30,7 +33,15 @@ angular.module('ui.dashboard')
         scope.addWidget = function (widgetDef) {
           var title = widgetDef.title ? widgetDef.title : ('Widget ' + count++);
 
-          var widget = new WidgetModel(widgetDef, {
+          var wDef = scope.widgetDefs.getByName(widgetDef.name);
+          if (!wDef) {
+            throw 'Widget ' + widgetDef.name + ' is not found.';
+          }
+
+          var w = angular.copy(wDef);
+          angular.extend(w, widgetDef); //TODO deep extend
+
+          var widget = new WidgetModel(w, {
             title: title
           });
 
@@ -143,10 +154,10 @@ angular.module('ui.dashboard')
         var widget = scope.widget;
 
         // set up data source
-        if (widget.dataSourceType) {
+        if (widget.dataModelType) {
           //var ds = widget.ds;
-          var ds = new widget.dataSourceType();
-          widget.dataSource = ds;
+          var ds = new widget.dataModelType();
+          widget.dataModel = ds;
           ds.setup(widget, scope);
           ds.init();
           scope.$on('$destroy', ds.destroy.bind(ds));
@@ -283,7 +294,7 @@ angular.module('ui.dashboard')
             title: widget.title,
             name: widget.name,
             style: widget.style,
-            dataSourceOptions: widget.dataSourceOptions
+            dataModelOptions: widget.dataModelOptions
           };
 
           return widgetObject;
@@ -359,7 +370,7 @@ angular.module('ui.dashboard')
     WidgetDataModel.prototype = {
       setup: function (widget, scope) {
         this.dataAttrName = widget.dataAttrName;
-        this.dataSourceOptions = widget.dataSourceOptions;
+        this.dataModelOptions = widget.dataModelOptions;
         this.widgetScope = scope;
       },
 
@@ -381,6 +392,22 @@ angular.module('ui.dashboard')
 'use strict';
 
 angular.module('ui.dashboard')
+  .factory('WidgetDefCollection', function () {
+    function WidgetDefCollection(widgetDefs) {
+      this.push.apply(this, widgetDefs);
+    }
+
+    WidgetDefCollection.prototype = Object.create(Array.prototype);
+
+    WidgetDefCollection.prototype.getByName = function (name) {
+      return _.findWhere(this, { name: name });
+    };
+
+    return WidgetDefCollection;
+  });
+'use strict';
+
+angular.module('ui.dashboard')
   .factory('WidgetModel', function () {
     // constructor for widget model instances
     function WidgetModel(Class, overrides) {
@@ -391,8 +418,8 @@ angular.module('ui.dashboard')
         attrs: Class.attrs,
         dataAttrName: Class.dataAttrName,
         dataTypes: Class.dataTypes,
-        dataSourceType: Class.dataSourceType,
-        dataSourceOptions: Class.dataSourceOptions,
+        dataModelType: Class.dataModelType,
+        dataModelOptions: Class.dataModelOptions,
         style: Class.style
       }, overrides);
       this.style = this.style || { width: '33%' };
@@ -465,14 +492,14 @@ angular.module("ui.dashboard").run(["$templateCache", function($templateCache) {
     "            <button type=\"button\" class=\"dropdown-toggle btn btn-primary\" data-toggle=\"dropdown\">Add Widget <span\n" +
     "                    class=\"caret\"></span></button>\n" +
     "            <ul class=\"dropdown-menu\" role=\"menu\">\n" +
-    "                <li ng-repeat=\"widget in options.widgetDefinitions\">\n" +
+    "                <li ng-repeat=\"widget in widgetDefs\">\n" +
     "                    <a href=\"#\" ng-click=\"addWidgetInternal($event, widget);\"><span class=\"label label-primary\">{{widget.name}}</span></a>\n" +
     "                </li>\n" +
     "            </ul>\n" +
     "        </div>\n" +
     "\n" +
     "        <div class=\"btn-group\" ng-if=\"options.widgetButtons\">\n" +
-    "            <button ng-repeat=\"widget in options.widgetDefinitions\"\n" +
+    "            <button ng-repeat=\"widget in widgetDefs\"\n" +
     "                    ng-click=\"addWidgetInternal($event, widget);\" type=\"button\" class=\"btn btn-primary\">\n" +
     "                {{widget.name}}\n" +
     "            </button>\n" +
