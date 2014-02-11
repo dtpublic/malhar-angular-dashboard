@@ -4,14 +4,14 @@
             <button type="button" class="dropdown-toggle btn btn-primary" data-toggle="dropdown">Add Widget <span
                     class="caret"></span></button>
             <ul class="dropdown-menu" role="menu">
-                <li ng-repeat="widget in options.widgetDefinitions">
+                <li ng-repeat="widget in widgetDefs">
                     <a href="#" ng-click="addWidgetInternal($event, widget);"><span class="label label-primary">{{widget.name}}</span></a>
                 </li>
             </ul>
         </div>
 
         <div class="btn-group" ng-if="options.widgetButtons">
-            <button ng-repeat="widget in options.widgetDefinitions"
+            <button ng-repeat="widget in widgetDefs"
                     ng-click="addWidgetInternal($event, widget);" type="button" class="btn btn-primary">
                 {{widget.name}}
             </button>

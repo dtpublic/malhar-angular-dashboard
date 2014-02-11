@@ -3,7 +3,7 @@
 angular.module('ui.dashboard', ['ui.bootstrap', 'ui.sortable']);
 
 angular.module('ui.dashboard')
-  .directive('dashboard', ['WidgetModel', '$modal', 'DashboardState', function (WidgetModel, $modal, DashboardState) {
+  .directive('dashboard', ['WidgetModel', 'WidgetDefCollection', '$modal', 'DashboardState', function (WidgetModel, WidgetDefCollection, $modal, DashboardState) {
     return {
       restrict: 'A',
       templateUrl: 'template/dashboard.html',
@@ -20,6 +20,9 @@ angular.module('ui.dashboard')
       link: function (scope, element, attrs) {
         scope.options = scope.$eval(attrs.dashboard);
         scope.defaultWidgets = scope.options.defaultWidgets; // save widgets for reset
+        //scope.widgetDefs = scope.options.widgetDefinitions;
+        scope.widgetDefs = new WidgetDefCollection(scope.options.widgetDefinitions);
+        console.log(scope.widgetDefs.getByName('Value'));
 
         var count = 1;
         var dashboardState = scope.dashboardState = new DashboardState(
@@ -30,7 +33,15 @@ angular.module('ui.dashboard')
         scope.addWidget = function (widgetDef) {
           var title = widgetDef.title ? widgetDef.title : ('Widget ' + count++);
 
-          var widget = new WidgetModel(widgetDef, {
+          var wDef = scope.widgetDefs.getByName(widgetDef.name);
+          if (!wDef) {
+            throw 'Widget ' + widgetDef.name + ' is not found.';
+          }
+
+          var w = angular.copy(wDef);
+          angular.extend(w, widgetDef); //TODO deep extend
+
+          var widget = new WidgetModel(w, {
             title: title
           });
 
