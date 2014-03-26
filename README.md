@@ -7,15 +7,21 @@ Dashboard/Widgets functionality with AngularJS.
 
  - Adding/removing widgets
 
- - Widgets are instantiated dynamically (from corresponding directive)
+ - Widgets are instantiated dynamically (from corresponding directive or template)
 
  - Widgets drag and drop (with jQuery UI Sortable)
+
+ - Saving widgets state to local storage
 
  - Fluid layout (widgets can have percentage width)
 
  - Any directive can be a widget (e.g. AngularUI directives)
 
-[Running demo with real-time data](http://nickholub.github.io/angular-dashboard-app)
+ - Connecting widgets to real-time data (WebSocket)
+
+ - Changing widget data source dynamically (from widget options)
+
+[Online demo with real-time data](http://nickholub.github.io/angular-dashboard-app)
 
 [Demo source code](https://github.com/nickholub/angular-dashboard-app)
 
