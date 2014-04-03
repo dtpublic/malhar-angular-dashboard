@@ -443,7 +443,6 @@ angular.module('ui.dashboard')
     }
 
     WidgetModel.prototype = {
-
       // sets the width (and widthUnits)
       setWidth: function (width, units) {
         width = width.toString();
@@ -462,7 +461,6 @@ angular.module('ui.dashboard')
         this.style.width = width + '' + units;
         return true;
       }
-
     };
 
     return WidgetModel;
