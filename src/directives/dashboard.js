@@ -31,11 +31,18 @@ angular.module('ui.dashboard')
         );
 
         scope.addWidget = function (widgetDef) {
-          var title = widgetDef.title ? widgetDef.title : ('Widget ' + count++);
-
           var wDef = scope.widgetDefs.getByName(widgetDef.name);
           if (!wDef) {
             throw 'Widget ' + widgetDef.name + ' is not found.';
+          }
+
+          var title;
+          if (widgetDef.title) {
+            title = widgetDef.title;
+          } else if (wDef.title) {
+            title = wDef.title;
+          } else {
+            title = 'Widget ' + count++;
           }
 
           var w = angular.copy(wDef);
