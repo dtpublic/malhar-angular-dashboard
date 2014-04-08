@@ -1,5 +1,5 @@
 <div>
-    <div class="btn-toolbar">
+    <div class="btn-toolbar" ng-if="!options.hideToolbar">
         <div class="btn-group" ng-if="!options.widgetButtons">
             <button type="button" class="dropdown-toggle btn btn-primary" data-toggle="dropdown">Add Widget <span
                     class="caret"></span></button>
@@ -31,9 +31,9 @@
                         <form action="" class="widget-title" ng-show="widget.editingTitle" ng-submit="saveTitleEdit(widget)">
                             <input type="text" ng-model="widget.title" class="form-control">
                         </form>
-                        <span class="label label-primary">{{widget.name}}</span>
-                        <span ng-click="removeWidget(widget);" class="glyphicon glyphicon-remove"></span>
-                        <span ng-click="openWidgetDialog(widget);" class="glyphicon glyphicon-cog"></span>
+                        <span class="label label-primary" ng-if="!options.hideWidgetName">{{widget.name}}</span>
+                        <span ng-click="removeWidget(widget);" class="glyphicon glyphicon-remove" ng-if="!options.hideWidgetClose"></span>
+                        <span ng-click="openWidgetDialog(widget);" class="glyphicon glyphicon-cog" ng-if="!options.hideWidgetOptions"></span>
                     </h3>
                 </div>
                 <div class="widget-content panel-body">

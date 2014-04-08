@@ -499,7 +499,7 @@ angular.module("ui.dashboard").run(["$templateCache", function($templateCache) {
 
   $templateCache.put("template/dashboard.html",
     "<div>\n" +
-    "    <div class=\"btn-toolbar\">\n" +
+    "    <div class=\"btn-toolbar\" ng-if=\"!options.hideToolbar\">\n" +
     "        <div class=\"btn-group\" ng-if=\"!options.widgetButtons\">\n" +
     "            <button type=\"button\" class=\"dropdown-toggle btn btn-primary\" data-toggle=\"dropdown\">Add Widget <span\n" +
     "                    class=\"caret\"></span></button>\n" +
@@ -531,9 +531,9 @@ angular.module("ui.dashboard").run(["$templateCache", function($templateCache) {
     "                        <form action=\"\" class=\"widget-title\" ng-show=\"widget.editingTitle\" ng-submit=\"saveTitleEdit(widget)\">\n" +
     "                            <input type=\"text\" ng-model=\"widget.title\" class=\"form-control\">\n" +
     "                        </form>\n" +
-    "                        <span class=\"label label-primary\">{{widget.name}}</span>\n" +
-    "                        <span ng-click=\"removeWidget(widget);\" class=\"glyphicon glyphicon-remove\"></span>\n" +
-    "                        <span ng-click=\"openWidgetDialog(widget);\" class=\"glyphicon glyphicon-cog\"></span>\n" +
+    "                        <span class=\"label label-primary\" ng-if=\"!options.hideWidgetName\">{{widget.name}}</span>\n" +
+    "                        <span ng-click=\"removeWidget(widget);\" class=\"glyphicon glyphicon-remove\" ng-if=\"!options.hideWidgetClose\"></span>\n" +
+    "                        <span ng-click=\"openWidgetDialog(widget);\" class=\"glyphicon glyphicon-cog\" ng-if=\"!options.hideWidgetOptions\"></span>\n" +
     "                    </h3>\n" +
     "                </div>\n" +
     "                <div class=\"widget-content panel-body\">\n" +
