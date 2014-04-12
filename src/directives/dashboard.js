@@ -22,7 +22,6 @@ angular.module('ui.dashboard')
         scope.defaultWidgets = scope.options.defaultWidgets; // save widgets for reset
         //scope.widgetDefs = scope.options.widgetDefinitions;
         scope.widgetDefs = new WidgetDefCollection(scope.options.widgetDefinitions);
-        console.log(scope.widgetDefs.getByName('Value'));
 
         var count = 1;
         var dashboardState = scope.dashboardState = new DashboardState(
