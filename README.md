@@ -99,7 +99,7 @@ You can think of Widget Definition Objects as a __class__ and the widgets on the
 
 key               | type     | default value | required | description 
 ----------------- | ------   | ------------- | -------- | -----------
-name              | Object   | n/a           | true     | Name of Widget Definition Object
+name              | Object   | n/a           | true     | Name of Widget Definition Object. If no `templateUrl`, `template`, or `directive` are on the Widget Definition Object, this is assumed to be a directive name. In other words, the `directive` attribute is set to this value.
 title             | String   | n/a           | false    | Default title of widget instances
 attrs             | Object   | n/a           | false    | Map of attributes to add to the markup of the widget
 templateUrl       | String   | n/a           | false    | URL of template to use for widget content
