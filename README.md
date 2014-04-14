@@ -94,6 +94,16 @@ See below for available options
 | useLocalStorage   | Boolean | false | no | If true, localStorage will be used to save the current state of the dashboard. |
 
 
+
+Markdown | Less | Pretty
+--- | --- | ---
+*Still* | `renders` | **nicely**
+1 | 2 | 3
+
+
+
+
+
 Links
 -----
 
