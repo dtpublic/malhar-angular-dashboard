@@ -87,7 +87,7 @@ See below for available options
 
 
 | key | type | default value | required | description |
-| --------------------------------------------------- |
+|-----------------------------------------------------|
 | widgetDefinitions | Array | n/a | yes | List of Widget Definition Objects. See below for available options on those. |
 | defaultWidgets    | Array | n/a | yes | List of objects where an object is `{ name: [NAME_OF_WIDGET_DEFINITION] }`. TODO: Allow just list of names. |
 | widgetButtons     | Boolean | true | no | Display buttons for adding and removing widgets. |
