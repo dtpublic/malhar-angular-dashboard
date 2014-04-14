@@ -5,8 +5,9 @@ angular-ui-dashboard
 
 Dashboard/Widgets functionality with AngularJS. 
 
- Features:
- ---------
+
+Features:
+---------
 
  - Adding/removing widgets
 
