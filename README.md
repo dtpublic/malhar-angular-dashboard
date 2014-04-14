@@ -79,9 +79,8 @@ Include the dashboard directive on the element you wish to place widgets in:
 ```HTML
 <div dashboard="dashboardOptions"></div>
 ```
-See below for available options
 
-### `dashboardOptions`
+#### dashboardOptions
 
 `dashboardOptions` in the above html is required and should be an object available on the current scope. The options on said object are as follows:
 
@@ -93,6 +92,22 @@ key | type | default value | required | description
  widgetButtons     | Boolean | true | no | Display buttons for adding and removing widgets. 
  useLocalStorage   | Boolean | false | no | If true, localStorage will be used to save the current state of the dashboard. 
 
+#### Widget Definition Objects
+
+You can think of Widget Definition Objects as a __class__ and the widgets on the page as __instances__ of those classes. The options for a Widget Definition Object are:
+
+
+key               | type     | default value | required | description 
+----------------- | ------   | ------------- | -------- | -----------
+name              | Object   | n/a           | true     | Name of Widget Definition Object
+title             | String   | n/a           | false    | Default title of widget instances
+attrs             | Object   | n/a           | false    | Map of attributes to add to the markup of the widget
+templateUrl       | String   | n/a           | false    | URL of template to use for widget content
+template          | String   | n/a           | false    | String template (ignored if templateUrl is present)
+directive         | String   | n/a           | false    | HTML-injectable directive name (eg. `"ng-show"`)
+dataModelType     | Function | n/a           | false    | Constructor for the dataModel object, which provides data to the widget
+dataModelOptions  | Object   | n/a           | false    | Arbitrary values to supply to the dataModel. Available on dataModel instance as this.dataModelOptions
+dataAttrName      | String   | n/a           | false    | Name of attribute to bind `widgetData` model
 
 
 Links
