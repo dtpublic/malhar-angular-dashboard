@@ -1,11 +1,12 @@
 angular-ui-dashboard
-=================
+====================
 
 [![Build Status](https://travis-ci.org/nickholub/angular-ui-dashboard.svg?branch=master)](https://travis-ci.org/nickholub/angular-ui-dashboard)
 
-Dashboard/Widgets functionality with AngularJS.
+Dashboard/Widgets functionality with AngularJS. 
 
  Features:
+ ---------
 
  - Adding/removing widgets
 
@@ -29,7 +30,8 @@ Dashboard/Widgets functionality with AngularJS.
 
 ![AngularJS Dashboard](docs/AngularJSDashboard.png "AngularJS Dashboard")
 
-## Build
+Build
+-----
 
  Project is built with Grunt.
 
@@ -38,7 +40,62 @@ Dashboard/Widgets functionality with AngularJS.
     $ grunt
  ```
 
-## Links
+Getting Started
+-----------------
+
+### download
+
+With bower:
+
+```
+bower install angular-ui-dashboard
+```
+Manually:
+
+Download the zip of this repo and use the files in the `dist` folder.
+
+### include
+
+Load `dist/angular-ui-dashboard.js` and `dist/angular-ui-dashboard.css` in your html:
+
+```HTML
+<link rel="stylesheet" href="bower_components/angular-ui-dashboard/dist/angular-ui-dashboard.css">
+<script src="bower_components/angular-ui-dashboard/dist/angular-ui-dashboard.js"></script>
+```
+
+Also be sure to add it to your apps dependency list:
+
+```JavaScript
+angular.module('yourApp', [
+  // other dependencies
+  'angular-ui-dashboard'
+]);
+```
+
+### usage
+
+Include the dashboard directive on the element you wish to place widgets in:
+
+```HTML
+<div dashboard="dashboardOptions"></div>
+```
+See below for available options
+
+### `dashboardOptions`
+
+`dashboardOptions` in the above html is required and should be an object available on the current scope. The options on said object are as follows:
+
+key | type | default value | required | description
+---------------------------------------
+widgetDefinitions | Array | n/a | yes | List of Widget Definition Objects. See below for available options on those.
+defaultWidgets    | Array | n/a | yes | List of objects where an object is `{ name: [NAME_OF_WIDGET_DEFINITION] }`. TODO: Allow just list of names.
+widgetButtons     | Boolean | true | no | Display buttons for adding and removing widgets.
+useLocalStorage   | Boolean | false | no | If true, localStorage will be used to save the current state of the dashboard.
+
+
+
+Links
+-----
 
 [Node.js](http://nodejs.org/) Software platform built on JavaScript runtime
 
