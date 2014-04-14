@@ -86,21 +86,12 @@ See below for available options
 `dashboardOptions` in the above html is required and should be an object available on the current scope. The options on said object are as follows:
 
 
-| key | type | default value | required | description |
-|-----------------------------------------------------|
-| widgetDefinitions | Array | n/a | yes | List of Widget Definition Objects. See below for available options on those. |
-| defaultWidgets    | Array | n/a | yes | List of objects where an object is `{ name: [NAME_OF_WIDGET_DEFINITION] }`. TODO: Allow just list of names. |
-| widgetButtons     | Boolean | true | no | Display buttons for adding and removing widgets. |
-| useLocalStorage   | Boolean | false | no | If true, localStorage will be used to save the current state of the dashboard. |
-
-
-
-Markdown | Less | Pretty
---- | --- | ---
-*Still* | `renders` | **nicely**
-1 | 2 | 3
-
-
+key | type | default value | required | description 
+--- | ---- | ------------- | -------- | -----------
+ widgetDefinitions | Array | n/a | yes | List of Widget Definition Objects. See below for available options on those. 
+ defaultWidgets    | Array | n/a | yes | List of objects where an object is `{ name: [NAME_OF_WIDGET_DEFINITION] }`. TODO: Allow just list of names. 
+ widgetButtons     | Boolean | true | no | Display buttons for adding and removing widgets. 
+ useLocalStorage   | Boolean | false | no | If true, localStorage will be used to save the current state of the dashboard. 
 
 
 
