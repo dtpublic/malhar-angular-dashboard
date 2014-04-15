@@ -29,6 +29,7 @@ Dashboard/Widgets functionality with AngularJS.
 [Demo source code](https://github.com/nickholub/angular-dashboard-app)
 
 [Simple demo](http://nickholub.github.io/angular-ui-dashboard/#/)
+
 [Simple demo source code](demo)
 
 ![AngularJS Dashboard](docs/AngularJSDashboard.png "AngularJS Dashboard")
@@ -77,8 +78,10 @@ angular.module('yourApp', [
 
 ### simple demo application
 
-Simple demo application with minimum dependencies - [Simple demo](http://nickholub.github.io/angular-ui-dashboard/#/)
+[Simple demo](http://nickholub.github.io/angular-ui-dashboard/#/)
+
 [Simple demo source code](demo)
+
 See [demo.js](demo/demo.js)
 
 ### usage
