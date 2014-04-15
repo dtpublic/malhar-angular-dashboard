@@ -22,7 +22,7 @@ angular.module('ui.dashboard')
         scope.options = scope.$eval(attrs.dashboard);
 
         // Save default widget config for reset
-        scope.defaultWidgets = scope.options.defaultWidgets; 
+        scope.defaultWidgets = scope.options.defaultWidgets;
         
         //scope.widgetDefs = scope.options.widgetDefinitions;
         scope.widgetDefs = new WidgetDefCollection(scope.options.widgetDefinitions);
