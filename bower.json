@@ -1,7 +1,7 @@
 {
   "name": "angular-ui-dashboard",
   "main": "./dist/angular-ui-dashboard.js",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "license": "MIT",
   "dependencies": {
     "angular": "~1.2.6",
