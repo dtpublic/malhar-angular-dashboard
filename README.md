@@ -72,6 +72,11 @@ angular.module('yourApp', [
 ]);
 ```
 
+### simple demo application
+
+Simple demo application with minimum dependencies - [demo](demo).
+See [demo.js](demo/demo.js)
+
 ### usage
 
 Include the dashboard directive on the element you wish to place widgets in:
