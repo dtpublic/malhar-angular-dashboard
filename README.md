@@ -33,7 +33,6 @@ Dashboard/Widgets functionality with AngularJS.
 ![AngularJS Dashboard](docs/AngularJSDashboard.png "AngularJS Dashboard")
 
 ## Build
------
 
  Project is built with Grunt.
 
