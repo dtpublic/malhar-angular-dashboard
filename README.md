@@ -24,17 +24,15 @@ Dashboard/Widgets functionality with AngularJS.
 
  - Changing widget data source dynamically (from widget options)
 
-[Online demo with real-time data](http://nickholub.github.io/angular-dashboard-app)
+## Examples
 
-[Demo source code](https://github.com/nickholub/angular-dashboard-app)
+[Simple demo](http://nickholub.github.io/angular-ui-dashboard/#/) [source code](demo)
 
-[Simple demo](http://nickholub.github.io/angular-ui-dashboard/#/)
-
-[Simple demo source code](demo)
+[Advanced demo](http://nickholub.github.io/angular-dashboard-app) [source code](https://github.com/nickholub/angular-dashboard-app)
 
 ![AngularJS Dashboard](docs/AngularJSDashboard.png "AngularJS Dashboard")
 
-Build
+## Build
 -----
 
  Project is built with Grunt.
@@ -43,6 +41,16 @@ Build
     $ npm install -g grunt-cli
     $ grunt
  ```
+
+## Requirements
+
+- AngularJS
+- Underscore.js
+- jQuery
+- jQuery UI
+- Angular UI Sortable
+
+Example of including dependencies from CDN [here](demo/index.html)
 
 Getting Started
 -----------------
@@ -76,13 +84,11 @@ angular.module('yourApp', [
 ]);
 ```
 
-### simple demo application
+### requirements
 
-[Simple demo](http://nickholub.github.io/angular-ui-dashboard/#/)
-
-[Simple demo source code](demo)
-
-See [demo.js](demo/demo.js)
+- JQuery
+- JQueryUI
+- AngularJS
 
 ### usage
 
