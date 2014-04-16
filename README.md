@@ -26,9 +26,9 @@ Dashboard/Widgets functionality with AngularJS.
 
 ## Examples
 
-[Simple demo](http://nickholub.github.io/angular-ui-dashboard/#/) [[source code](demo)]
+[Simple demo](http://nickholub.github.io/angular-ui-dashboard/#/)(minimum dependencies) [[source code](demo)]
 
-[Advanced demo](http://nickholub.github.io/angular-dashboard-app) [[source code](https://github.com/nickholub/angular-dashboard-app)]
+[Advanced demo](http://nickholub.github.io/angular-dashboard-app)(charts, visualization, data sources, etc.) [[source code](https://github.com/nickholub/angular-dashboard-app)]
 
 ![AngularJS Dashboard](docs/AngularJSDashboard.png "AngularJS Dashboard")
 
