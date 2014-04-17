@@ -3,7 +3,7 @@ angular-ui-dashboard
 
 [![Build Status](https://travis-ci.org/nickholub/angular-ui-dashboard.svg?branch=master)](https://travis-ci.org/nickholub/angular-ui-dashboard)
 
-Dashboard/Widgets functionality with AngularJS. 
+Dashboard/Widgets functionality with AngularJS (directive).
 
  Features:
  ---------
@@ -53,6 +53,8 @@ Example of including dependencies from CDN [here](demo/index.html)
 
 Getting Started
 -----------------
+
+See [simple demo](demo) (two widgets) for a quick start.
 
 ### download
 
