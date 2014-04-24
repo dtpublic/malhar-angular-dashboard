@@ -1,4 +1,4 @@
-angular-ui-dashboard
+angular-dashboard
 ====================
 
 [![Build Status](https://travis-ci.org/nickholub/angular-ui-dashboard.svg?branch=master)](https://travis-ci.org/nickholub/angular-ui-dashboard)
