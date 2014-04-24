@@ -6,11 +6,11 @@ Licensing
 ---------
 You acknowledge that your submissions to DataTorrent on this repository are made pursuant the terms of the Apache License, Version 2.0 (http://www.apache.org/licenses/LICENSE-2.0.html) and constitute "Contributions," as defined therein, and you represent and warrant that you have the right and authority to do so.
 
-When adding new javascript files, please include the following Apache v2.0 license header at the top of the file:
+When adding new javascript files, please include the following Apache v2.0 license header at the top of the file, with the fields enclosed by brackets "[]" replaced with your own identifying information. **(Don't include the brackets!)**:
 
 ```JavaScript
 /*
- * Copyright (c) 2014 DataTorrent, Inc. ALL Rights Reserved.
+ * Copyright (c) [XXXX] [NAME OF COPYRIGHT OWNER]
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
