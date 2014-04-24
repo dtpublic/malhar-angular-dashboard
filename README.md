@@ -28,7 +28,7 @@ Dashboard/Widgets functionality with AngularJS (directive).
 
 This project welcomes new contributors.
 
-You acknowledge that your submissions to DataTorrent on this repository are made pursuant the terms of the Apache License, Version 2.0 (http://www.apache.org/licenses/LICENSE-2.0.html) and constitute "Contributions," as defined therein, and you represent and warrant that you have the right and authority to do so.
+You acknowledge that your submissions to DataTorrent on this repository are made pursuant the terms of the Apache License, Version 2.0 (http://www.apache.org/licenses/LICENSE-2.0.html) and constitute "Contributions," as defined therein, and you represent and warrant that you have the right and authority to do so. Please include the Apache 2.0 license text file (found here: http://apache.org/licenses/LICENSE-2.0.txt) along with your contribution.
 
 
 ## Examples
