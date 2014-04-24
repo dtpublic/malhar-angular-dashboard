@@ -1,7 +1,7 @@
 angular-dashboard
 ====================
 
-[![Build Status](https://travis-ci.org/nickholub/angular-ui-dashboard.svg?branch=master)](https://travis-ci.org/nickholub/angular-ui-dashboard)
+[![Build Status](https://travis-ci.org/DataTorrent/malhar-angular-dashboard.svg?branch=master)](https://travis-ci.org/DataTorrent/malhar-angular-dashboard)
 
 Dashboard/Widgets functionality with AngularJS (directive).
 
