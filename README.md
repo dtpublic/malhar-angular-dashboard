@@ -3,6 +3,8 @@ angular-dashboard
 
 [![Build Status](https://travis-ci.org/DataTorrent/malhar-angular-dashboard.svg?branch=master)](https://travis-ci.org/DataTorrent/malhar-angular-dashboard)
 
+Dashboard/Widgets functionality with AngularJS (directive).
+
 ## Contributing
 
 This project welcomes new contributors.
@@ -10,9 +12,7 @@ This project welcomes new contributors.
 You acknowledge that your submissions to DataTorrent on this repository are made pursuant the terms of the Apache License, Version 2.0 (http://www.apache.org/licenses/LICENSE-2.0.html) and constitute "Contributions," as defined therein, and you represent and warrant that you have the right and authority to do so.
 
 
-Dashboard/Widgets functionality with AngularJS (directive).
-
- Features:
+## Features:
  ---------
 
  - Adding/removing widgets
