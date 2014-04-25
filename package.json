@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "author": "https://github.com/DataTorrent/malhar-angular-dashboard/graphs/contributors",
   "homepage": "https://github.com/DataTorrent/malhar-angular-dashboard",
-  "license": "MIT",
+  "license": "Apache License, v2.0",
   "dependencies": {},
   "devDependencies": {
     "grunt-html2js": "~0.1.3",
