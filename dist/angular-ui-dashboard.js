@@ -556,17 +556,19 @@ angular.module('ui.dashboard')
   .factory('WidgetModel', function () {
     // constructor for widget model instances
     function WidgetModel(Class, overrides) {
+      var defaults = {
+          title: 'Widget',
+          name: Class.name,
+          attrs: Class.attrs,
+          dataAttrName: Class.dataAttrName,
+          dataTypes: Class.dataTypes,
+          dataModelType: Class.dataModelType,
+          //AW Need deep copy of options to support widget options editing
+          dataModelOptions: Class.dataModelOptions,
+          style: Class.style
+        };
       overrides = overrides || {};
-      angular.extend(this, {
-        title: 'Widget',
-        name: Class.name,
-        attrs: Class.attrs,
-        dataAttrName: Class.dataAttrName,
-        dataTypes: Class.dataTypes,
-        dataModelType: Class.dataModelType,
-        dataModelOptions: Class.dataModelOptions,
-        style: Class.style
-      }, overrides);
+      angular.extend(this, angular.copy(defaults), overrides);
       this.style = this.style || { width: '33%' };
       this.setWidth(this.style.width);
 
