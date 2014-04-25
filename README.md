@@ -1,12 +1,13 @@
-angular-ui-dashboard
+angular-dashboard
 ====================
 
-[![Build Status](https://travis-ci.org/nickholub/angular-ui-dashboard.svg?branch=master)](https://travis-ci.org/nickholub/angular-ui-dashboard)
+[![Build Status](https://travis-ci.org/DataTorrent/malhar-angular-dashboard.svg?branch=master)](https://travis-ci.org/DataTorrent/malhar-angular-dashboard)
 
 Dashboard/Widgets functionality with AngularJS (directive).
 
- Features:
- ---------
+
+Features:
+---------
 
  - Adding/removing widgets
 
@@ -24,9 +25,18 @@ Dashboard/Widgets functionality with AngularJS (directive).
 
  - Changing widget data source dynamically (from widget options)
 
+## Contributing
+
+This project welcomes new contributors.
+
+You acknowledge that your submissions to DataTorrent on this repository are made pursuant the terms of the Apache License, Version 2.0 (http://www.apache.org/licenses/LICENSE-2.0.html) and constitute "Contributions," as defined therein, and you represent and warrant that you have the right and authority to do so.
+
+When **adding new javascript files**, please prepend the Apache v2.0 license header, which can be found in [CONTRIBUTING.md file](https://github.com/DataTorrent/malhar-angular-dashboard/blob/master/CONTRIBUTING.md).
+
+
 ## Examples
 
-[Simple demo](http://nickholub.github.io/angular-ui-dashboard/#/) (minimum dependencies) [[source code](demo)]
+[Simple demo](http://datatorrent.github.io/malhar-angular-dashboard/#/) (minimum dependencies) [[source code](demo)]
 
 [Advanced demo](http://nickholub.github.io/angular-dashboard-app) (charts, visualization, data sources, etc.) [[source code](https://github.com/nickholub/angular-dashboard-app)]
 
