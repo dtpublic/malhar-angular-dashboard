@@ -15,8 +15,6 @@ Features:
 
  - Widgets drag and drop (with jQuery UI Sortable)
 
- - Saving widgets state to local storage
-
  - Fluid layout (widgets can have percentage width)
 
  - Any directive can be a widget (e.g. AngularUI directives)
@@ -24,6 +22,8 @@ Features:
  - Connecting widgets to real-time data (WebSocket, REST, etc.)
 
  - Changing widget data source dynamically (from widget options)
+
+ - Saving widgets state to local storage
 
 Contributing
 ------------
