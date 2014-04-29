@@ -76,6 +76,8 @@ Running demo with Grunt.
     $ grunt demo
  ```
 
+Application will be available at http://127.0.0.1:9000
+
 ### download
 
 With bower:
