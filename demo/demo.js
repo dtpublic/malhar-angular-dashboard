@@ -76,6 +76,7 @@ angular.module('app', [
   .directive('wtTime', function ($interval) {
     return {
       restrict: 'A',
+      scope: true,
       replace: true,
       template: '<div>Time<div class="alert alert-success">{{time}}</div></div>',
       link: function (scope) {

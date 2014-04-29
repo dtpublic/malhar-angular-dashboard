@@ -36,7 +36,19 @@ module.exports = function (grunt) {
         'src/**/*.*',
         'template/*.html'
       ],
-      tasks: ['ngtemplates', 'concat', 'copy:dist']
+      tasks: ['ngtemplates', 'concat', 'copy:dist'],
+      livereload: {
+        options: {
+          livereload: '<%= connect.options.livereload %>'
+        },
+        files: [
+          'demo/{,*/}*.html',
+          'demo/{,*/}*.css',
+          'demo/{,*/}*.js',
+          'dist/*.css',
+          'dist/*.js'
+        ]
+      }
     },
     jshint: {
       options: {
@@ -68,12 +80,34 @@ module.exports = function (grunt) {
       templates: {
         src: ['<%= ngtemplates.dashboard.dest %>']
       }
+    },
+    connect: {
+      options: {
+        port: 9000,
+        // Change this to '0.0.0.0' to access the server from outside.
+        hostname: 'localhost',
+        livereload: 35729
+      },
+      livereload: {
+        options: {
+          open: true,
+          base: [
+            'demo',
+            'dist'
+          ]
+        }
+      }
     }
   });
 
   grunt.registerTask('test', [
     'ngtemplates',
     'karma'
+  ]);
+
+  grunt.registerTask('demo', [
+    'connect:livereload',
+    'watch'
   ]);
 
   grunt.registerTask('default', [
