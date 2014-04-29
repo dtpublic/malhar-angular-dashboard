@@ -70,6 +70,12 @@ Getting Started
 
 See [simple demo](demo) (two widgets) for a quick start.
 
+Running demo with Grunt.
+
+ ``` bash
+    $ grunt demo
+ ```
+
 ### download
 
 With bower:
