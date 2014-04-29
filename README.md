@@ -25,7 +25,8 @@ Features:
 
  - Changing widget data source dynamically (from widget options)
 
-## Contributing
+Contributing
+------------
 
 This project welcomes new contributors.
 
@@ -34,7 +35,8 @@ You acknowledge that your submissions to DataTorrent on this repository are made
 When **adding new javascript files**, please prepend the Apache v2.0 license header, which can be found in [CONTRIBUTING.md file](https://github.com/DataTorrent/malhar-angular-dashboard/blob/master/CONTRIBUTING.md).
 
 
-## Examples
+Examples
+--------
 
 [Simple demo](http://datatorrent.github.io/malhar-angular-dashboard/#/) (minimum dependencies) [[source code](demo)]
 
@@ -42,7 +44,8 @@ When **adding new javascript files**, please prepend the Apache v2.0 license hea
 
 ![AngularJS Dashboard](docs/AngularJSDashboard.png "AngularJS Dashboard")
 
-## Build
+Build
+-----
 
  Project is built with Grunt.
 
@@ -51,7 +54,8 @@ When **adding new javascript files**, please prepend the Apache v2.0 license hea
     $ grunt
  ```
 
-## Requirements
+Requirements
+------------
 
 - AngularJS
 - Underscore.js
@@ -62,7 +66,7 @@ When **adding new javascript files**, please prepend the Apache v2.0 license hea
 Example of including dependencies from CDN [here](demo/index.html)
 
 Getting Started
------------------
+---------------
 
 See [simple demo](demo) (two widgets) for a quick start.
 
@@ -101,7 +105,8 @@ angular.module('yourApp', [
 - JQueryUI
 - AngularJS
 
-### usage
+Usage
+-----
 
 Include the dashboard directive on the element you wish to place widgets in:
 
@@ -109,7 +114,7 @@ Include the dashboard directive on the element you wish to place widgets in:
 <div dashboard="dashboardOptions"></div>
 ```
 
-#### dashboardOptions
+### dashboardOptions
 
 `dashboardOptions` in the above html is required and should be an object available on the current scope. The options on said object are as follows:
 
@@ -121,7 +126,7 @@ key | type | default value | required | description
  widgetButtons     | Boolean | true | no | Display buttons for adding and removing widgets. 
  useLocalStorage   | Boolean | false | no | If true, localStorage will be used to save the current state of the dashboard. 
 
-#### Widget Definition Objects
+### Widget Definition Objects
 
 You can think of Widget Definition Objects as a __class__ and the widgets on the page as __instances__ of those classes. The options for a Widget Definition Object are:
 
@@ -134,10 +139,58 @@ attrs             | Object   | n/a           | false    | Map of attributes to a
 templateUrl       | String   | n/a           | false    | URL of template to use for widget content
 template          | String   | n/a           | false    | String template (ignored if templateUrl is present)
 directive         | String   | n/a           | false    | HTML-injectable directive name (eg. `"ng-show"`)
-dataModelType     | Function | n/a           | false    | Constructor for the dataModel object, which provides data to the widget
+dataModelType     | Function | n/a           | false    | Constructor for the dataModel object, which provides data to the widget (see below for more information).
 dataModelOptions  | Object   | n/a           | false    | Arbitrary values to supply to the dataModel. Available on dataModel instance as this.dataModelOptions
 dataAttrName      | String   | n/a           | false    | Name of attribute to bind `widgetData` model
 
+
+### dataModelType
+
+The best way to provide data to a widget is to specify a `dataModelType` in the Widget Definition Object (above). This function is used as a constructor whenever a new widget is instantiated on the page. Here is the relevant code snippet (located in the [widget directive file](https://github.com/DataTorrent/malhar-angular-dashboard/blob/master/src/directives/widget.js):
+
+```JavaScript
+// set up data source
+if (widget.dataModelType) {
+  var ds = new widget.dataModelType();
+  widget.dataModel = ds;
+  ds.setup(widget, scope);
+  ds.init();
+  scope.$on('$destroy', ds.destroy.bind(ds));
+}
+```
+
+As shown, the `dataModelType` is a constructor function whose instances are assumed to implement the following methods: `setup`, `init`, and `destroy`.
+
+#### `setup`
+This function is called once when a widget is instantiated. It takes two arguments: (1) the instance of the [`WidgetModel`](https://github.com/DataTorrent/malhar-angular-dashboard/blob/master/src/models/widgetModel.js) constructor that corresponds to the widget instance, and (2) the scope of the widget.
+
+#### `init`
+This function is called once when a widget is instantiated. This function does not take any arguments.
+
+#### `destroy`
+This function is called when the widget is removed from the dashboard. It does not take any arguments. It should be used to clean up any listeners that may otherwise hang around, e.g. unsubscribing to a WebSocket topic or RESTful endpoint.
+
+It is recommended to prototypically extend from the [`WidgetDataModel`](https://github.com/DataTorrent/malhar-angular-dashboard/blob/master/src/models/widgetDataModel.js) constructor, which implements the `setup` function. [Take a look at the code here](https://github.com/DataTorrent/malhar-angular-dashboard/blob/master/src/models/widgetDataModel.js).
+
+Here is an example way to extend from `WidgetDataModel`:
+
+```JavaScript
+angular.module('myApp')
+  // Inject other services like $http here, if necessary:
+  .factory('MyDataModel', ['WidgetDataModel', function (WidgetDataModel) {
+      function MyDataModel() {}
+      MyDataModel.prototype = Object.create(WidgetDataModel.prototype);
+      MyDataModel.prototype.init = function() {
+        // My custom data model setup, like subscribing
+        // to WebSocket or starting a REST call interval
+      }
+      MyDataModel.prototype.destroy = function() {
+        // My custom data model teardown, like unsubscribing
+        // to WebSocket or clearing a setInterval
+      }
+      return MyDataModel;
+    }]);
+```
 
 Links
 -----

@@ -29,12 +29,11 @@ angular.module('ui.dashboard')
         // first child of .widget-content
         var elm = findWidgetPlaceholder(element);
 
-        // the widget model/definition object
+        // instance of widgetModel
         var widget = scope.widget;
 
         // set up data source
         if (widget.dataModelType) {
-          //var ds = widget.ds;
           var ds = new widget.dataModelType();
           widget.dataModel = ds;
           ds.setup(widget, scope);
