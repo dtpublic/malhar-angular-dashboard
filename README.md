@@ -103,7 +103,7 @@ Also be sure to add it to your apps dependency list:
 ```JavaScript
 angular.module('yourApp', [
   // other dependencies
-  'angular-ui-dashboard'
+  'ui.dashboard'
 ]);
 ```
 
