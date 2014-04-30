@@ -107,12 +107,6 @@ angular.module('yourApp', [
 ]);
 ```
 
-### requirements
-
-- JQuery
-- JQueryUI
-- AngularJS
-
 Usage
 -----
 
