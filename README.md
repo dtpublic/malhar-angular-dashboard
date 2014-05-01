@@ -40,7 +40,7 @@ Examples
 
 [Simple demo](http://datatorrent.github.io/malhar-angular-dashboard/#/) (minimum dependencies) [[source code](demo)]
 
-[Advanced demo](http://nickholub.github.io/angular-dashboard-app) (charts, visualization, data sources, etc.) [[source code](https://github.com/nickholub/angular-dashboard-app)]
+[Advanced demo](http://datatorrent.github.io/malhar-dashboard-webapp/#/) (charts, visualization, data sources, etc.) [[source code](https://github.com/DataTorrent/malhar-dashboard-webapp)]
 
 ![AngularJS Dashboard](docs/AngularJSDashboard.png "AngularJS Dashboard")
 
