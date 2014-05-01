@@ -684,7 +684,7 @@ angular.module("ui.dashboard").run(["$templateCache", function($templateCache) {
     "                        <span ng-click=\"openWidgetDialog(widget);\" class=\"glyphicon glyphicon-cog\" ng-if=\"!options.hideWidgetOptions\"></span>\n" +
     "                    </h3>\n" +
     "                </div>\n" +
-    "                <div class=\"widget-content panel-body\">\n" +
+    "                <div class=\"panel-body widget-content\">\n" +
     "                    <div></div>\n" +
     "                </div>\n" +
     "                <div class=\"widget-ew-resizer\" ng-mousedown=\"grabResizer($event)\"></div>\n" +
