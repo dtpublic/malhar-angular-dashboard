@@ -206,6 +206,10 @@ angular.module('myApp')
 Links
 -----
 
+[malhar-angular-widgets](https://github.com/DataTorrent/malhar-angular-widgets) Widget library (widgets, data models, WebSocket, etc.)
+
+[malhar-dashboard-webapp](https://github.com/DataTorrent/malhar-dashboard-webapp) Demo using this dashboard and widget library
+
 [Node.js](http://nodejs.org/) Software platform built on JavaScript runtime
 
 [AngularJS](http://angularjs.org/) JavaScript framework
