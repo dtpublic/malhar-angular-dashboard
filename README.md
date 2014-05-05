@@ -107,6 +107,15 @@ angular.module('yourApp', [
 ]);
 ```
 
+Controller Scope vs. DataModel
+-----
+
+Widgets inherit controller scope (so normally different widgets will have bindings to different controller scope properties).
+
+DataModel has direct access to widget scope, each widget has separate instance of DataModel.
+
+![Controller Scope vs. DataModel](docs/scope.png "Controller Scope vs. DataModel")
+
 Usage
 -----
 
