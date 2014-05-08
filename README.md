@@ -135,7 +135,9 @@ key | type | default value | required | description
  widgetDefinitions | Array | n/a | yes | List of Widget Definition Objects. See below for available options on those. 
  defaultWidgets    | Array | n/a | yes | List of objects where an object is `{ name: [NAME_OF_WIDGET_DEFINITION] }`. TODO: Allow just list of names. 
  widgetButtons     | Boolean | true | no | Display buttons for adding and removing widgets. 
- useLocalStorage   | Boolean | false | no | If true, localStorage will be used to save the current state of the dashboard. 
+ storage   | Object | null | no | If defined, this object should implement three methods: `setItem`, `getItem`, and `removeItem`. See the **Persistence** section below.
+ storageId | String | null | no (yes if `storage` is defined) | This is used as the first parameter passed to the three `storage` methods above. See the **Persistence** section below.
+ storageHash | String | '' | no | This is used to validate/invalidate loaded state. See the **Persistence** section below.
 
 ### Widget Definition Objects
 
@@ -151,7 +153,7 @@ templateUrl       | String   | n/a           | false    | URL of template to use
 template          | String   | n/a           | false    | String template (ignored if templateUrl is present)
 directive         | String   | n/a           | false    | HTML-injectable directive name (eg. `"ng-show"`)
 dataModelType     | Function | n/a           | false    | Constructor for the dataModel object, which provides data to the widget (see below for more information).
-dataModelOptions  | Object   | n/a           | false    | Arbitrary values to supply to the dataModel. Available on dataModel instance as this.dataModelOptions
+dataModelOptions  | Object   | n/a           | false    | Arbitrary values to supply to the dataModel. Available on dataModel instance as this.dataModelOptions. Serializable values in this object will also be saved if `storage` is being used (see the **Persistence** section below).
 dataAttrName      | String   | n/a           | false    | Name of attribute to bind `widgetData` model
 
 
@@ -202,6 +204,34 @@ angular.module('myApp')
       return MyDataModel;
     }]);
 ```
+
+Persistence
+-----------
+This dashboard component offers a means to save the state of the user's dashboard. Specifically, the dashboard can automatically save:
+
+- instantiated widgets
+- width of widgets
+- order that widgets are displayed
+- widget titles
+- any serializable data stored in `dataModelOptions` if the widget instance has a `ds` (instantiated `dataModelType`)
+
+There are three options you can specify in the `dashboardOptions` object relating to persistence:
+
+### `storage` (Object)
+This object will be used by the dashboard to save its state. It should implement the following three methods:
+
+- **storage.getItem(String `key`)**
+  This method will be used to attempt to retrieve previous dashboard state. It can return either a string or a promise. "promise" in this context simply means an object that has a `then` function that takes a `successCallback` and `errorCallback` as its first and second arguments. This follows the most common promise interface (it works with angular's `$q` promise, jQuery's `$.Deferred()` promise, and many others).
+- **storage.setItem(String `key`, String `value`)**
+  This method is assumed to store `value` in a way that will be accessible later via the `getItem` method above.
+- **storage.removeItem(String `key`)**
+  This method is assumed to remove items set with the `setItem` method above.
+
+### `storageId` (String)
+This string will be used as the `key` argument in the three methods on the `storage` object, outlined above. This allows for multiple dashboard instances to exist with storage on a single page and site. **This is required in order for storage to work.**
+
+### `storageHash` (String)
+This string will be stored along with the dashboard state. Then later, when state is loaded, the loaded value will be compared to the value passed to `dashboardOptions`. If the values are different, the item in storage will be assumed to be invalid and `removeItem` will be called to clear it out. This is so that if you as the developer makes changes that are not backwards compatible with previous dashboard configurations, you can simply change the `storageHash` and not have to worry about strange behavior due to stale dashboard state. **This is optional but is highly recommended.**
 
 Links
 -----
