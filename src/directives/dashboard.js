@@ -45,9 +45,11 @@ angular.module('ui.dashboard')
         var count = 1;
 
         // Instantiate new instance of dashboard state
-        var dashboardState = scope.dashboardState = new DashboardState(
-          !!scope.options.useLocalStorage,
-          scope.defaultWidgets
+        scope.dashboardState = new DashboardState(
+          scope.options.storage,
+          scope.options.storageId,
+          scope.options.storageHash,
+          scope.widgetDefs
         );
 
         /**
@@ -149,7 +151,7 @@ angular.module('ui.dashboard')
          * Uses dashboardState service to save state
          */
         scope.saveDashboard = function () {
-          dashboardState.save(scope.widgets);
+          scope.dashboardState.save(scope.widgets);
         };
 
         /**
@@ -173,12 +175,20 @@ angular.module('ui.dashboard')
         };
 
         // Set default widgets array
-        var savedWidgets = dashboardState.load();
+        var savedWidgetDefs = scope.dashboardState.load();
 
-        if (savedWidgets) {
-          scope.widgets = savedWidgets;
-        } else if (scope.defaultWidgets) {
-          scope.resetWidgetsToDefault();
+        // Success handler
+        function handleStateLoad(saved) {
+          if (saved && saved.length) {
+            scope.loadWidgets(saved);
+          } else if (scope.defaultWidgets) {
+            scope.resetWidgetsToDefault();
+          }
+        }
+        if (savedWidgetDefs instanceof Array) {
+          handleStateLoad(savedWidgetDefs);
+        } else if (typeof savedWidgetDefs === 'object' && typeof savedWidgetDefs.then === 'function') {
+          savedWidgetDefs.then(handleStateLoad, handleStateLoad);
         }
 
         // allow adding widgets externally

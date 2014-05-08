@@ -17,24 +17,28 @@
 'use strict';
 
 angular.module('ui.dashboard')
-  .factory('DashboardState', ['WidgetModel', function (WidgetModel) {
-    function DashboardState(useLocalStorage, widgetDefinitions) {
-      this.useLocalStorage = !!useLocalStorage;
+  .factory('DashboardState', ['WidgetModel', '$log', '$q', function (WidgetModel, $log, $q) {
+    function DashboardState(storage, id, hash, widgetDefinitions) {
+      this.storage = storage;
+      this.id = id;
+      this.hash = hash;
       this.widgetDefinitions = widgetDefinitions;
     }
 
     DashboardState.prototype = {
-      // Takes array of widgets, serializes, and saves state.
-      // (currently stored in localStorage)
-      save: function (lsKey, widgets) {
-        console.log('saving dash state');
-        if (!this.useLocalStorage) {
+      /**
+       * Takes array of widget instance objects, serializes, 
+       * and saves state.
+       * 
+       * @param  {Array} widgets  scope.widgets from dashboard directive
+       * @return {Boolean}        true on success, false on failure
+       */
+      save: function (widgets) {
+        
+        if (!this.storage) {
           return true;
         }
-        if (arguments.length === 1) {
-          widgets = lsKey;
-          lsKey = 'default';
-        }
+
         var serialized = _.map(widgets, function (widget) {
           var widgetObject = {
             title: widget.title,
@@ -46,63 +50,108 @@ angular.module('ui.dashboard')
           return widgetObject;
         });
 
-        serialized = JSON.stringify(serialized);
-        localStorage.setItem('widgets.' + lsKey, serialized);
+        serialized = JSON.stringify({ widgets: serialized, hash: this.hash });
+        this.storage.setItem(this.id, serialized);
         return true;
       },
 
-      // Returns array of instantiated widget objects
-      load: function (key) {
-        if (!this.useLocalStorage) {
+      /**
+       * Loads dashboard state from the storage object.
+       * Can handle a synchronous response or a promise.
+       * 
+       * @return {Array|Promise} Array of widget definitions or a promise
+       */
+      load: function () {
+
+        if (!this.storage) {
           return null;
         }
 
-        var serialized, deserialized, result = [];
-        key = key || 'default';
+        var serialized;
 
-        // try loading localStorage item
-        if (!(serialized = localStorage.getItem('widgets.' + key))) {
-          return null;
+        // try loading storage item
+        serialized = this.storage.getItem( this.id );
+
+        // check for promise
+        if (typeof serialized === 'object' && typeof serialized.then === 'function') {
+          return this._handleAsyncLoad(serialized);
         }
+        // otherwise handle synchronous load
+        return this._handleSyncLoad(serialized);
+      },
+
+      _handleSyncLoad: function(serialized) {
+
+        var deserialized, result = [];
 
         try { // to deserialize the string
+
           deserialized = JSON.parse(serialized);
+
         } catch (e) {
-          // bad JSON, clear localStorage
-          localStorage.removeItem('widgets.' + key);
+
+          // bad JSON, log a warning and return
+          $log.warn('Serialized dashboard state was malformed and could not be parsed: ', serialized);
+          return null;
+
+        }
+
+        // check hash against current hash
+        if (deserialized.hash !== this.hash) {
+          $log.info('Serialized dashboard from storage was stale (old hash: ' + deserialized.hash + ', new hash: ' + this.hash + ')');
+          this.storage.removeItem(this.id);
           return null;
         }
 
+        // Cache widgets
+        var savedWidgetDefs = deserialized.widgets;
+
         // instantiate widgets from stored data
-        for (var i = 0; i < deserialized.length; i++) {
+        for (var i = 0; i < savedWidgetDefs.length; i++) {
 
           // deserialized object
-          var widgetObject = deserialized[i];
-          // widget definition to use
-          var widgetDefinition = false;
+          var savedWidgetDef = savedWidgetDefs[i];
 
-          // find definition with same name
-          for (var k = this.widgetDefinitions.length - 1; k >= 0; k--) {
-            var def = this.widgetDefinitions[k];
-            if (def.name === widgetObject.name) {
-              widgetDefinition = def;
-              break;
-            }
-          }
+          // widget definition to use
+          var widgetDefinition = this.widgetDefinitions.getByName(savedWidgetDef.name);
 
           // check for no widget
           if (!widgetDefinition) {
             // no widget definition found, remove and return false
-            localStorage.removeItem('widgets.' + key);
-            return null;
+            $log.warn('Widget with name "' + savedWidgetDef.name + '" was not found in given widget definition objects');
+            continue;
           }
 
           // push instantiated widget to result array
-          result.push(new WidgetModel(widgetDefinition, widgetObject));
+          result.push(widgetDefinition);
         }
 
         return result;
+      },
+
+      _handleAsyncLoad: function(promise) {
+        var self = this;
+        var deferred = $q.defer();
+
+        promise.then(
+          // success
+          function(res) {
+            var result = self._handleSyncLoad(res);
+            if (result) {
+              deferred.resolve(result);
+            } else {
+              deferred.reject(result);
+            }
+          },
+          // failure
+          function(res) {
+            deferred.reject(res);
+          }
+        );
+
+        return deferred.promise;
       }
+
     };
     return DashboardState;
   }]);
