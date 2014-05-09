@@ -3,6 +3,19 @@
 
 module.exports = function(config) {
   config.set({
+
+    preprocessors: {
+      // which files to show in coverage report
+      'src/**/*.js': ['coverage']
+    },
+
+    reporters: ['dots', 'coverage'],
+
+    coverageReporter: {
+      type: 'html',
+      dir: 'coverage/'
+    },
+
     // base path, that will be used to resolve files and exclude
     basePath: '',
 
@@ -47,7 +60,7 @@ module.exports = function(config) {
     // - Safari (only Mac)
     // - PhantomJS
     // - IE (only Windows)
-    browsers: ['PhantomJS'],
+    browsers: ['Chrome'],
 
 
     // Continuous Integration mode
