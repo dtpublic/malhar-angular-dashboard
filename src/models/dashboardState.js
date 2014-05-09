@@ -44,7 +44,10 @@ angular.module('ui.dashboard')
             title: widget.title,
             name: widget.name,
             style: widget.style,
-            dataModelOptions: widget.dataModelOptions
+            dataModelOptions: widget.dataModelOptions,
+            // TODO: finish functionality here:
+            // storageHash: widget.storageHash,
+            attrs: widget.attrs
           };
 
           return widgetObject;
@@ -122,8 +125,15 @@ angular.module('ui.dashboard')
             continue;
           }
 
+          // TODO: check for storageHash on WDO itself
+          // if (widgetDefinition.hasOwnProperty('storageHash') && widgetDefinition.storageHash !== savedWidgetDef.storageHash) {
+          //   // widget definition was found, but storageHash was stale, removing storage
+          //   $log.warn('Widget with name "' + savedWidgetDef.name + '" was found but the storageHash property on the widget definition is different from that loaded from storage. ');
+          //   continue; 
+          // }
+
           // push instantiated widget to result array
-          result.push(widgetDefinition);
+          result.push(savedWidgetDef);
         }
 
         return result;
