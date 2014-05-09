@@ -131,7 +131,7 @@ angular.module('ui.dashboard')
               'but the storageHash property on the widget definition is different from that on the ' +
               'serialized widget loaded from storage. hash from storage: "' + savedWidgetDef.storageHash + '"' +
               ', hash from WDO: "' + widgetDefinition.storageHash + '"');
-            continue; 
+            continue;
           }
 
           // push instantiated widget to result array
