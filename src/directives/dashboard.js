@@ -185,10 +185,16 @@ angular.module('ui.dashboard')
             scope.resetWidgetsToDefault();
           }
         }
+
         if (savedWidgetDefs instanceof Array) {
           handleStateLoad(savedWidgetDefs);
-        } else if (typeof savedWidgetDefs === 'object' && typeof savedWidgetDefs.then === 'function') {
+        }
+        else if (typeof savedWidgetDefs === 'object' && typeof savedWidgetDefs.then === 'function') {
+          console.log('here!');
           savedWidgetDefs.then(handleStateLoad, handleStateLoad);
+        }
+        else {
+          handleStateLoad();
         }
 
         // allow adding widgets externally
