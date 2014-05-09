@@ -17,7 +17,7 @@
 'use strict';
 
 angular.module('ui.dashboard')
-  .factory('DashboardState', ['WidgetModel', '$log', '$q', function (WidgetModel, $log, $q) {
+  .factory('DashboardState', ['$log', '$q', function ($log, $q) {
     function DashboardState(storage, id, hash, widgetDefinitions) {
       this.storage = storage;
       this.id = id;
@@ -144,7 +144,6 @@ angular.module('ui.dashboard')
       _handleAsyncLoad: function(promise) {
         var self = this;
         var deferred = $q.defer();
-
         promise.then(
           // success
           function(res) {
