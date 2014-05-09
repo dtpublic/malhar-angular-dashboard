@@ -45,8 +45,7 @@ angular.module('ui.dashboard')
             name: widget.name,
             style: widget.style,
             dataModelOptions: widget.dataModelOptions,
-            // TODO: finish functionality here:
-            // storageHash: widget.storageHash,
+            storageHash: widget.storageHash,
             attrs: widget.attrs
           };
 
@@ -125,12 +124,15 @@ angular.module('ui.dashboard')
             continue;
           }
 
-          // TODO: check for storageHash on WDO itself
-          // if (widgetDefinition.hasOwnProperty('storageHash') && widgetDefinition.storageHash !== savedWidgetDef.storageHash) {
-          //   // widget definition was found, but storageHash was stale, removing storage
-          //   $log.warn('Widget with name "' + savedWidgetDef.name + '" was found but the storageHash property on the widget definition is different from that loaded from storage. ');
-          //   continue; 
-          // }
+          // check widget-specific storageHash
+          if (widgetDefinition.hasOwnProperty('storageHash') && widgetDefinition.storageHash !== savedWidgetDef.storageHash) {
+            // widget definition was found, but storageHash was stale, removing storage
+            $log.warn('Widget Definition Object with name "' + savedWidgetDef.name + '" was found ' +
+              'but the storageHash property on the widget definition is different from that on the ' +
+              'serialized widget loaded from storage. hash from storage: "' + savedWidgetDef.storageHash + '"' +
+              ', hash from WDO: "' + widgetDefinition.storageHash + '"');
+            continue; 
+          }
 
           // push instantiated widget to result array
           result.push(savedWidgetDef);
