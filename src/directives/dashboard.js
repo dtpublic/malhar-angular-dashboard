@@ -207,6 +207,10 @@ angular.module('ui.dashboard')
           event.stopPropagation();
           scope.saveDashboard();
         });
+
+        scope.$watch('widgets', function() {
+          scope.saveDashboard();
+        }, true);
       }
     };
   }]);
