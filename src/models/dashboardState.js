@@ -74,17 +74,25 @@ angular.module('ui.dashboard')
         // try loading storage item
         serialized = this.storage.getItem( this.id );
 
-        // check for promise
-        if (typeof serialized === 'object' && typeof serialized.then === 'function') {
-          return this._handleAsyncLoad(serialized);
+        if (serialized) {
+          // check for promise
+          if (typeof serialized === 'object' && typeof serialized.then === 'function') {
+            return this._handleAsyncLoad(serialized);
+          }
+          // otherwise handle synchronous load
+          return this._handleSyncLoad(serialized);
+        } else {
+          return null;
         }
-        // otherwise handle synchronous load
-        return this._handleSyncLoad(serialized);
       },
 
       _handleSyncLoad: function(serialized) {
 
         var deserialized, result = [];
+
+        if (!serialized) {
+          return null;
+        }
 
         try { // to deserialize the string
 
@@ -100,9 +108,11 @@ angular.module('ui.dashboard')
 
         // check hash against current hash
         if (deserialized.hash !== this.hash) {
+
           $log.info('Serialized dashboard from storage was stale (old hash: ' + deserialized.hash + ', new hash: ' + this.hash + ')');
           this.storage.removeItem(this.id);
           return null;
+
         }
 
         // Cache widgets
@@ -127,7 +137,7 @@ angular.module('ui.dashboard')
           // check widget-specific storageHash
           if (widgetDefinition.hasOwnProperty('storageHash') && widgetDefinition.storageHash !== savedWidgetDef.storageHash) {
             // widget definition was found, but storageHash was stale, removing storage
-            $log.warn('Widget Definition Object with name "' + savedWidgetDef.name + '" was found ' +
+            $log.info('Widget Definition Object with name "' + savedWidgetDef.name + '" was found ' +
               'but the storageHash property on the widget definition is different from that on the ' +
               'serialized widget loaded from storage. hash from storage: "' + savedWidgetDef.storageHash + '"' +
               ', hash from WDO: "' + widgetDefinition.storageHash + '"');
