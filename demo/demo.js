@@ -30,7 +30,7 @@ angular.module('app', [
         redirectTo: '/'
       });
   })
-  .controller('DemoCtrl', function ($scope, $interval) {
+  .controller('DemoCtrl', function ($scope, $interval, $window) {
     var widgetDefinitions = [
       {
         name: 'time',
@@ -66,7 +66,9 @@ angular.module('app', [
     $scope.dashboardOptions = {
       widgetButtons: true,
       widgetDefinitions: widgetDefinitions,
-      defaultWidgets: defaultWidgets
+      defaultWidgets: defaultWidgets,
+      storage: $window.localStorage,
+      storageId: 'dashboard-demo'
     };
 
     $interval(function () {
@@ -76,6 +78,7 @@ angular.module('app', [
   .directive('wtTime', function ($interval) {
     return {
       restrict: 'A',
+      scope: true,
       replace: true,
       template: '<div>Time<div class="alert alert-success">{{time}}</div></div>',
       link: function (scope) {

@@ -1,8 +1,8 @@
 {
-  "name": "angular-ui-dashboard",
+  "name": "malhar-angular-dashboard",
   "main": "./dist/angular-ui-dashboard.js",
   "version": "0.1.0",
-  "license": "MIT",
+  "license": "Apache License, v2.0",
   "dependencies": {
     "angular": "~1.2.6",
     "underscore": "~1.5.2",

@@ -25,6 +25,7 @@ angular.module('ui.dashboard')
       templateUrl: 'template/dashboard.html',
       scope: true,
       controller: function ($scope) {
+
         $scope.sortableOptions = {
           stop: function () {
             //TODO store active widgets in local storage on add/remove/reorder
@@ -32,6 +33,7 @@ angular.module('ui.dashboard')
           },
           handle: '.widget-header'
         };
+        
       },
       link: function (scope, element, attrs) {
         // Extract options the dashboard="" attribute
@@ -45,9 +47,11 @@ angular.module('ui.dashboard')
         var count = 1;
 
         // Instantiate new instance of dashboard state
-        var dashboardState = scope.dashboardState = new DashboardState(
-          !!scope.options.useLocalStorage,
-          scope.defaultWidgets
+        scope.dashboardState = new DashboardState(
+          scope.options.storage,
+          scope.options.storageId,
+          scope.options.storageHash,
+          scope.widgetDefs
         );
 
         /**
@@ -149,7 +153,7 @@ angular.module('ui.dashboard')
          * Uses dashboardState service to save state
          */
         scope.saveDashboard = function () {
-          dashboardState.save(scope.widgets);
+          scope.dashboardState.save(scope.widgets);
         };
 
         /**
@@ -173,12 +177,25 @@ angular.module('ui.dashboard')
         };
 
         // Set default widgets array
-        var savedWidgets = dashboardState.load();
+        var savedWidgetDefs = scope.dashboardState.load();
 
-        if (savedWidgets) {
-          scope.widgets = savedWidgets;
-        } else if (scope.defaultWidgets) {
-          scope.resetWidgetsToDefault();
+        // Success handler
+        function handleStateLoad(saved) {
+          if (saved && saved.length) {
+            scope.loadWidgets(saved);
+          } else if (scope.defaultWidgets) {
+            scope.resetWidgetsToDefault();
+          }
+        }
+
+        if (savedWidgetDefs instanceof Array) {
+          handleStateLoad(savedWidgetDefs);
+        }
+        else if (savedWidgetDefs && typeof savedWidgetDefs === 'object' && typeof savedWidgetDefs.then === 'function') {
+          savedWidgetDefs.then(handleStateLoad, handleStateLoad);
+        }
+        else {
+          handleStateLoad();
         }
 
         // allow adding widgets externally
@@ -190,6 +207,10 @@ angular.module('ui.dashboard')
           event.stopPropagation();
           scope.saveDashboard();
         });
+
+        scope.$watch('widgets', function() {
+          scope.saveDashboard();
+        }, true);
       }
     };
   }]);
@@ -224,12 +245,11 @@ angular.module('ui.dashboard')
         // first child of .widget-content
         var elm = findWidgetPlaceholder(element);
 
-        // the widget model/definition object
+        // instance of widgetModel
         var widget = scope.widget;
 
         // set up data source
         if (widget.dataModelType) {
-          //var ds = widget.ds;
           var ds = new widget.dataModelType();
           widget.dataModel = ds;
           ds.setup(widget, scope);
@@ -361,92 +381,162 @@ angular.module('ui.dashboard')
 'use strict';
 
 angular.module('ui.dashboard')
-  .factory('DashboardState', ['WidgetModel', function (WidgetModel) {
-    function DashboardState(useLocalStorage, widgetDefinitions) {
-      this.useLocalStorage = !!useLocalStorage;
+  .factory('DashboardState', ['$log', '$q', function ($log, $q) {
+    function DashboardState(storage, id, hash, widgetDefinitions) {
+      this.storage = storage;
+      this.id = id;
+      this.hash = hash;
       this.widgetDefinitions = widgetDefinitions;
     }
 
     DashboardState.prototype = {
-      // Takes array of widgets, serializes, and saves state.
-      // (currently stored in localStorage)
-      save: function (lsKey, widgets) {
-        console.log('saving dash state');
-        if (!this.useLocalStorage) {
+      /**
+       * Takes array of widget instance objects, serializes, 
+       * and saves state.
+       * 
+       * @param  {Array} widgets  scope.widgets from dashboard directive
+       * @return {Boolean}        true on success, false on failure
+       */
+      save: function (widgets) {
+        
+        if (!this.storage) {
           return true;
         }
-        if (arguments.length === 1) {
-          widgets = lsKey;
-          lsKey = 'default';
-        }
+
         var serialized = _.map(widgets, function (widget) {
           var widgetObject = {
             title: widget.title,
             name: widget.name,
             style: widget.style,
-            dataModelOptions: widget.dataModelOptions
+            dataModelOptions: widget.dataModelOptions,
+            storageHash: widget.storageHash,
+            attrs: widget.attrs
           };
 
           return widgetObject;
         });
 
-        serialized = JSON.stringify(serialized);
-        localStorage.setItem('widgets.' + lsKey, serialized);
+        serialized = JSON.stringify({ widgets: serialized, hash: this.hash });
+        this.storage.setItem(this.id, serialized);
         return true;
       },
 
-      // Returns array of instantiated widget objects
-      load: function (key) {
-        if (!this.useLocalStorage) {
+      /**
+       * Loads dashboard state from the storage object.
+       * Can handle a synchronous response or a promise.
+       * 
+       * @return {Array|Promise} Array of widget definitions or a promise
+       */
+      load: function () {
+
+        if (!this.storage) {
           return null;
         }
 
-        var serialized, deserialized, result = [];
-        key = key || 'default';
+        var serialized;
 
-        // try loading localStorage item
-        if (!(serialized = localStorage.getItem('widgets.' + key))) {
+        // try loading storage item
+        serialized = this.storage.getItem( this.id );
+
+        if (serialized) {
+          // check for promise
+          if (typeof serialized === 'object' && typeof serialized.then === 'function') {
+            return this._handleAsyncLoad(serialized);
+          }
+          // otherwise handle synchronous load
+          return this._handleSyncLoad(serialized);
+        } else {
+          return null;
+        }
+      },
+
+      _handleSyncLoad: function(serialized) {
+
+        var deserialized, result = [];
+
+        if (!serialized) {
           return null;
         }
 
         try { // to deserialize the string
+
           deserialized = JSON.parse(serialized);
+
         } catch (e) {
-          // bad JSON, clear localStorage
-          localStorage.removeItem('widgets.' + key);
+
+          // bad JSON, log a warning and return
+          $log.warn('Serialized dashboard state was malformed and could not be parsed: ', serialized);
           return null;
+
         }
 
+        // check hash against current hash
+        if (deserialized.hash !== this.hash) {
+
+          $log.info('Serialized dashboard from storage was stale (old hash: ' + deserialized.hash + ', new hash: ' + this.hash + ')');
+          this.storage.removeItem(this.id);
+          return null;
+
+        }
+
+        // Cache widgets
+        var savedWidgetDefs = deserialized.widgets;
+
         // instantiate widgets from stored data
-        for (var i = 0; i < deserialized.length; i++) {
+        for (var i = 0; i < savedWidgetDefs.length; i++) {
 
           // deserialized object
-          var widgetObject = deserialized[i];
-          // widget definition to use
-          var widgetDefinition = false;
+          var savedWidgetDef = savedWidgetDefs[i];
 
-          // find definition with same name
-          for (var k = this.widgetDefinitions.length - 1; k >= 0; k--) {
-            var def = this.widgetDefinitions[k];
-            if (def.name === widgetObject.name) {
-              widgetDefinition = def;
-              break;
-            }
-          }
+          // widget definition to use
+          var widgetDefinition = this.widgetDefinitions.getByName(savedWidgetDef.name);
 
           // check for no widget
           if (!widgetDefinition) {
             // no widget definition found, remove and return false
-            localStorage.removeItem('widgets.' + key);
-            return null;
+            $log.warn('Widget with name "' + savedWidgetDef.name + '" was not found in given widget definition objects');
+            continue;
+          }
+
+          // check widget-specific storageHash
+          if (widgetDefinition.hasOwnProperty('storageHash') && widgetDefinition.storageHash !== savedWidgetDef.storageHash) {
+            // widget definition was found, but storageHash was stale, removing storage
+            $log.info('Widget Definition Object with name "' + savedWidgetDef.name + '" was found ' +
+              'but the storageHash property on the widget definition is different from that on the ' +
+              'serialized widget loaded from storage. hash from storage: "' + savedWidgetDef.storageHash + '"' +
+              ', hash from WDO: "' + widgetDefinition.storageHash + '"');
+            continue;
           }
 
           // push instantiated widget to result array
-          result.push(new WidgetModel(widgetDefinition, widgetObject));
+          result.push(savedWidgetDef);
         }
 
         return result;
+      },
+
+      _handleAsyncLoad: function(promise) {
+        var self = this;
+        var deferred = $q.defer();
+        promise.then(
+          // success
+          function(res) {
+            var result = self._handleSyncLoad(res);
+            if (result) {
+              deferred.resolve(result);
+            } else {
+              deferred.reject(result);
+            }
+          },
+          // failure
+          function(res) {
+            deferred.reject(res);
+          }
+        );
+
+        return deferred.promise;
       }
+
     };
     return DashboardState;
   }]);
@@ -556,17 +646,19 @@ angular.module('ui.dashboard')
   .factory('WidgetModel', function () {
     // constructor for widget model instances
     function WidgetModel(Class, overrides) {
+      var defaults = {
+          title: 'Widget',
+          name: Class.name,
+          attrs: Class.attrs,
+          dataAttrName: Class.dataAttrName,
+          dataTypes: Class.dataTypes,
+          dataModelType: Class.dataModelType,
+          //AW Need deep copy of options to support widget options editing
+          dataModelOptions: Class.dataModelOptions,
+          style: Class.style
+        };
       overrides = overrides || {};
-      angular.extend(this, {
-        title: 'Widget',
-        name: Class.name,
-        attrs: Class.attrs,
-        dataAttrName: Class.dataAttrName,
-        dataTypes: Class.dataTypes,
-        dataModelType: Class.dataModelType,
-        dataModelOptions: Class.dataModelOptions,
-        style: Class.style
-      }, overrides);
+      angular.extend(this, angular.copy(defaults), overrides);
       this.style = this.style || { width: '33%' };
       this.setWidth(this.style.width);
 
@@ -683,7 +775,7 @@ angular.module("ui.dashboard").run(["$templateCache", function($templateCache) {
     "                        <span ng-click=\"openWidgetDialog(widget);\" class=\"glyphicon glyphicon-cog\" ng-if=\"!options.hideWidgetOptions\"></span>\n" +
     "                    </h3>\n" +
     "                </div>\n" +
-    "                <div class=\"widget-content panel-body\">\n" +
+    "                <div class=\"panel-body widget-content\">\n" +
     "                    <div></div>\n" +
     "                </div>\n" +
     "                <div class=\"widget-ew-resizer\" ng-mousedown=\"grabResizer($event)\"></div>\n" +
