@@ -348,8 +348,8 @@ angular.module('ui.dashboard')
 
         // saves whatever is in the title input as the new title
         scope.saveTitleEdit = function (widget) {
-
           widget.editingTitle = false;
+          scope.$emit('widgetChanged', widget);
         };
 
         $compile(elm)(scope);
