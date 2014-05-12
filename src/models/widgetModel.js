@@ -25,7 +25,6 @@ angular.module('ui.dashboard')
           name: Class.name,
           attrs: Class.attrs,
           dataAttrName: Class.dataAttrName,
-          dataTypes: Class.dataTypes,
           dataModelType: Class.dataModelType,
           //AW Need deep copy of options to support widget options editing
           dataModelOptions: Class.dataModelOptions,
