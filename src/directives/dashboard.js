@@ -81,7 +81,7 @@ angular.module('ui.dashboard')
           });
 
           scope.widgets.push(widget);
-          scope.saveDashboard();
+          //scope.saveDashboard();
         };
 
         /**
@@ -207,10 +207,6 @@ angular.module('ui.dashboard')
           event.stopPropagation();
           scope.saveDashboard();
         });
-
-        scope.$watch('widgets', function() {
-          scope.saveDashboard();
-        }, true);
       }
     };
   }]);

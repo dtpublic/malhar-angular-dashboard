@@ -81,7 +81,7 @@ angular.module('ui.dashboard')
           });
 
           scope.widgets.push(widget);
-          scope.saveDashboard();
+          //scope.saveDashboard();
         };
 
         /**
@@ -207,10 +207,6 @@ angular.module('ui.dashboard')
           event.stopPropagation();
           scope.saveDashboard();
         });
-
-        scope.$watch('widgets', function() {
-          scope.saveDashboard();
-        }, true);
       }
     };
   }]);
@@ -651,7 +647,6 @@ angular.module('ui.dashboard')
           name: Class.name,
           attrs: Class.attrs,
           dataAttrName: Class.dataAttrName,
-          dataTypes: Class.dataTypes,
           dataModelType: Class.dataModelType,
           //AW Need deep copy of options to support widget options editing
           dataModelOptions: Class.dataModelOptions,
