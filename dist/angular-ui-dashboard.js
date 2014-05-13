@@ -201,6 +201,7 @@ angular.module('ui.dashboard')
         // allow adding widgets externally
         scope.options.addWidget = scope.addWidget;
         scope.options.loadWidgets = scope.loadWidgets;
+        scope.options.saveDashboard = scope.saveDashboard;
 
         // save state
         scope.$on('widgetChanged', function (event) {
