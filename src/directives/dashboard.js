@@ -123,6 +123,8 @@ angular.module('ui.dashboard')
               console.log('widget dialog closed');
               console.log('result: ', result);
               widget.title = result.title;
+              //AW Persist the change
+              scope.$emit('widgetChanged', widget);
             },
             function (reason) {
               console.log('widget dialog dismissed: ', reason);
