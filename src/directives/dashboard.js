@@ -81,7 +81,7 @@ angular.module('ui.dashboard')
           });
 
           scope.widgets.push(widget);
-          //scope.saveDashboard();
+          scope.saveDashboard();
         };
 
         /**
@@ -123,7 +123,7 @@ angular.module('ui.dashboard')
               console.log('widget dialog closed');
               console.log('result: ', result);
               widget.title = result.title;
-              //AW Persist the change
+              //AW Persist title change from options editor
               scope.$emit('widgetChanged', widget);
             },
             function (reason) {
@@ -139,6 +139,7 @@ angular.module('ui.dashboard')
          */
         scope.clear = function () {
           scope.widgets = [];
+          scope.saveDashboard();
         };
 
         /**
@@ -163,7 +164,9 @@ angular.module('ui.dashboard')
          * @param  {Array} widgets Array of definition objects
          */
         scope.loadWidgets = function (widgets) {
-          scope.defaultWidgets = widgets; // save widgets for reset
+          // AW dashboards are continuously saved today (no "save" button).
+          //scope.defaultWidgets = widgets;
+          scope.savedWidgetDefs = widgets;
           scope.clear();
           _.each(widgets, function (widgetDef) {
             scope.addWidget(widgetDef);
