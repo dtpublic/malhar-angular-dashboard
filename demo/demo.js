@@ -30,25 +30,31 @@ angular.module('app', [
         redirectTo: '/'
       });
   })
-  .controller('DemoCtrl', function ($scope, $interval, $window) {
+  .controller('DemoCtrl', function ($scope, $interval, $window, RandomDataModel) {
     var widgetDefinitions = [
-      {
-        name: 'time',
-        directive: 'wt-time'
-      },
       {
         name: 'random',
         directive: 'wt-scope-watch',
         attrs: {
           value: 'randomValue'
         }
+      },
+      {
+        name: 'time',
+        directive: 'wt-time'
+      },
+      {
+        name: 'datamodel',
+        directive: 'wt-scope-watch',
+        dataAttrName: 'value',
+        dataModelType: RandomDataModel
       }
     ];
 
     var defaultWidgets = [
-      { name: 'time' },
       { name: 'random' },
       { name: 'time' },
+      { name: 'datamodel' },
       {
         name: 'random',
         style: {
@@ -68,7 +74,7 @@ angular.module('app', [
       widgetDefinitions: widgetDefinitions,
       defaultWidgets: defaultWidgets,
       storage: $window.localStorage,
-      storageId: 'dashboard-demo'
+      storageId: 'demo'
     };
 
     $interval(function () {
@@ -103,5 +109,25 @@ angular.module('app', [
         value: '=value'
       }
     };
+  })
+  .factory('RandomDataModel', function ($interval, WidgetDataModel) {
+    function RandomDataModel() {
+    }
+
+    RandomDataModel.prototype = Object.create(WidgetDataModel.prototype);
+
+    RandomDataModel.prototype.init = function () {
+      this.intervalPromise = $interval(function () {
+        var value = Math.floor(Math.random() * 100);
+        this.updateScope(value);
+      }.bind(this), 500);
+    };
+
+    RandomDataModel.prototype.destroy = function () {
+      WidgetDataModel.prototype.destroy.call(this);
+      $interval.cancel(this.intervalPromise);
+    };
+
+    return RandomDataModel;
   });
 
