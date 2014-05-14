@@ -81,7 +81,7 @@ angular.module('ui.dashboard')
           });
 
           scope.widgets.push(widget);
-          //scope.saveDashboard();
+          scope.saveDashboard();
         };
 
         /**
@@ -123,6 +123,8 @@ angular.module('ui.dashboard')
               console.log('widget dialog closed');
               console.log('result: ', result);
               widget.title = result.title;
+              //AW Persist title change from options editor
+              scope.$emit('widgetChanged', widget);
             },
             function (reason) {
               console.log('widget dialog dismissed: ', reason);
@@ -137,6 +139,7 @@ angular.module('ui.dashboard')
          */
         scope.clear = function () {
           scope.widgets = [];
+          scope.saveDashboard();
         };
 
         /**
@@ -161,7 +164,9 @@ angular.module('ui.dashboard')
          * @param  {Array} widgets Array of definition objects
          */
         scope.loadWidgets = function (widgets) {
-          scope.defaultWidgets = widgets; // save widgets for reset
+          // AW dashboards are continuously saved today (no "save" button).
+          //scope.defaultWidgets = widgets;
+          scope.savedWidgetDefs = widgets;
           scope.clear();
           _.each(widgets, function (widgetDef) {
             scope.addWidget(widgetDef);
@@ -211,6 +216,7 @@ angular.module('ui.dashboard')
       }
     };
   }]);
+
 /*
  * Copyright (c) 2014 DataTorrent, Inc. ALL Rights Reserved.
  *
