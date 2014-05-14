@@ -18,54 +18,69 @@
 
 angular.module('ui.dashboard')
   .directive('widget', ['$compile', function ($compile) {
-    function findWidgetPlaceholder(element) {
+
+    function findWidgetContainer(element) {
       // widget placeholder is the first (and only) child of .widget-content
-      return angular.element(element.find('.widget-content').children()[0]);
+      return element.find('.widget-content');
     }
 
     return {
 
       link: function (scope, element) {
-        // first child of .widget-content
-        var elm = findWidgetPlaceholder(element);
 
-        // instance of widgetModel
-        var widget = scope.widget;
+        // Fills "container" with compiled view
+        scope.makeTemplateString = function() {
 
-        // set up data source
-        if (widget.dataModelType) {
-          var ds = new widget.dataModelType();
-          widget.dataModel = ds;
-          ds.setup(widget, scope);
-          ds.init();
-          scope.$on('$destroy', ds.destroy.bind(ds));
-        }
+          var widget = scope.widget;
 
-        // .widget element (element is .widget-container)
+          // First, build template string
+          var templateString = '';
+
+          if (widget.templateUrl) {
+            
+            // Use ng-include for templateUrl
+            templateString = '<div ng-include="\'' + widget.templateUrl + '\'"></div>';
+
+          } else if (widget.template) {
+
+            // Direct string template
+            templateString = widget.template;
+
+          } else {
+
+            // Assume attribute directive
+            templateString = '<div ' + widget.directive;
+
+            // Check if data attribute was specified
+            if (widget.dataAttrName) {
+              widget.attrs = widget.attrs || {};
+              widget.attrs[widget.dataAttrName] = 'widgetData';
+            }
+
+            // Check for specified attributes
+            if (widget.attrs) {
+
+              // First check directive name attr
+              if (widget.attrs[widget.directive]) {
+                templateString += '="' + widget.attrs[widget.directive] + '"';
+              }
+
+              // Add attributes
+              _.each(widget.attrs, function (value, attr) {
+
+                // make sure we aren't reusing directive attr
+                if (attr !== widget.directive) {
+                  templateString += ' ' + attr + '="' + value + '"';
+                }
+                
+              });
+            }
+            templateString += '></div>';
+          }
+          return templateString;
+        };
+
         var widgetElm = element.find('.widget');
-
-        // check for a template in widget def
-        if (widget.templateUrl) {
-          var includeTemplate = '<div ng-include="\'' + widget.templateUrl + '\'"></div>';
-          var templateElm = angular.element(includeTemplate);
-          elm.replaceWith(templateElm);
-          elm = templateElm;
-        } else if (widget.template) {
-          elm.replaceWith(widget.template);
-          elm = findWidgetPlaceholder(element);
-        } else {
-          elm.attr(widget.directive, '');
-
-          if (widget.attrs) {
-            _.each(widget.attrs, function (value, attr) {
-              elm.attr(attr, value);
-            });
-          }
-
-          if (widget.dataAttrName) {
-            elm.attr(widget.dataAttrName, 'widgetData');
-          }
-        }
 
         scope.grabResizer = function (e) {
 
@@ -140,8 +155,31 @@ angular.module('ui.dashboard')
           scope.$emit('widgetChanged', widget);
         };
 
-        $compile(elm)(scope);
 
+        // instance of widgetModel
+        var widget = scope.widget;
+
+        scope.compileTemplate = function() {
+          var container = findWidgetContainer(element);
+          var templateString = scope.makeTemplateString();
+          var widgetElement = angular.element(templateString);
+
+          container.empty();
+          container.append(widgetElement);
+          $compile(widgetElement)(scope);
+        };
+
+        // set up data source
+        if (widget.dataModelType) {
+          var ds = new widget.dataModelType();
+          widget.dataModel = ds;
+          ds.setup(widget, scope);
+          ds.init();
+          scope.$on('$destroy', ds.destroy.bind(ds));
+        }
+
+        // Compile the widget template, emit add event
+        scope.compileTemplate();
         scope.$emit('widgetAdded', widget);
       }
     };
