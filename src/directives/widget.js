@@ -17,157 +17,15 @@
 'use strict';
 
 angular.module('ui.dashboard')
-  .directive('widget', ['$compile', function ($compile) {
-
-    function findWidgetContainer(element) {
-      // widget placeholder is the first (and only) child of .widget-content
-      return element.find('.widget-content');
-    }
+  .directive('widget', function () {
 
     return {
 
-      link: function (scope, element) {
+      controller: 'DashboardWidgetCtrl',
 
-        // Fills "container" with compiled view
-        scope.makeTemplateString = function() {
+      link: function (scope) {
 
-          var widget = scope.widget;
-
-          // First, build template string
-          var templateString = '';
-
-          if (widget.templateUrl) {
-            
-            // Use ng-include for templateUrl
-            templateString = '<div ng-include="\'' + widget.templateUrl + '\'"></div>';
-
-          } else if (widget.template) {
-
-            // Direct string template
-            templateString = widget.template;
-
-          } else {
-
-            // Assume attribute directive
-            templateString = '<div ' + widget.directive;
-
-            // Check if data attribute was specified
-            if (widget.dataAttrName) {
-              widget.attrs = widget.attrs || {};
-              widget.attrs[widget.dataAttrName] = 'widgetData';
-            }
-
-            // Check for specified attributes
-            if (widget.attrs) {
-
-              // First check directive name attr
-              if (widget.attrs[widget.directive]) {
-                templateString += '="' + widget.attrs[widget.directive] + '"';
-              }
-
-              // Add attributes
-              _.each(widget.attrs, function (value, attr) {
-
-                // make sure we aren't reusing directive attr
-                if (attr !== widget.directive) {
-                  templateString += ' ' + attr + '="' + value + '"';
-                }
-                
-              });
-            }
-            templateString += '></div>';
-          }
-          return templateString;
-        };
-
-        var widgetElm = element.find('.widget');
-
-        scope.grabResizer = function (e) {
-
-          // ignore middle- and right-click
-          if (e.which !== 1) {
-            return;
-          }
-
-          e.stopPropagation();
-          e.originalEvent.preventDefault();
-
-          // get the starting horizontal position
-          var initX = e.clientX;
-          // console.log('initX', initX);
-
-          // Get the current width of the widget and dashboard
-          var pixelWidth = widgetElm.width();
-          var pixelHeight = widgetElm.height();
-          var widgetStyleWidth = widget.style.width;
-          var widthUnits = widget.widthUnits;
-          var unitWidth = parseFloat(widgetStyleWidth);
-
-          // create marquee element for resize action
-          var $marquee = angular.element('<div class="widget-resizer-marquee" style="height: ' + pixelHeight + 'px; width: ' + pixelWidth + 'px;"></div>');
-          widgetElm.append($marquee);
-
-          // determine the unit/pixel ratio
-          var transformMultiplier = unitWidth / pixelWidth;
-
-          // updates marquee with preview of new width
-          var mousemove = function (e) {
-            var curX = e.clientX;
-            var pixelChange = curX - initX;
-            var newWidth = pixelWidth + pixelChange;
-            $marquee.css('width', newWidth + 'px');
-          };
-
-          // sets new widget width on mouseup
-          var mouseup = function (e) {
-            // remove listener and marquee
-            jQuery(window).off('mousemove', mousemove);
-            $marquee.remove();
-
-            // calculate change in units
-            var curX = e.clientX;
-            var pixelChange = curX - initX;
-            var unitChange = Math.round(pixelChange * transformMultiplier * 100) / 100;
-
-            // add to initial unit width
-            var newWidth = unitWidth * 1 + unitChange;
-            widget.setWidth(newWidth + widthUnits);
-            scope.$emit('widgetChanged', widget);
-            scope.$apply();
-          };
-
-          jQuery(window).on('mousemove', mousemove).one('mouseup', mouseup);
-
-        };
-
-        // replaces widget title with input
-        scope.editTitle = function (widget) {
-          widget.editingTitle = true;
-          // HACK: get the input to focus after being displayed.
-          setTimeout(function () {
-            widgetElm.find('form.widget-title input:eq(0)').focus()[0].setSelectionRange(0, 9999);
-          }, 0);
-        };
-
-        // saves whatever is in the title input as the new title
-        scope.saveTitleEdit = function (widget) {
-          widget.editingTitle = false;
-          scope.$emit('widgetChanged', widget);
-        };
-
-
-        // instance of widgetModel
         var widget = scope.widget;
-
-        scope.compileTemplate = function() {
-          var container = findWidgetContainer(element);
-          var templateString = scope.makeTemplateString();
-          var widgetElement = angular.element(templateString);
-
-          container.empty();
-          container.append(widgetElement);
-          $compile(widgetElement)(scope);
-        };
 
         // set up data source
         if (widget.dataModelType) {
@@ -183,4 +41,4 @@ angular.module('ui.dashboard')
         scope.$emit('widgetAdded', widget);
       }
     };
-  }]);
+  });
