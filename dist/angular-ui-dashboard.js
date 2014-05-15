@@ -613,10 +613,7 @@ angular.module('ui.dashboard')
 'use strict';
 
 angular.module('ui.dashboard')
-  .controller('DashboardWidgetCtrl', function($scope, $element, $compile) {
-
-    var widgetElm = $element.find('.widget');
-    var widget = $scope.widget;
+  .controller('DashboardWidgetCtrl', function($scope, $element, $compile, $window, $timeout) {
 
     // Fills "container" with compiled view
     $scope.makeTemplateString = function() {
@@ -672,6 +669,9 @@ angular.module('ui.dashboard')
 
     $scope.grabResizer = function (e) {
 
+      var widget = $scope.widget;
+      var widgetElm = $element.find('.widget');
+
       // ignore middle- and right-click
       if (e.which !== 1) {
         return;
@@ -709,7 +709,7 @@ angular.module('ui.dashboard')
       // sets new widget width on mouseup
       var mouseup = function (e) {
         // remove listener and marquee
-        jQuery(window).off('mousemove', mousemove);
+        jQuery($window).off('mousemove', mousemove);
         $marquee.remove();
 
         // calculate change in units
@@ -724,17 +724,17 @@ angular.module('ui.dashboard')
         $scope.$apply();
       };
 
-      jQuery(window).on('mousemove', mousemove).one('mouseup', mouseup);
-
+      jQuery($window).on('mousemove', mousemove).one('mouseup', mouseup);
     };
 
     // replaces widget title with input
     $scope.editTitle = function (widget) {
+      var widgetElm = $element.find('.widget');
       widget.editingTitle = true;
       // HACK: get the input to focus after being displayed.
-      setTimeout(function () {
+      $timeout(function () {
         widgetElm.find('form.widget-title input:eq(0)').focus()[0].setSelectionRange(0, 9999);
-      }, 0);
+      });
     };
 
     // saves whatever is in the title input as the new title
