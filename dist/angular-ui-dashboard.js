@@ -206,7 +206,8 @@ angular.module('ui.dashboard')
           handleStateLoad();
         }
 
-        // allow adding widgets externally
+        // expose functionality externally
+        // functions are appended to the provided dashboard options
         scope.options.addWidget = scope.addWidget;
         scope.options.loadWidgets = scope.loadWidgets;
         scope.options.saveDashboard = scope.saveDashboard;
