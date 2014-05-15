@@ -74,7 +74,10 @@ angular.module('ui.dashboard')
           }
 
           var w = angular.copy(wDef);
-          angular.extend(w, widgetDef); //TODO deep extend
+          angular.extend(w, widgetDef);
+          if (wDef.hasOwnProperty('dataModelOptions')) {
+            angular.extend(w.dataModelOptions, wDef.dataModelOptions);
+          }
 
           var widget = new WidgetModel(w, {
             title: title
