@@ -114,6 +114,13 @@ describe('Directive: dashboard', function () {
       expect(widgetCreated.title).toEqual('defaultTitle');
     });
 
+    it('should call the saveDashboard method (internal)', function() {
+      spyOn(childScope.widgetDefs, 'getByName').and.returnValue({ title: 'defaultTitle', name: 'A' });
+        spyOn(childScope, 'saveDashboard');
+        childScope.addWidget({ name: 'A' });
+        expect(childScope.saveDashboard).toHaveBeenCalled();
+    });
+
     describe('@awashbrook Test Case', function() {
       beforeEach(function() {
         spyOn(childScope.widgetDefs, 'getByName').and.returnValue(widgetDefault = {
@@ -194,6 +201,17 @@ describe('Directive: dashboard', function () {
       });
     });
 
+    describe('the doNotSave parameter', function() {
+      
+      it('should prevent save from being called if set to true', function() {
+        spyOn(childScope.widgetDefs, 'getByName').and.returnValue({ title: 'defaultTitle', name: 'A' });
+        spyOn(childScope, 'saveDashboard');
+        childScope.addWidget({ name: 'A' }, true);
+        expect(childScope.saveDashboard).not.toHaveBeenCalled();
+      });
+
+    });
+
   });
 
   describe('the saveDashboard function', function() {
@@ -226,6 +244,66 @@ describe('Directive: dashboard', function () {
       $rootScope.dashboardOptions.explicitSave = true;
       $rootScope.dashboardOptions.saveDashboard();
       expect(childScope.dashboardState.save.calls.count()).toEqual(2);
+    });
+
+    it('should keep a count of unsaved changes as unsavedChangeCount', function() {
+      $rootScope.dashboardOptions.explicitSave = true;
+      spyOn(childScope.dashboardState, 'save').and.returnValue(true);
+      childScope.saveDashboard();
+      expect($rootScope.dashboardOptions.unsavedChangeCount).toEqual(1);
+      childScope.saveDashboard();
+      childScope.saveDashboard();
+      expect($rootScope.dashboardOptions.unsavedChangeCount).toEqual(3);
+    });
+
+    it('should reset the cound of unsaved changes if a successful force save occurs', function() {
+      $rootScope.dashboardOptions.explicitSave = true;
+      spyOn(childScope.dashboardState, 'save').and.returnValue(true);
+
+      childScope.saveDashboard();
+      childScope.saveDashboard();
+      childScope.saveDashboard();
+
+      childScope.saveDashboard(true);
+
+      expect($rootScope.dashboardOptions.unsavedChangeCount).toEqual(0);
+    });
+
+  });
+
+  describe('the loadWidgets function', function() {
+    
+    it('should be a function', function() {
+      expect(typeof childScope.loadWidgets).toEqual('function');
+    });
+
+    it('should set savedWidgetDefs on scope as passed array', function() {
+      var widgets = [];
+      childScope.loadWidgets(widgets);
+      expect(childScope.savedWidgetDefs === widgets).toEqual(true);
+    });
+
+    it('should call clear on the scope with true as the only argument', function() {
+      spyOn(childScope, 'clear');
+      childScope.loadWidgets([]);
+      expect(childScope.clear).toHaveBeenCalled();
+      expect(childScope.clear.calls.argsFor(0)).toEqual([true]);
+    });
+
+    it('should call addWidget for each widget in the array', function() {
+      spyOn(childScope, 'addWidget').and.returnValue(null);
+      var widgets = [{},{},{}];
+      childScope.loadWidgets(widgets);
+      expect(childScope.addWidget.calls.count()).toEqual(3);
+    });
+
+    it('should call addWidget for each widget with true as the second parameter (doNotSave)', function() {
+      spyOn(childScope, 'addWidget').and.returnValue(null);
+      var widgets = [{},{},{}];
+      childScope.loadWidgets(widgets);
+      expect(childScope.addWidget.calls.argsFor(0)).toEqual( [ widgets[0], true] );
+      expect(childScope.addWidget.calls.argsFor(1)).toEqual( [ widgets[1], true] );
+      expect(childScope.addWidget.calls.argsFor(2)).toEqual( [ widgets[2], true] );
     });
 
   });
