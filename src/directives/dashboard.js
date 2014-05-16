@@ -157,9 +157,18 @@ angular.module('ui.dashboard')
         /**
          * Uses dashboardState service to save state
          */
-        scope.saveDashboard = function () {
-          scope.dashboardState.save(scope.widgets);
-        };
+        scope.saveDashboard = function (force) {
+          if (!scope.options.explicitSave || force) {
+            scope.dashboardState.save(scope.widgets);
+          }
+        }
+
+        /**
+         * Wraps saveDashboard for external use.
+         */
+         scope.externalSaveDashboard = function() {
+          scope.saveDashboard(true);
+         }
 
         /**
          * Clears current dash and instantiates widget definitions
@@ -208,7 +217,8 @@ angular.module('ui.dashboard')
         // allow adding widgets externally
         scope.options.addWidget = scope.addWidget;
         scope.options.loadWidgets = scope.loadWidgets;
-        scope.options.saveDashboard = scope.saveDashboard;
+        scope.options.saveDashboard = scope.externalSaveDashboard;
+
 
         // save state
         scope.$on('widgetChanged', function (event) {

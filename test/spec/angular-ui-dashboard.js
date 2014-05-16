@@ -195,4 +195,39 @@ describe('Directive: dashboard', function () {
     });
 
   });
+
+  describe('the saveDashboard function', function() {
+    
+    it('should be attached to the options object after initialization', function() {
+      expect(typeof $rootScope.dashboardOptions.saveDashboard).toEqual('function');
+      expect($rootScope.dashboardOptions.saveDashboard === childScope.externalSaveDashboard).toEqual(true);
+    });
+
+    it('should call scope.dashboardState.save when called internally if explicitSave is falsey', function() {
+      spyOn(childScope.dashboardState, 'save').and.returnValue(true);
+      childScope.saveDashboard();
+      expect(childScope.dashboardState.save).toHaveBeenCalled();
+    });
+
+    it('should not call scope.dashboardState.save when called internally if explicitSave is truthy', function() {
+      $rootScope.dashboardOptions.explicitSave = true;
+      spyOn(childScope.dashboardState, 'save').and.returnValue(true);
+      childScope.saveDashboard();
+      expect(childScope.dashboardState.save).not.toHaveBeenCalled();
+    });
+
+    it('should call scope.dashboardState.save when called externally, no matter what explicitSave value is', function() {
+      spyOn(childScope.dashboardState, 'save').and.returnValue(true);
+
+      $rootScope.dashboardOptions.explicitSave = false;
+      $rootScope.dashboardOptions.saveDashboard();
+      expect(childScope.dashboardState.save.calls.count()).toEqual(1);
+
+      $rootScope.dashboardOptions.explicitSave = true;
+      $rootScope.dashboardOptions.saveDashboard();
+      expect(childScope.dashboardState.save.calls.count()).toEqual(2);
+    });
+
+  });
+
 });

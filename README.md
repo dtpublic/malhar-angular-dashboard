@@ -138,6 +138,9 @@ key | type | default value | required | description
  storage   | Object | null | no | If defined, this object should implement three methods: `setItem`, `getItem`, and `removeItem`. See the **Persistence** section below.
  storageId | String | null | no (yes if `storage` is defined) | This is used as the first parameter passed to the three `storage` methods above. See the **Persistence** section below.
  storageHash | String | '' | no | This is used to validate/invalidate loaded state. See the **Persistence** section below.
+ explicitSave | Boolean | false | no | The dashboard will not automatically save to storage for every change. Saves must instead be called explicitly using the `saveDashboard` method that is attached to the option event upon initialization.
+
+Upon instantiation, this options object is endowed with a few API methods for use by outside code: `addWidget`, `loadWidgets`, and `saveDashboard`. 
 
 ### Widget Definition Objects
 
