@@ -188,6 +188,10 @@ describe('Directive: dashboard', function () {
       it('should override deep options in dataModelOptions', function() {
         expect(widgetCreated.dataModelOptions.params.from).toEqual(widgetPassed.dataModelOptions.params.from);
       });
+
+      it('should fill in deep default attrs', function() {
+        expect(widgetCreated.dataModelOptions.params.until).toEqual(widgetDefault.dataModelOptions.params.until);
+      });
     });
 
   });
