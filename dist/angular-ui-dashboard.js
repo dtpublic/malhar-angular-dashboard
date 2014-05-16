@@ -74,19 +74,8 @@ angular.module('ui.dashboard')
             title = 'Widget ' + count++;
           }
 
-          // Make a copy of the default WDO
-          var defaultCopy = angular.copy(defaultWidgetDefinition);
-
-          // First shallow extend the widgetToInstantiate
-          angular.extend(widgetToInstantiate, defaultCopy);
-
-          // Check for dataModelOptions
-          if (defaultCopy.hasOwnProperty('dataModelOptions')) {
-
-            // Extend dataModelOptions with the defaults
-            angular.extend(widgetToInstantiate.dataModelOptions, defaultCopy.dataModelOptions);
-
-          }
+          // Deep extend a new object for instantiation
+          widgetToInstantiate = jQuery.extend(true, {}, defaultWidgetDefinition, widgetToInstantiate);
 
           // Instantiation
           var widget = new WidgetModel(widgetToInstantiate, {

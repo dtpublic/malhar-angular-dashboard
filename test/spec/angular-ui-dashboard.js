@@ -18,6 +18,8 @@
 
 describe('Directive: dashboard', function () {
 
+  var $rootScope, element, childScope;
+
   // mock UI Sortable
   beforeEach(function () {
     angular.module('ui.sortable', []);
@@ -25,8 +27,6 @@ describe('Directive: dashboard', function () {
 
   // load the directive's module
   beforeEach(module('ui.dashboard'));
-
-  var $rootScope, element;
 
   beforeEach(inject(function ($compile, _$rootScope_) {
     $rootScope = _$rootScope_;
@@ -52,6 +52,7 @@ describe('Directive: dashboard', function () {
     element = $compile('<div dashboard="dashboardOptions"></div>')($rootScope);
     $compile(element)($rootScope);
     $rootScope.$digest();
+    childScope = element.scope();
   }));
 
   it('should have toolbar', function () {
@@ -77,5 +78,117 @@ describe('Directive: dashboard', function () {
   it('should evaluate scope expressions', function () {
     var spanWidget = element.find('.wt-two-value');
     expect(spanWidget.html()).toEqual('10');
+  });
+
+  describe('the addWidget function', function() {
+
+    var widgetCreated, widgetPassed, widgetDefault;
+
+    beforeEach(function() {
+      childScope.widgets.push = function(w) {
+        widgetCreated = w;
+      }
+    });
+    
+    it('should be a function', function() {
+      expect(typeof childScope.addWidget).toEqual('function');
+    });
+
+    it('should throw if no default widgetDefinition was found', function() {
+      spyOn(childScope.widgetDefs, 'getByName').and.returnValue(false);
+      function fn () {
+        childScope.addWidget({ name: 'notReal' });
+      }
+      expect(fn).toThrow();
+    });
+
+    it('should look to the passed widgetToInstantiate object for the title before anything else', function() {
+      spyOn(childScope.widgetDefs, 'getByName').and.returnValue({ title: 'defaultTitle', name: 'A' });
+      childScope.addWidget({ title: 'highestPrecedence', name: 'A' });
+      expect(widgetCreated.title).toEqual('highestPrecedence');
+    });
+
+    it('should use the defaultWidget\'s title second', function() {
+      spyOn(childScope.widgetDefs, 'getByName').and.returnValue({ title: 'defaultTitle', name: 'A' });
+      childScope.addWidget({ name: 'A' });
+      expect(widgetCreated.title).toEqual('defaultTitle');
+    });
+
+    describe('@awashbrook Test Case', function() {
+      beforeEach(function() {
+        spyOn(childScope.widgetDefs, 'getByName').and.returnValue(widgetDefault = {
+          "name": "nvLineChartAlpha",
+          "directive": "nvd3-line-chart",
+          "dataAttrName": "data",
+          "attrs": {
+            "isArea": true,
+            "height": 400,
+            "showXAxis": true,
+            "showYAxis": true,
+            "xAxisTickFormat": "xAxisTickFormat()",
+            "interactive": true,
+            "useInteractiveGuideline": true,
+            "tooltips": true,
+            "showLegend": true,
+            "noData": "No data for YOU!",
+            "color": "colorFunction()",
+            "forcey": "[0,2]"
+          },
+          "dataModelOptions": {
+            "params": {
+              "from": "-2h",
+              "until": "now"
+            }
+          },
+          "style": {
+            "width": "400px"
+          },
+        });
+        childScope.addWidget(widgetPassed = {
+          "title": "Andy",
+          "name": "nvLineChartAlpha",
+          "style": {
+            "width": "400px"
+          },
+          "dataModelOptions": {
+            "params": {
+              "from": "-1h",
+              "target": [
+              "randomWalk(\"random Andy 1\")",
+              "randomWalk(\"random walk 2\")",
+              "randomWalk(\"random walk 3\")"
+              ]
+            }
+          },
+          "attrs": {
+            "height": 400,
+            "showXAxis": true,
+            "showYAxis": true,
+            "xAxisTickFormat": "xAxisTickFormat()",
+            "interactive": false,
+            "useInteractiveGuideline": true,
+            "tooltips": true,
+            "showLegend": true,
+            "noData": "No data for YOU!",
+            "color": "colorFunction()",
+            "forcey": "[0,2]",
+            "data": "widgetData"
+          }
+        });
+      });
+
+      it('should keep overrides from widgetPassed', function() {
+        expect(widgetCreated.attrs.interactive).toEqual(widgetPassed.attrs.interactive);
+      });
+
+      it('should fill in default attrs', function() {
+        expect(widgetCreated.attrs.isArea).toEqual(widgetDefault.attrs.isArea);
+      });
+
+      it('should override deep options in dataModelOptions', function() {
+        expect(widgetCreated.dataModelOptions.params.from).toEqual(widgetPassed.dataModelOptions.params.from);
+      });
+    });
+
   });
 });
