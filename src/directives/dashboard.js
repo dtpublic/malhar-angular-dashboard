@@ -28,8 +28,7 @@ angular.module('ui.dashboard')
 
         $scope.sortableOptions = {
           stop: function () {
-            //TODO store active widgets in local storage on add/remove/reorder
-            $scope.dashboardState.save($scope.widgets);
+            $scope.saveDashboard();
           },
           handle: '.widget-header'
         };
@@ -58,7 +57,7 @@ angular.module('ui.dashboard')
          * Instantiates a new widget on the dashboard
          * @param {Object} widgetToInstantiate The definition object of the widget to be instantiated
          */
-        scope.addWidget = function (widgetToInstantiate) {
+        scope.addWidget = function (widgetToInstantiate, doNotSave) {
           var defaultWidgetDefinition = scope.widgetDefs.getByName(widgetToInstantiate.name);
           if (!defaultWidgetDefinition) {
             throw 'Widget ' + widgetToInstantiate.name + ' is not found.';
@@ -83,7 +82,9 @@ angular.module('ui.dashboard')
           });
 
           scope.widgets.push(widget);
-          scope.saveDashboard();
+          if (!doNotSave) {
+            scope.saveDashboard();
+          }
         };
 
         /**
@@ -139,8 +140,11 @@ angular.module('ui.dashboard')
         /**
          * Remove all widget instances from dashboard
          */
-        scope.clear = function () {
+        scope.clear = function (doNotSave) {
           scope.widgets = [];
+          if (doNotSave === true) {
+            return;
+          }
           scope.saveDashboard();
         };
 
@@ -157,8 +161,28 @@ angular.module('ui.dashboard')
         /**
          * Uses dashboardState service to save state
          */
-        scope.saveDashboard = function () {
-          scope.dashboardState.save(scope.widgets);
+        scope.saveDashboard = function (force) {
+          if (!scope.options.explicitSave) {
+            scope.dashboardState.save(scope.widgets);
+          } else {
+            if (typeof scope.options.unsavedChangeCount !== 'number') {
+              scope.options.unsavedChangeCount = 0;
+            }
+            if (force) {
+              scope.options.unsavedChangeCount = 0;
+              scope.dashboardState.save(scope.widgets);
+
+            } else {
+              ++scope.options.unsavedChangeCount;
+            }
+          }
+        };
+
+        /**
+         * Wraps saveDashboard for external use.
+         */
+        scope.externalSaveDashboard = function() {
+          scope.saveDashboard(true);
         };
 
         /**
@@ -169,9 +193,9 @@ angular.module('ui.dashboard')
           // AW dashboards are continuously saved today (no "save" button).
           //scope.defaultWidgets = widgets;
           scope.savedWidgetDefs = widgets;
-          scope.clear();
+          scope.clear(true);
           _.each(widgets, function (widgetDef) {
-            scope.addWidget(widgetDef);
+            scope.addWidget(widgetDef, true);
           });
         };
 
@@ -209,7 +233,8 @@ angular.module('ui.dashboard')
         // functions are appended to the provided dashboard options
         scope.options.addWidget = scope.addWidget;
         scope.options.loadWidgets = scope.loadWidgets;
-        scope.options.saveDashboard = scope.saveDashboard;
+        scope.options.saveDashboard = scope.externalSaveDashboard;
+
 
         // save state
         scope.$on('widgetChanged', function (event) {

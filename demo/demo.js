@@ -26,12 +26,16 @@ angular.module('app', [
         templateUrl: 'view.html',
         controller: 'DemoCtrl'
       })
+      .when('/explicit-saving', {
+        templateUrl: 'view.html',
+        controller: 'ExplicitSaveDemoCtrl'
+      })
       .otherwise({
         redirectTo: '/'
       });
   })
-  .controller('DemoCtrl', function ($scope, $interval, $window, RandomDataModel) {
-    var widgetDefinitions = [
+  .factory('widgetDefinitions', function(RandomDataModel) {
+    return [
       {
         name: 'random',
         directive: 'wt-scope-watch',
@@ -50,31 +54,47 @@ angular.module('app', [
         dataModelType: RandomDataModel
       }
     ];
-
-    var defaultWidgets = [
-      { name: 'random' },
-      { name: 'time' },
-      { name: 'datamodel' },
-      {
-        name: 'random',
-        style: {
-          width: '50%'
-        }
-      },
-      {
-        name: 'time',
-        style: {
-          width: '50%'
-        }
+  })
+  .value('defaultWidgets', [
+    { name: 'random' },
+    { name: 'time' },
+    { name: 'datamodel' },
+    {
+      name: 'random',
+      style: {
+        width: '50%'
       }
-    ];
-
+    },
+    {
+      name: 'time',
+      style: {
+        width: '50%'
+      }
+    }
+  ])
+  .controller('DemoCtrl', function ($scope, $interval, $window, widgetDefinitions, defaultWidgets) {
+    
     $scope.dashboardOptions = {
       widgetButtons: true,
       widgetDefinitions: widgetDefinitions,
       defaultWidgets: defaultWidgets,
       storage: $window.localStorage,
       storageId: 'demo'
+    };
+
+    $interval(function () {
+      $scope.randomValue = Math.random();
+    }, 500);
+  })
+  .controller('ExplicitSaveDemoCtrl', function ($scope, $interval, $window, widgetDefinitions, defaultWidgets) {
+
+    $scope.dashboardOptions = {
+      widgetButtons: true,
+      widgetDefinitions: widgetDefinitions,
+      defaultWidgets: defaultWidgets,
+      storage: $window.localStorage,
+      storageId: 'explicitSave',
+      explicitSave: true
     };
 
     $interval(function () {
