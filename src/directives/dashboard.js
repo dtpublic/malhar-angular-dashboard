@@ -56,30 +56,29 @@ angular.module('ui.dashboard')
 
         /**
          * Instantiates a new widget on the dashboard
-         * @param {Object} widgetDef The definition object of the widget
+         * @param {Object} widgetToInstantiate The definition object of the widget to be instantiated
          */
-        scope.addWidget = function (widgetDef) {
-          var wDef = scope.widgetDefs.getByName(widgetDef.name);
-          if (!wDef) {
-            throw 'Widget ' + widgetDef.name + ' is not found.';
+        scope.addWidget = function (widgetToInstantiate) {
+          var defaultWidgetDefinition = scope.widgetDefs.getByName(widgetToInstantiate.name);
+          if (!defaultWidgetDefinition) {
+            throw 'Widget ' + widgetToInstantiate.name + ' is not found.';
           }
 
+          // Determine the title for the new widget
           var title;
-          if (widgetDef.title) {
-            title = widgetDef.title;
-          } else if (wDef.title) {
-            title = wDef.title;
+          if (widgetToInstantiate.title) {
+            title = widgetToInstantiate.title;
+          } else if (defaultWidgetDefinition.title) {
+            title = defaultWidgetDefinition.title;
           } else {
             title = 'Widget ' + count++;
           }
 
-          var w = angular.copy(wDef);
-          angular.extend(w, widgetDef);
-          if (wDef.hasOwnProperty('dataModelOptions')) {
-            angular.extend(w.dataModelOptions, wDef.dataModelOptions);
-          }
+          // Deep extend a new object for instantiation
+          widgetToInstantiate = jQuery.extend(true, {}, defaultWidgetDefinition, widgetToInstantiate);
 
-          var widget = new WidgetModel(w, {
+          // Instantiation
+          var widget = new WidgetModel(widgetToInstantiate, {
             title: title
           });
 
