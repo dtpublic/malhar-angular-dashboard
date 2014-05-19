@@ -205,6 +205,7 @@ angular.module('ui.dashboard')
          */
         scope.resetWidgetsToDefault = function () {
           scope.loadWidgets(scope.defaultWidgets);
+          scope.saveDashboard();
         };
 
         // Set default widgets array
