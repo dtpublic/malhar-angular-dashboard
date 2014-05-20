@@ -108,10 +108,13 @@ angular.module('app', [
   .factory('LayoutStorage', function() {
 
     function LayoutStorage(options) {
+
+      angular.extend(options, { stringifyStorage: true }, options);
+
       this.id = options.storageId;
       this.storage = options.storage;
       this.storageHash = options.storageHash;
-
+      this.stringify = options.stringifyStorage;
       this.widgetDefinitions = options.widgetDefinitions;
       this.layouts = [];
       this.defaultLayouts = options.defaultLayouts;
@@ -135,6 +138,8 @@ angular.module('app', [
           layout.dashboard.storageId = layout.id = self.layouts.length + 1;
           layout.dashboard.widgetDefinitions = self.widgetDefinitions;
           layout.dashboard.stringifyStorage = false;
+          console.log('layout.dashboard.stringifyStorage', layout.dashboard.stringifyStorage );
+          console.log('layout', layout);
           self.layouts.push(layout);
         });
       },
@@ -146,7 +151,11 @@ angular.module('app', [
           storageHash: this.storageHash || ''
         };
 
-        this.storage.setItem(this.id, JSON.stringify(state));
+        if (this.stringify) {
+          state = JSON.stringify(state);
+        }
+
+        this.storage.setItem(this.id, state);
 
       },
 
@@ -172,15 +181,30 @@ angular.module('app', [
       },
 
       _handleSyncLoad: function(serialized) {
-        try {
+        
+        if (this.stringify) {
+          try {
 
-          var deserialized = JSON.parse(serialized);
+            var deserialized = JSON.parse(serialized);
 
-        } catch (e) {
+          } catch (e) {
 
+            this.add(this.defaultLayouts);
+            return;
+          }
+        } else {
 
+          deserialized = serialized;
 
         }
+
+        if (this.storageHash !== deserialized.storageHash) {
+          this.add(this.defaultLayouts);
+          return;
+        }
+
+        this.add(deserialized.layouts);
+
       },
 
       _handleAsyncLoad: function(promise) {
@@ -194,10 +218,13 @@ angular.module('app', [
       },
 
       setItem: function(id, value) {
-        
+        console.log('setItem');
+        console.log('id: ', id, 'value: ', value);
+        console.log('typeof value', typeof value);
       },
       getItem: function(id) {
-
+        console.log('getItem');
+        console.log('id: ', id);
       },
       removeItem: function(id) {
 
