@@ -44,7 +44,8 @@ angular.module('ui.dashboard')
         scope.options = scope.$eval(attrs.dashboard);
 
         // from dashboard="options"
-        angular.extend(scope.options, defaults, scope.options);
+        angular.extend(defaults, scope.options);
+        angular.extend(scope.options, defaults);
 
         // Save default widget config for reset
         scope.defaultWidgets = scope.options.defaultWidgets;
