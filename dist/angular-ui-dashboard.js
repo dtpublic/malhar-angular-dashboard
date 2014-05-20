@@ -24,8 +24,8 @@ angular.module('ui.dashboard')
       restrict: 'A',
       templateUrl: 'template/dashboard.html',
       scope: true,
-      controller: function ($scope) {
 
+      controller: ['$scope',function ($scope) {
         $scope.sortableOptions = {
           stop: function () {
             $scope.saveDashboard();
@@ -33,7 +33,7 @@ angular.module('ui.dashboard')
           handle: '.widget-header'
         };
         
-      },
+      }],
       link: function (scope, element, attrs) {
         // Extract options the dashboard="" attribute
         scope.options = scope.$eval(attrs.dashboard);
@@ -642,7 +642,7 @@ angular.module('ui.dashboard')
 'use strict';
 
 angular.module('ui.dashboard')
-  .controller('DashboardWidgetCtrl', function($scope, $element, $compile, $window, $timeout) {
+  .controller('DashboardWidgetCtrl', ['$scope', '$element', '$compile', '$window', '$timeout', function($scope, $element, $compile, $window, $timeout) {
 
     // Fills "container" with compiled view
     $scope.makeTemplateString = function() {
@@ -786,7 +786,7 @@ angular.module('ui.dashboard')
       // widget placeholder is the first (and only) child of .widget-content
       return element.find('.widget-content');
     };
-  });
+  }]);
 /*
  * Copyright (c) 2014 DataTorrent, Inc. ALL Rights Reserved.
  *
@@ -806,7 +806,7 @@ angular.module('ui.dashboard')
 'use strict';
 
 angular.module('ui.dashboard')
-  .controller('WidgetDialogCtrl', function ($scope, $modalInstance, widget, optionsTemplateUrl) {
+  .controller('WidgetDialogCtrl', ['$scope', '$modalInstance', 'widget', 'optionsTemplateUrl', function ($scope, $modalInstance, widget, optionsTemplateUrl) {
     // add widget to scope
     $scope.widget = widget;
 
@@ -825,7 +825,7 @@ angular.module('ui.dashboard')
     $scope.cancel = function () {
       $modalInstance.dismiss('cancel');
     };
-  });
+  }]);
 angular.module("ui.dashboard").run(["$templateCache", function($templateCache) {
 
   $templateCache.put("template/dashboard.html",
