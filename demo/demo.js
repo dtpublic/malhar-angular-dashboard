@@ -134,6 +134,7 @@ angular.module('app', [
           layout.dashboard.storage = self;
           layout.dashboard.storageId = layout.id = self.layouts.length + 1;
           layout.dashboard.widgetDefinitions = self.widgetDefinitions;
+          layout.dashboard.stringifyStorage = false;
           self.layouts.push(layout);
         });
       },
