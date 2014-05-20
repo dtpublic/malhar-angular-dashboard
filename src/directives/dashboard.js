@@ -24,8 +24,8 @@ angular.module('ui.dashboard')
       restrict: 'A',
       templateUrl: 'template/dashboard.html',
       scope: true,
-      controller: function ($scope) {
 
+      controller: ['$scope',function ($scope) {
         $scope.sortableOptions = {
           stop: function () {
             $scope.saveDashboard();
@@ -33,7 +33,7 @@ angular.module('ui.dashboard')
           handle: '.widget-header'
         };
         
-      },
+      }],
       link: function (scope, element, attrs) {
         // Extract options the dashboard="" attribute
         scope.options = scope.$eval(attrs.dashboard);
