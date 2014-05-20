@@ -849,6 +849,27 @@ angular.module('ui.dashboard')
   }]);
 angular.module("ui.dashboard").run(["$templateCache", function($templateCache) {
 
+  $templateCache.put("template/dashboard-layouts.html",
+    "<ul class=\"nav nav-tabs layout-tabs\">\n" +
+    "    <li ng-repeat=\"layout in layouts\" ng-class=\"{ active: layout.active }\">\n" +
+    "        <a ng-click=\"makeLayoutActive(layout)\">\n" +
+    "            <span ng-dblclick=\"editTitle(layout)\" ng-show=\"!layout.editingTitle\">{{layout.title}}</span>\n" +
+    "            <form action=\"\" class=\"layout-title\" ng-show=\"layout.editingTitle\" ng-submit=\"saveTitleEdit(layout)\">\n" +
+    "                <input type=\"text\" ng-model=\"layout.title\" class=\"form-control\" data-layout=\"{{layout.id}}\">\n" +
+    "            </form>\n" +
+    "            <!-- <span class=\"glyphicon glyphicon-pencil\"></span> -->\n" +
+    "            <!-- <span class=\"glyphicon glyphicon-remove\"></span> -->\n" +
+    "        </a>\n" +
+    "    </li>\n" +
+    "    <li>\n" +
+    "        <a ng-click=\"createNewLayout()\">\n" +
+    "            <span class=\"glyphicon glyphicon-plus\"></span>\n" +
+    "        </a>\n" +
+    "    </li>\n" +
+    "</ul>\n" +
+    "<div ng-repeat=\"layout in layouts | filter:isActive\" dashboard=\"layout.dashboard\"></div>"
+  );
+
   $templateCache.put("template/dashboard.html",
     "<div>\n" +
     "    <div class=\"btn-toolbar\" ng-if=\"!options.hideToolbar\">\n" +

@@ -161,7 +161,7 @@ angular.module('app', [
         var result = [];
         angular.forEach(this.layouts, function(l) {
           result.push({
-            name: l.name,
+            title: l.title,
             id: l.id,
             active: l.active
           });
@@ -192,10 +192,12 @@ angular.module('app', [
 
       _handleSyncLoad: function(serialized) {
         
+        var deserialized;
+
         if (this.stringify) {
           try {
 
-            var deserialized = JSON.parse(serialized);
+            deserialized = JSON.parse(serialized);
 
           } catch (e) {
 
@@ -223,7 +225,7 @@ angular.module('app', [
           function() {
             self.add(self.defaultLayouts);
           }
-        )
+        );
       },
 
       setItem: function(id, value) {
@@ -239,48 +241,80 @@ angular.module('app', [
         delete this.states[id];
       }
 
-    }
+    };
     return LayoutStorage;
   })
-  .controller('LayoutsDemoCtrl', function($scope, widgetDefinitions, defaultWidgets, LayoutStorage) {
+  .directive('dashboardLayouts', ['LayoutStorage', '$timeout', function(LayoutStorage, $timeout) {
+    return {
+      scope: true,
+      templateUrl: 'template/dashboard-layouts.html',
+      link: function(scope, element, attrs) {
 
-    var layoutStorage = new LayoutStorage({
+        scope.options = scope.$eval(attrs.dashboardLayouts);
+
+        var layoutStorage = new LayoutStorage(scope.options);
+
+        scope.layouts = layoutStorage.layouts;
+
+        scope.createNewLayout = function() {
+          layoutStorage.add({ title: 'Custom', dashboard: { defaultWidgets: [] } });
+        };
+
+        scope.makeLayoutActive = function(layout) {
+          angular.forEach(scope.layouts, function(l) {
+            if (l !== layout) {
+              l.active = false;
+            } else {
+              l.active = true;
+            }
+          });
+          layoutStorage.save();
+        };
+
+        scope.isActive = function(layout) {
+          return !! layout.active;
+        };
+
+        scope.editTitle = function (layout) {
+          var input = element.find('input[data-layout="' + layout.id + '"]');
+          layout.editingTitle = true;
+
+          $timeout(function() {
+            input.focus()[0].setSelectionRange(0, 9999);
+          });
+        };
+
+        // saves whatever is in the title input as the new title
+        scope.saveTitleEdit = function (layout) {
+          layout.editingTitle = false;
+          layoutStorage.save();
+        };
+      }
+    };
+  }])
+  .controller('LayoutsDemoCtrl', function($scope, widgetDefinitions, defaultWidgets, LayoutStorage, $interval) {
+
+    $scope.layoutOptions = {
       storageId: 'demo-layouts',
       storage: localStorage,
-      storageHash: '5s9ctn59',
+      storageHash: 'fs4df4d51',
       widgetDefinitions: widgetDefinitions,
       defaultLayouts: [
-        { name: 'Layout 1', active: true , dashboard: {
+        { title: 'Layout 1', active: true , dashboard: {
           defaultWidgets: defaultWidgets
         }},
-        { name: 'Layout 2', active: false, dashboard: {
+        { title: 'Layout 2', active: false, dashboard: {
           defaultWidgets: defaultWidgets
         } },
-        { name: 'Layout 3', active: false, dashboard: {
+        { title: 'Layout 3', active: false, dashboard: {
           defaultWidgets: defaultWidgets
         } }
       ]
-    });
-
-    $scope.layouts = layoutStorage.layouts;
-
-    $scope.createNewLayout = function() {
-      layoutStorage.add({ name: 'Custom', dashboard: { defaultWidgets: defaultWidgets } });
     };
 
-    $scope.makeLayoutActive = function(layout) {
-      angular.forEach($scope.layouts, function(l) {
-        if (l !== layout) {
-          l.active = false;
-        } else {
-          l.active = true;
-        }
-      })
-    };
-
-    $scope.isActive = function(layout) {
-      return !! layout.active;
-    };
+    $interval(function () {
+      $scope.randomValue = Math.random();
+    }, 500);
 
   })
   .directive('wtTime', function ($interval) {
