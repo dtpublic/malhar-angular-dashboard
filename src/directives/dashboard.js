@@ -32,7 +32,7 @@ angular.module('ui.dashboard')
           },
           handle: '.widget-header'
         };
-        
+
       }],
       link: function (scope, element, attrs) {
         // Extract options the dashboard="" attribute
@@ -40,7 +40,7 @@ angular.module('ui.dashboard')
 
         // Save default widget config for reset
         scope.defaultWidgets = scope.options.defaultWidgets;
-        
+
         //scope.widgetDefs = scope.options.widgetDefinitions;
         scope.widgetDefs = new WidgetDefCollection(scope.options.widgetDefinitions);
         var count = 1;
@@ -208,9 +208,6 @@ angular.module('ui.dashboard')
           scope.saveDashboard();
         };
 
-        // Set default widgets array
-        var savedWidgetDefs = scope.dashboardState.load();
-
         // Success handler
         function handleStateLoad(saved) {
           if (saved && saved.length) {
@@ -220,22 +217,29 @@ angular.module('ui.dashboard')
           }
         }
 
-        if (savedWidgetDefs instanceof Array) {
-          handleStateLoad(savedWidgetDefs);
-        }
-        else if (savedWidgetDefs && typeof savedWidgetDefs === 'object' && typeof savedWidgetDefs.then === 'function') {
-          savedWidgetDefs.then(handleStateLoad, handleStateLoad);
-        }
-        else {
-          handleStateLoad();
-        }
+        scope.loadSavedWidgets = function() {
+        // Set default widgets array
+          var savedWidgetDefs = scope.dashboardState.load();
+
+          if (savedWidgetDefs instanceof Array) {
+            handleStateLoad(savedWidgetDefs);
+          }
+          else if (savedWidgetDefs && typeof savedWidgetDefs === 'object' && typeof savedWidgetDefs.then === 'function') {
+            savedWidgetDefs.then(handleStateLoad, handleStateLoad);
+          }
+          else {
+            handleStateLoad();
+          }
+        };
+
+        scope.loadSavedWidgets();
 
         // expose functionality externally
         // functions are appended to the provided dashboard options
         scope.options.addWidget = scope.addWidget;
         scope.options.loadWidgets = scope.loadWidgets;
         scope.options.saveDashboard = scope.externalSaveDashboard;
-
+        scope.options.loadDashboard = scope.loadSavedWidgets;
 
         // save state
         scope.$on('widgetChanged', function (event) {

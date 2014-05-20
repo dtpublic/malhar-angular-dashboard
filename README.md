@@ -140,7 +140,7 @@ key | type | default value | required | description
  storageHash | String | '' | no | This is used to validate/invalidate loaded state. See the **Persistence** section below.
  explicitSave | Boolean | false | no | The dashboard will not automatically save to storage for every change. Saves must instead be called explicitly using the `saveDashboard` method that is attached to the option event upon initialization.
 
-Upon instantiation, this options object is endowed with a few API methods for use by outside code: `addWidget`, `loadWidgets`, and `saveDashboard`. 
+Upon instantiation, this options object is endowed with a few API methods for use by outside code: `addWidget`, `loadWidgets`, `saveDashboard` and `loadDashboard`. 
 
 ### Widget Definition Objects
 
