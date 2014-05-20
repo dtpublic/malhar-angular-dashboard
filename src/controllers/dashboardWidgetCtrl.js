@@ -17,7 +17,7 @@
 'use strict';
 
 angular.module('ui.dashboard')
-  .controller('DashboardWidgetCtrl', function($scope, $element, $compile, $window, $timeout) {
+  .controller('DashboardWidgetCtrl', ['$scope', '$element', '$compile', '$window', '$timeout', function($scope, $element, $compile, $window, $timeout) {
 
     // Fills "container" with compiled view
     $scope.makeTemplateString = function() {
@@ -161,4 +161,4 @@ angular.module('ui.dashboard')
       // widget placeholder is the first (and only) child of .widget-content
       return element.find('.widget-content');
     };
-  });
+  }]);

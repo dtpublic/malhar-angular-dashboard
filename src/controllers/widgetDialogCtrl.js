@@ -17,7 +17,7 @@
 'use strict';
 
 angular.module('ui.dashboard')
-  .controller('WidgetDialogCtrl', function ($scope, $modalInstance, widget, optionsTemplateUrl) {
+  .controller('WidgetDialogCtrl', ['$scope', '$modalInstance', 'widget', 'optionsTemplateUrl', function ($scope, $modalInstance, widget, optionsTemplateUrl) {
     // add widget to scope
     $scope.widget = widget;
 
@@ -36,4 +36,4 @@ angular.module('ui.dashboard')
     $scope.cancel = function () {
       $modalInstance.dismiss('cancel');
     };
-  });
+  }]);
