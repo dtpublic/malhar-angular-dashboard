@@ -113,13 +113,13 @@ angular.module('app', [
 
       this.id = options.storageId;
       this.storage = options.storage;
-      this.storageHash = options.storageHash;
+      this.storageHash = options.storageHash || '';
       this.stringify = options.stringifyStorage;
       this.widgetDefinitions = options.widgetDefinitions;
-      this.layouts = [];
       this.defaultLayouts = options.defaultLayouts;
       
-
+      this.layouts = [];
+      this.states = {};
       this.load();
     }
 
@@ -138,8 +138,6 @@ angular.module('app', [
           layout.dashboard.storageId = layout.id = self.layouts.length + 1;
           layout.dashboard.widgetDefinitions = self.widgetDefinitions;
           layout.dashboard.stringifyStorage = false;
-          console.log('layout.dashboard.stringifyStorage', layout.dashboard.stringifyStorage );
-          console.log('layout', layout);
           self.layouts.push(layout);
         });
       },
@@ -147,8 +145,9 @@ angular.module('app', [
       save: function() {
 
         var state = {
-          layouts: this.layouts,
-          storageHash: this.storageHash || ''
+          layouts: this._serializeLayouts(),
+          states: this.states,
+          storageHash: this.storageHash
         };
 
         if (this.stringify) {
@@ -156,7 +155,18 @@ angular.module('app', [
         }
 
         this.storage.setItem(this.id, state);
+      },
 
+      _serializeLayouts: function() {
+        var result = [];
+        angular.forEach(this.layouts, function(l) {
+          result.push({
+            name: l.name,
+            id: l.id,
+            active: l.active
+          });
+        });
+        return result;
       },
 
       load: function() {
@@ -167,10 +177,10 @@ angular.module('app', [
           
           // check for promise
           if (typeof serialized === 'object' && typeof serialized.then === 'function') {
-            _handleAsyncLoad(serialized);
+            this._handleAsyncLoad(serialized);
           }
            else {
-            _handleSyncLoad(serialized);
+            this._handleSyncLoad(serialized);
           }
 
         }
@@ -202,9 +212,8 @@ angular.module('app', [
           this.add(this.defaultLayouts);
           return;
         }
-
+        this.states = deserialized.states;
         this.add(deserialized.layouts);
-
       },
 
       _handleAsyncLoad: function(promise) {
@@ -218,16 +227,16 @@ angular.module('app', [
       },
 
       setItem: function(id, value) {
-        console.log('setItem');
-        console.log('id: ', id, 'value: ', value);
-        console.log('typeof value', typeof value);
+        this.states[id] = value;
+        this.save();
       },
-      getItem: function(id) {
-        console.log('getItem');
-        console.log('id: ', id);
-      },
-      removeItem: function(id) {
 
+      getItem: function(id) {
+        return this.states[id];
+      },
+
+      removeItem: function(id) {
+        delete this.states[id];
       }
 
     }
@@ -238,7 +247,7 @@ angular.module('app', [
     var layoutStorage = new LayoutStorage({
       storageId: 'demo-layouts',
       storage: localStorage,
-      storageHash: '92u2n9jn9',
+      storageHash: '5s9ctn59',
       widgetDefinitions: widgetDefinitions,
       defaultLayouts: [
         { name: 'Layout 1', active: true , dashboard: {
