@@ -80,6 +80,18 @@ describe('Directive: dashboard', function () {
     expect(spanWidget.html()).toEqual('10');
   });
 
+  it('should fill options with defaults', function() {
+    expect($rootScope.dashboardOptions.stringifyStorage).toEqual(true);
+  });
+
+  it('should not overwrite specified options with defaults', inject(function($compile) {
+    $rootScope.dashboardOptions.stringifyStorage = false;
+    element = $compile('<div dashboard="dashboardOptions"></div>')($rootScope);
+    $compile(element)($rootScope);
+    $rootScope.$digest();
+    expect($rootScope.dashboardOptions.stringifyStorage).toEqual(false);
+  }));
+
   describe('the addWidget function', function() {
 
     var widgetCreated, widgetPassed, widgetDefault;
