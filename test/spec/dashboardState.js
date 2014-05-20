@@ -8,6 +8,7 @@ describe('Factory: DashboardState', function () {
     DashboardState,
     state,
     state_no_storage,
+    state_no_stringify,
     storage,
     id,
     hash,
@@ -57,8 +58,9 @@ describe('Factory: DashboardState', function () {
         }
     };
 
-    state = new DashboardState(storage, id, hash, widgetDefinitions);
-    state_no_storage = new DashboardState(undefined, undefined, undefined, widgetDefinitions);
+    state = new DashboardState(storage, id, hash, widgetDefinitions, true);
+    state_no_storage = new DashboardState(undefined, undefined, undefined, widgetDefinitions, true);
+    state_no_stringify = new DashboardState(storage, id, hash, widgetDefinitions, false);
 
   }));
 
@@ -93,6 +95,18 @@ describe('Factory: DashboardState', function () {
       expect(storage.setItem).toHaveBeenCalledWith(id, JSON.stringify({widgets: widgets, hash: hash}));
     });
 
+    it('should not use JSON.stringify if options.stringifyStorage is false', function() {
+      spyOn(storage, 'setItem');
+      var widgets = [
+        { title: 'widget1', name: 'Widget1', style: { width: '50%' }, dataModelOptions: { foo: 'bar' }, storageHash: '123', attrs: { bar: 'baz' } },
+        { title: 'widget2', name: 'Widget2', style: { width: '50%' }, dataModelOptions: { foo: 'bar' }, storageHash: '123'},
+        { title: 'widget3', name: 'Widget3', style: { width: '100%' }, attrs: { bar: 'baz' } },
+        { title: 'widget4', name: 'Widget3', dataModelOptions: { foo: 'baz' }, storageHash: '123' }
+      ];
+      state_no_stringify.save(widgets);
+      expect(typeof storage.setItem.calls.argsFor(0)[1]).toEqual('object');
+    });
+
   });
 
   describe('the load function', function() {
@@ -122,13 +136,6 @@ describe('Factory: DashboardState', function () {
       var res = state.load();
       expect(res).toEqual(null);
       expect($log.warn).toHaveBeenCalled();
-    });
-
-    it('should return an array of widgets if getItem returns valid serialized dashboard state', function() {
-      spyOn(storage, 'getItem').and.returnValue(JSON.stringify(serialized));
-      var res = state.load();
-      expect(res instanceof Array).toEqual(true);
-      expect(res).toEqual(serialized.widgets);
     });
 
     it('should return an array of widgets if getItem returns valid serialized dashboard state', function() {
@@ -248,6 +255,38 @@ describe('Factory: DashboardState', function () {
         expect(failed).toEqual(true);
       });
 
+    });
+
+    it('should use JSON.parse if options.stringifyStorage is true', function() {
+      var parse = JSON.parse;
+      spyOn(JSON, 'parse').and.callFake(parse);
+      spyOn(storage, 'getItem').and.returnValue(JSON.stringify(serialized));
+      spyOn(widgetDefinitions, 'getByName').and.callFake(function(name) {
+        if (name === 'W3') {
+          return { name: 'W3', storageHash: 'else' };
+        } else {
+          return { name: name };
+        }
+      });
+
+      var res = state.load();
+      expect(JSON.parse).toHaveBeenCalled();
+    });
+
+    it('should not use JSON.parse if options.stringifyStorage is false', function() {
+      var parse = JSON.parse;
+      spyOn(JSON, 'parse').and.callFake(parse);
+      spyOn(storage, 'getItem').and.returnValue(serialized);
+      spyOn(widgetDefinitions, 'getByName').and.callFake(function(name) {
+        if (name === 'W3') {
+          return { name: 'W3', storageHash: 'else' };
+        } else {
+          return { name: name };
+        }
+      });
+
+      var res = state_no_stringify.load();
+      expect(JSON.parse).not.toHaveBeenCalled();
     });
 
   });

@@ -138,6 +138,7 @@ key | type | default value | required | description
  storage   | Object | null | no | If defined, this object should implement three methods: `setItem`, `getItem`, and `removeItem`. See the **Persistence** section below.
  storageId | String | null | no (yes if `storage` is defined) | This is used as the first parameter passed to the three `storage` methods above. See the **Persistence** section below.
  storageHash | String | '' | no | This is used to validate/invalidate loaded state. See the **Persistence** section below.
+ stringifyStorage | Boolean | true | no | If set to true, the dashboard state will be converted to a JSON string before being passed to `storage.setItem`. Likewise, it will be passed through JSON.parse after being retrieved from `storage.getItem`. See the **Persistence** section below.
  explicitSave | Boolean | false | no | The dashboard will not automatically save to storage for every change. Saves must instead be called explicitly using the `saveDashboard` method that is attached to the option event upon initialization.
 
 Upon instantiation, this options object is endowed with a few API methods for use by outside code: `addWidget`, `loadWidgets`, and `saveDashboard`. 
@@ -236,6 +237,9 @@ This string will be used as the `key` argument in the three methods on the `stor
 
 ### `storageHash` (String)
 This string will be stored along with the dashboard state. Then later, when state is loaded, the loaded value will be compared to the value passed to `dashboardOptions`. If the values are different, the item in storage will be assumed to be invalid and `removeItem` will be called to clear it out. This is so that if you as the developer makes changes that are not backwards compatible with previous dashboard configurations, you can simply change the `storageHash` and not have to worry about strange behavior due to stale dashboard state. **This is optional but is highly recommended.**
+
+### `stringifyStorage` (Boolean)
+By default (`stringifyStorage=true`), the dashboard will convert its state (a JavaScript Object) to a string using `JSON.stringify` before passing it to `storage.setItem`. Additionally, the dashboard will assume that `storage.getItem` will return a JSON string and try to parse it with `JSON.parse`. This works with `window.localStorage` nicely, since objects cannot be used as `value` in `localStorage.setItem(key, value)`. However, if you are implementing your own `storage` and would not like this stringification business, set `stringifyStorage` to `false`.
 
 Links
 -----
