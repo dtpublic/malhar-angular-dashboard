@@ -1,0 +1,15 @@
+<ul class="nav nav-tabs layout-tabs">
+    <li ng-repeat="layout in layouts" ng-class="{ active: layout.active }">
+        <a>
+            <span ng-click="makeLayoutActive(layout)">{{layout.name}}</span>
+            <!-- <span class="glyphicon glyphicon-pencil"></span> -->
+            <!-- <span class="glyphicon glyphicon-remove"></span> -->
+        </a>
+    </li>
+    <li>
+        <a ng-click="createNewLayout()">
+            <span class="glyphicon glyphicon-plus"></span>
+        </a>
+    </li>
+</ul>
+<div ng-repeat="layout in layouts | filter:isActive" dashboard="layout.dashboard"></div>

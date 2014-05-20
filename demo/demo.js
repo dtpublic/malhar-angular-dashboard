@@ -30,6 +30,10 @@ angular.module('app', [
         templateUrl: 'view.html',
         controller: 'ExplicitSaveDemoCtrl'
       })
+      .when('/layouts', {
+        templateUrl: 'layouts.html',
+        controller: 'LayoutsDemoCtrl'
+      })
       .otherwise({
         redirectTo: '/'
       });
@@ -100,6 +104,147 @@ angular.module('app', [
     $interval(function () {
       $scope.randomValue = Math.random();
     }, 500);
+  })
+  .factory('LayoutStorage', function() {
+
+    function LayoutStorage(options) {
+      this.id = options.storageId;
+      this.storage = options.storage;
+      this.storageHash = options.storageHash;
+
+      this.widgetDefinitions = options.widgetDefinitions;
+      this.layouts = [];
+      this.defaultLayouts = options.defaultLayouts;
+      
+
+      this.load();
+    }
+
+    LayoutStorage.prototype = {
+
+      add: function(layouts) {
+        if ( !(layouts instanceof Array) ) {
+          layouts = [layouts];
+        }
+
+        var self = this;
+
+        angular.forEach(layouts, function(layout) {
+          layout.dashboard = layout.dashboard || {};
+          layout.dashboard.storage = self;
+          layout.dashboard.storageId = layout.id = self.layouts.length + 1;
+          layout.dashboard.widgetDefinitions = self.widgetDefinitions;
+          self.layouts.push(layout);
+        });
+      },
+
+      save: function() {
+
+        var state = {
+          layouts: this.layouts,
+          storageHash: this.storageHash || ''
+        };
+
+        this.storage.setItem(this.id, JSON.stringify(state));
+
+      },
+
+      load: function() {
+
+        var serialized = this.storage.getItem(this.id);
+
+        if (serialized) {
+          
+          // check for promise
+          if (typeof serialized === 'object' && typeof serialized.then === 'function') {
+            _handleAsyncLoad(serialized);
+          }
+           else {
+            _handleSyncLoad(serialized);
+          }
+
+        }
+
+        else {
+          this.add(this.defaultLayouts);
+        }
+      },
+
+      _handleSyncLoad: function(serialized) {
+        try {
+
+          var deserialized = JSON.parse(serialized);
+
+        } catch (e) {
+
+
+
+        }
+      },
+
+      _handleAsyncLoad: function(promise) {
+        var self = this;
+        promise.then(
+          this._handleSyncLoad,
+          function() {
+            self.add(self.defaultLayouts);
+          }
+        )
+      },
+
+      setItem: function(id, value) {
+        
+      },
+      getItem: function(id) {
+
+      },
+      removeItem: function(id) {
+
+      }
+
+    }
+    return LayoutStorage;
+  })
+  .controller('LayoutsDemoCtrl', function($scope, widgetDefinitions, defaultWidgets, LayoutStorage) {
+
+    var layoutStorage = new LayoutStorage({
+      storageId: 'demo-layouts',
+      storage: localStorage,
+      storageHash: '92u2n9jn9',
+      widgetDefinitions: widgetDefinitions,
+      defaultLayouts: [
+        { name: 'Layout 1', active: true , dashboard: {
+          defaultWidgets: defaultWidgets
+        }},
+        { name: 'Layout 2', active: false, dashboard: {
+          defaultWidgets: defaultWidgets
+        } },
+        { name: 'Layout 3', active: false, dashboard: {
+          defaultWidgets: defaultWidgets
+        } }
+      ]
+    });
+
+    $scope.layouts = layoutStorage.layouts;
+
+    $scope.createNewLayout = function() {
+      layoutStorage.add({ name: 'Custom', dashboard: { defaultWidgets: defaultWidgets } });
+    };
+
+    $scope.makeLayoutActive = function(layout) {
+      angular.forEach($scope.layouts, function(l) {
+        if (l !== layout) {
+          l.active = false;
+        } else {
+          l.active = true;
+        }
+      })
+    };
+
+    $scope.isActive = function(layout) {
+      return !! layout.active;
+    };
+
   })
   .directive('wtTime', function ($interval) {
     return {
