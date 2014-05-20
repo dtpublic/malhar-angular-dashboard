@@ -18,11 +18,12 @@
 
 angular.module('ui.dashboard')
   .factory('DashboardState', ['$log', '$q', function ($log, $q) {
-    function DashboardState(storage, id, hash, widgetDefinitions) {
+    function DashboardState(storage, id, hash, widgetDefinitions, stringify) {
       this.storage = storage;
       this.id = id;
       this.hash = hash;
       this.widgetDefinitions = widgetDefinitions;
+      this.stringify = stringify;
     }
 
     DashboardState.prototype = {
@@ -52,8 +53,13 @@ angular.module('ui.dashboard')
           return widgetObject;
         });
 
-        serialized = JSON.stringify({ widgets: serialized, hash: this.hash });
-        this.storage.setItem(this.id, serialized);
+        var item = { widgets: serialized, hash: this.hash };
+
+        if (this.stringify) {
+          item = JSON.stringify(item);
+        }
+
+        this.storage.setItem(this.id, item);
         return true;
       },
 
@@ -94,16 +100,21 @@ angular.module('ui.dashboard')
           return null;
         }
 
-        try { // to deserialize the string
+        if (this.stringify) {
+          try { // to deserialize the string
 
-          deserialized = JSON.parse(serialized);
+            deserialized = JSON.parse(serialized);
 
-        } catch (e) {
+          } catch (e) {
 
-          // bad JSON, log a warning and return
-          $log.warn('Serialized dashboard state was malformed and could not be parsed: ', serialized);
-          return null;
+            // bad JSON, log a warning and return
+            $log.warn('Serialized dashboard state was malformed and could not be parsed: ', serialized);
+            return null;
 
+          }
+        }
+        else {
+          deserialized = serialized;
         }
 
         // check hash against current hash

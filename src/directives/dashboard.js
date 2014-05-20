@@ -35,8 +35,16 @@ angular.module('ui.dashboard')
         
       },
       link: function (scope, element, attrs) {
-        // Extract options the dashboard="" attribute
+
+        // default options
+        var defaults = {
+          stringifyStorage: true
+        };
+
         scope.options = scope.$eval(attrs.dashboard);
+
+        // from dashboard="options"
+        angular.extend(scope.options, defaults, scope.options);
 
         // Save default widget config for reset
         scope.defaultWidgets = scope.options.defaultWidgets;
@@ -50,7 +58,8 @@ angular.module('ui.dashboard')
           scope.options.storage,
           scope.options.storageId,
           scope.options.storageHash,
-          scope.widgetDefs
+          scope.widgetDefs,
+          scope.options.stringifyStorage
         );
 
         /**
