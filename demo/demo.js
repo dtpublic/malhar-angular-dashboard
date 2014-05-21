@@ -85,7 +85,7 @@ angular.module('app', [
       storage: $window.localStorage,
       storageId: 'demo'
     };
-
+    $scope.randomValue = Math.random();
     $interval(function () {
       $scope.randomValue = Math.random();
     }, 500);
@@ -100,7 +100,7 @@ angular.module('app', [
       storageId: 'explicitSave',
       explicitSave: true
     };
-
+    $scope.randomValue = Math.random();
     $interval(function () {
       $scope.randomValue = Math.random();
     }, 500);
@@ -157,18 +157,6 @@ angular.module('app', [
         this.storage.setItem(this.id, state);
       },
 
-      _serializeLayouts: function() {
-        var result = [];
-        angular.forEach(this.layouts, function(l) {
-          result.push({
-            title: l.title,
-            id: l.id,
-            active: l.active
-          });
-        });
-        return result;
-      },
-
       load: function() {
 
         var serialized = this.storage.getItem(this.id);
@@ -188,6 +176,32 @@ angular.module('app', [
         else {
           this.add(this.defaultLayouts);
         }
+      },
+
+      setItem: function(id, value) {
+        this.states[id] = value;
+        this.save();
+      },
+
+      getItem: function(id) {
+        return this.states[id];
+      },
+
+      removeItem: function(id) {
+        delete this.states[id];
+        this.save();
+      },
+
+      _serializeLayouts: function() {
+        var result = [];
+        angular.forEach(this.layouts, function(l) {
+          result.push({
+            title: l.title,
+            id: l.id,
+            active: l.active
+          });
+        });
+        return result;
       },
 
       _handleSyncLoad: function(serialized) {
@@ -226,19 +240,6 @@ angular.module('app', [
             self.add(self.defaultLayouts);
           }
         );
-      },
-
-      setItem: function(id, value) {
-        this.states[id] = value;
-        this.save();
-      },
-
-      getItem: function(id) {
-        return this.states[id];
-      },
-
-      removeItem: function(id) {
-        delete this.states[id];
       }
 
     };
@@ -311,7 +312,7 @@ angular.module('app', [
         } }
       ]
     };
-
+    $scope.randomValue = Math.random();
     $interval(function () {
       $scope.randomValue = Math.random();
     }, 500);
@@ -327,6 +328,8 @@ angular.module('app', [
         function update() {
           scope.time = new Date().toLocaleTimeString();
         }
+
+        update();
 
         var promise = $interval(update, 500);
 
@@ -353,6 +356,7 @@ angular.module('app', [
     RandomDataModel.prototype = Object.create(WidgetDataModel.prototype);
 
     RandomDataModel.prototype.init = function () {
+      this.updateScope('-');
       this.intervalPromise = $interval(function () {
         var value = Math.floor(Math.random() * 100);
         this.updateScope(value);
