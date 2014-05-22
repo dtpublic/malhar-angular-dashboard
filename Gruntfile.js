@@ -23,6 +23,7 @@ module.exports = function (grunt) {
     concat: {
       dist: {
         src: [
+          'src/directives/dashboard.js',
           'src/directives/*.js',
           'src/models/*.js',
           'src/controllers/*.js',
