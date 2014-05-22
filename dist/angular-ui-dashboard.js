@@ -226,6 +226,8 @@ angular.module('ui.dashboard')
             scope.loadWidgets(saved);
           } else if (scope.defaultWidgets) {
             scope.resetWidgetsToDefault();
+          } else {
+            scope.clear(true);
           }
         }
 
