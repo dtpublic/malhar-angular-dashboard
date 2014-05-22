@@ -141,7 +141,7 @@ key | type | default value | required | description
  stringifyStorage | Boolean | true | no | If set to true, the dashboard state will be converted to a JSON string before being passed to `storage.setItem`. Likewise, it will be passed through JSON.parse after being retrieved from `storage.getItem`. See the **Persistence** section below.
  explicitSave | Boolean | false | no | The dashboard will not automatically save to storage for every change. Saves must instead be called explicitly using the `saveDashboard` method that is attached to the option event upon initialization.
 
-Upon instantiation, this options object is endowed with a few API methods for use by outside code: `addWidget`, `loadWidgets`, and `saveDashboard`. 
+Upon instantiation, this options object is endowed with a few API methods for use by outside code: `addWidget`, `loadWidgets`, `saveDashboard` and `loadDashboard`. 
 
 ### Widget Definition Objects
 

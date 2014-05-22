@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 'use strict';
 
 angular.module('ui.dashboard', ['ui.bootstrap', 'ui.sortable']);
@@ -22,7 +21,7 @@ angular.module('ui.dashboard')
   .directive('dashboard', ['WidgetModel', 'WidgetDefCollection', '$modal', 'DashboardState', function (WidgetModel, WidgetDefCollection, $modal, DashboardState) {
     return {
       restrict: 'A',
-      templateUrl: 'template/dashboard.html',
+      templateUrl: function(element, attr) { return attr.templateUrl ? attr.templateUrl : 'template/dashboard.html'; },
       scope: true,
 
       controller: ['$scope',function ($scope) {
@@ -849,6 +848,55 @@ angular.module('ui.dashboard')
   }]);
 angular.module("ui.dashboard").run(["$templateCache", function($templateCache) {
 
+  $templateCache.put("template/alt-dashboard.html",
+    "<div>\n" +
+    "    <div class=\"btn-toolbar\" ng-if=\"!options.hideToolbar\">\n" +
+    "        <div class=\"btn-group\" ng-if=\"!options.widgetButtons\">\n" +
+    "            <button type=\"button\" class=\"dropdown-toggle btn btn-primary\" data-toggle=\"dropdown\">Add Widget <span\n" +
+    "                    class=\"caret\"></span></button>\n" +
+    "            <ul class=\"dropdown-menu\" role=\"menu\">\n" +
+    "                <li ng-repeat=\"widget in widgetDefs\">\n" +
+    "                    <a href=\"#\" ng-click=\"addWidgetInternal($event, widget);\"><span class=\"label label-primary\">{{widget.name}}</span></a>\n" +
+    "                </li>\n" +
+    "            </ul>\n" +
+    "        </div>\n" +
+    "\n" +
+    "        <div class=\"btn-group\" ng-if=\"options.widgetButtons\">\n" +
+    "            <button ng-repeat=\"widget in widgetDefs\"\n" +
+    "                    ng-click=\"addWidgetInternal($event, widget);\" type=\"button\" class=\"btn btn-primary\">\n" +
+    "                {{widget.name}}\n" +
+    "            </button>\n" +
+    "        </div>\n" +
+    "\n" +
+    "        <button class=\"btn btn-warning\" ng-click=\"resetWidgetsToDefault()\">Default Widgets</button>\n" +
+    "\n" +
+    "        <button ng-if=\"options.storage && options.explicitSave\" ng-click=\"options.saveDashboard()\" class=\"btn btn-success\" ng-hide=\"!options.unsavedChangeCount\">{{ !options.unsavedChangeCount ? \"Alternative - No Changes\" : \"Save\" }}</button>\n" +
+    "\n" +
+    "        <button ng-click=\"clear();\" ng-hide=\"!widgets.length\" type=\"button\" class=\"btn btn-info\">Clear</button>\n" +
+    "    </div>\n" +
+    "\n" +
+    "    <div ui-sortable=\"sortableOptions\" ng-model=\"widgets\" class=\"dashboard-widget-area\">\n" +
+    "        <div ng-repeat=\"widget in widgets\" ng-style=\"widget.style\" class=\"widget-container\" widget>\n" +
+    "            <div class=\"widget panel panel-default\">\n" +
+    "                <div class=\"widget-header panel-heading\">\n" +
+    "                    <h3 class=\"panel-title\">\n" +
+    "                        <span class=\"widget-title\" ng-dblclick=\"editTitle(widget)\" ng-hide=\"widget.editingTitle\">{{widget.title}}</span>\n" +
+    "                        <form action=\"\" class=\"widget-title\" ng-show=\"widget.editingTitle\" ng-submit=\"saveTitleEdit(widget)\">\n" +
+    "                            <input type=\"text\" ng-model=\"widget.title\" class=\"form-control\">\n" +
+    "                        </form>\n" +
+    "                        <span class=\"label label-primary\" ng-if=\"!options.hideWidgetName\">{{widget.name}}</span>\n" +
+    "                        <span ng-click=\"removeWidget(widget);\" class=\"glyphicon glyphicon-remove\" ng-if=\"!options.hideWidgetClose\"></span>\n" +
+    "                        <span ng-click=\"openWidgetDialog(widget);\" class=\"glyphicon glyphicon-cog\" ng-if=\"!options.hideWidgetOptions\"></span>\n" +
+    "                    </h3>\n" +
+    "                </div>\n" +
+    "                <div class=\"panel-body widget-content\"></div>\n" +
+    "                <div class=\"widget-ew-resizer\" ng-mousedown=\"grabResizer($event)\"></div>\n" +
+    "            </div>\n" +
+    "        </div>\n" +
+    "    </div>\n" +
+    "</div>\n"
+  );
+
   $templateCache.put("template/dashboard-layouts.html",
     "<ul class=\"nav nav-tabs layout-tabs\">\n" +
     "    <li ng-repeat=\"layout in layouts\" ng-class=\"{ active: layout.active }\">\n" +
@@ -920,7 +968,7 @@ angular.module("ui.dashboard").run(["$templateCache", function($templateCache) {
   );
 
   $templateCache.put("template/widget-default-content.html",
-    "No edit template specified for this widget ({{widget.name}})."
+    ""
   );
 
   $templateCache.put("template/widget-template.html",

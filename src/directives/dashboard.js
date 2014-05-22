@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 'use strict';
 
 angular.module('ui.dashboard', ['ui.bootstrap', 'ui.sortable']);
@@ -22,7 +21,7 @@ angular.module('ui.dashboard')
   .directive('dashboard', ['WidgetModel', 'WidgetDefCollection', '$modal', 'DashboardState', function (WidgetModel, WidgetDefCollection, $modal, DashboardState) {
     return {
       restrict: 'A',
-      templateUrl: 'template/dashboard.html',
+      templateUrl: function(element, attr) { return attr.templateUrl ? attr.templateUrl : 'template/dashboard.html'; },
       scope: true,
 
       controller: ['$scope',function ($scope) {
