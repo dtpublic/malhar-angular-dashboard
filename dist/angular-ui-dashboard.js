@@ -947,7 +947,7 @@ angular.module("ui.dashboard").run(["$templateCache", function($templateCache) {
   );
 
   $templateCache.put("template/widget-default-content.html",
-    "No edit template specified for this widget ({{widget.name}})."
+    ""
   );
 
   $templateCache.put("template/widget-template.html",
