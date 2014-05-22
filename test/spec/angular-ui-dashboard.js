@@ -50,7 +50,6 @@ describe('Directive: dashboard', function () {
     $rootScope.value = 10;
 
     element = $compile('<div dashboard="dashboardOptions"></div>')($rootScope);
-    $compile(element)($rootScope);
     $rootScope.$digest();
     childScope = element.scope();
   }));
@@ -112,6 +111,14 @@ describe('Directive: dashboard', function () {
     var customElement = $compile('<div dashboard="dashboardOptions" template-url="myCustomTemplate.html"></div>')($rootScope);
     $rootScope.$digest();
     expect(customElement.find('.custom-widget').length).toEqual(2);
+  }));
+
+  it('should set scope.widgets to an empty array if no defaultWidgets are specified', inject(function($compile) {
+    delete $rootScope.dashboardOptions.defaultWidgets;
+    var element2 = $compile('<div dashboard="dashboardOptions"></div>')($rootScope);
+    $rootScope.$digest();
+    var childScope2 = element2.scope();
+    expect(childScope2.widgets instanceof Array).toEqual(true);
   }));
 
   describe('the addWidget function', function() {
