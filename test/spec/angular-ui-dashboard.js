@@ -92,6 +92,28 @@ describe('Directive: dashboard', function () {
     expect($rootScope.dashboardOptions.stringifyStorage).toEqual(false);
   }));
 
+  it('should be able to use a different dashboard template', inject(function($compile, $templateCache) {
+    $templateCache.put(
+      'myCustomTemplate.html',
+        '<div>' +
+        '<div ui-sortable="sortableOptions" ng-model="widgets">' +
+        '<div ng-repeat="widget in widgets" ng-style="widget.style" class="widget-container custom-widget" widget>' +
+        '<h3 class="widget-header">' +
+        '{{widget.title}}' +
+        '<span ng-click="removeWidget(widget);" class="glyphicon glyphicon-remove" ng-if="!options.hideWidgetClose"></span>' +
+        '<span ng-click="openWidgetDialog(widget);" class="glyphicon glyphicon-cog" ng-if="!options.hideWidgetOptions"></span>' +
+        '</h3>' +
+        '<div class="widget-content"></div>' +
+        '<div class="widget-ew-resizer" ng-mousedown="grabResizer($event)"></div>' +
+        '</div>' +
+        '</div>' +
+        '</div>'
+    );
+    var customElement = $compile('<div dashboard="dashboardOptions" template-url="myCustomTemplate.html"></div>')($rootScope);
+    $rootScope.$digest();
+    expect(customElement.find('.custom-widget').length).toEqual(2);
+  }));
+
   describe('the addWidget function', function() {
 
     var widgetCreated, widgetPassed, widgetDefault;

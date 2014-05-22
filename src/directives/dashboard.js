@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+'use strict';
 
 angular.module('ui.dashboard', ['ui.bootstrap', 'ui.sortable']);
 
@@ -21,7 +21,7 @@ angular.module('ui.dashboard')
   .directive('dashboard', ['WidgetModel', 'WidgetDefCollection', '$modal', 'DashboardState', function (WidgetModel, WidgetDefCollection, $modal, DashboardState) {
     return {
       restrict: 'A',
-      templateUrl: function(element, attr) { return attr.templateUrl ? attr.templateUrl : 'template/dashboard.html' },
+      templateUrl: function(element, attr) { return attr.templateUrl ? attr.templateUrl : 'template/dashboard.html'; },
       scope: true,
 
       controller: ['$scope',function ($scope) {
@@ -31,7 +31,7 @@ angular.module('ui.dashboard')
           },
           handle: '.widget-header'
         };
-
+        
       }],
       link: function (scope, element, attrs) {
 
@@ -48,7 +48,7 @@ angular.module('ui.dashboard')
 
         // Save default widget config for reset
         scope.defaultWidgets = scope.options.defaultWidgets;
-
+        
         //scope.widgetDefs = scope.options.widgetDefinitions;
         scope.widgetDefs = new WidgetDefCollection(scope.options.widgetDefinitions);
         var count = 1;
@@ -217,6 +217,9 @@ angular.module('ui.dashboard')
           scope.saveDashboard();
         };
 
+        // Set default widgets array
+        var savedWidgetDefs = scope.dashboardState.load();
+
         // Success handler
         function handleStateLoad(saved) {
           if (saved && saved.length) {
@@ -226,29 +229,22 @@ angular.module('ui.dashboard')
           }
         }
 
-        scope.loadSavedWidgets = function() {
-        // Set default widgets array
-          var savedWidgetDefs = scope.dashboardState.load();
-
-          if (savedWidgetDefs instanceof Array) {
-            handleStateLoad(savedWidgetDefs);
-          }
-          else if (savedWidgetDefs && typeof savedWidgetDefs === 'object' && typeof savedWidgetDefs.then === 'function') {
-            savedWidgetDefs.then(handleStateLoad, handleStateLoad);
-          }
-          else {
-            handleStateLoad();
-          }
-        };
-
-        scope.loadSavedWidgets();
+        if (savedWidgetDefs instanceof Array) {
+          handleStateLoad(savedWidgetDefs);
+        }
+        else if (savedWidgetDefs && typeof savedWidgetDefs === 'object' && typeof savedWidgetDefs.then === 'function') {
+          savedWidgetDefs.then(handleStateLoad, handleStateLoad);
+        }
+        else {
+          handleStateLoad();
+        }
 
         // expose functionality externally
         // functions are appended to the provided dashboard options
         scope.options.addWidget = scope.addWidget;
         scope.options.loadWidgets = scope.loadWidgets;
         scope.options.saveDashboard = scope.externalSaveDashboard;
-        scope.options.loadDashboard = scope.loadSavedWidgets;
+
 
         // save state
         scope.$on('widgetChanged', function (event) {
