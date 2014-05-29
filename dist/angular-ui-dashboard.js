@@ -294,6 +294,11 @@ angular.module('ui.dashboard')
           layoutStorage.save();
         };
 
+        scope.removeLayout = function(layout) {
+          layoutStorage.remove(layout);
+          layoutStorage.save();
+        };
+
         scope.makeLayoutActive = function(layout) {
 
           var current = layoutStorage.getActiveLayout();
@@ -451,6 +456,10 @@ angular.module('ui.dashboard')
 
       angular.extend(options, { stringifyStorage: true }, options);
 
+      if (!options.storage || typeof options.storage !== 'object') {
+        throw new TypeError('The "storage" object in options is required.');
+      }
+
       this.id = options.storageId;
       this.storage = options.storage;
       this.storageHash = options.storageHash || '';
@@ -487,6 +496,10 @@ angular.module('ui.dashboard')
           layout.dashboard.explicitSave = self.explicitSave;
           self.layouts.push(layout);
         });
+      },
+
+      remove: function() {
+
       },
 
       save: function(force) {
@@ -1247,6 +1260,7 @@ angular.module("ui.dashboard").run(["$templateCache", function($templateCache) {
     "            <form action=\"\" class=\"layout-title\" ng-show=\"layout.editingTitle\" ng-submit=\"saveTitleEdit(layout)\">\n" +
     "                <input type=\"text\" ng-model=\"layout.title\" class=\"form-control\" data-layout=\"{{layout.id}}\">\n" +
     "            </form>\n" +
+    "            <span ng-click=\"removeLayout(layout)\" class=\"glyphicon glyphicon-remove\"></span>\n" +
     "            <!-- <span class=\"glyphicon glyphicon-pencil\"></span> -->\n" +
     "            <!-- <span class=\"glyphicon glyphicon-remove\"></span> -->\n" +
     "        </a>\n" +

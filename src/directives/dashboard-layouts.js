@@ -34,6 +34,11 @@ angular.module('ui.dashboard')
           layoutStorage.save();
         };
 
+        scope.removeLayout = function(layout) {
+          layoutStorage.remove(layout);
+          layoutStorage.save();
+        };
+
         scope.makeLayoutActive = function(layout) {
 
           var current = layoutStorage.getActiveLayout();

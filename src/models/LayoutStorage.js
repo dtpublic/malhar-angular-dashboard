@@ -23,6 +23,10 @@ angular.module('ui.dashboard')
 
       angular.extend(options, { stringifyStorage: true }, options);
 
+      if (!options.storage || typeof options.storage !== 'object') {
+        throw new TypeError('The "storage" object in options is required.');
+      }
+
       this.id = options.storageId;
       this.storage = options.storage;
       this.storageHash = options.storageHash || '';
@@ -59,6 +63,10 @@ angular.module('ui.dashboard')
           layout.dashboard.explicitSave = self.explicitSave;
           self.layouts.push(layout);
         });
+      },
+
+      remove: function() {
+
       },
 
       save: function(force) {
