@@ -121,6 +121,10 @@ describe('Directive: dashboard', function () {
     expect(childScope2.widgets instanceof Array).toEqual(true);
   }));
 
+  it('should set options.unsavedChangeCount to 0 upon load', function() {
+    expect($rootScope.dashboardOptions.unsavedChangeCount).toEqual(0);
+  });
+
   describe('the addWidget function', function() {
 
     var widgetCreated, widgetPassed, widgetDefault;

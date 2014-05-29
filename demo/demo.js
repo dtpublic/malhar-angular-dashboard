@@ -34,6 +34,10 @@ angular.module('app', [
         templateUrl: 'layouts.html',
         controller: 'LayoutsDemoCtrl'
       })
+      .when('/layouts/explicit-saving', {
+        templateUrl: 'layouts.html',
+        controller: 'LayoutsDemoExplicitSaveCtrl'
+      })
       .otherwise({
         redirectTo: '/'
       });
@@ -113,15 +117,29 @@ angular.module('app', [
       storageHash: 'fs4df4d51',
       widgetDefinitions: widgetDefinitions,
       defaultLayouts: [
-        { title: 'Layout 1', active: true , dashboard: {
-          defaultWidgets: defaultWidgets
-        }},
-        { title: 'Layout 2', active: false, dashboard: {
-          defaultWidgets: defaultWidgets
-        } },
-        { title: 'Layout 3', active: false, dashboard: {
-          defaultWidgets: defaultWidgets
-        } }
+        { title: 'Layout 1', active: true , defaultWidgets: defaultWidgets },
+        { title: 'Layout 2', active: false, defaultWidgets: defaultWidgets },
+        { title: 'Layout 3', active: false, defaultWidgets: defaultWidgets }
+      ]
+    };
+    $scope.randomValue = Math.random();
+    $interval(function () {
+      $scope.randomValue = Math.random();
+    }, 500);
+
+  })
+  .controller('LayoutsDemoExplicitSaveCtrl', function($scope, widgetDefinitions, defaultWidgets, LayoutStorage, $interval) {
+
+    $scope.layoutOptions = {
+      storageId: 'demo-layouts',
+      storage: localStorage,
+      storageHash: 'fs4df4d51',
+      widgetDefinitions: widgetDefinitions,
+      explicitSave: true,
+      defaultLayouts: [
+        { title: 'Layout 1', active: true , defaultWidgets: defaultWidgets },
+        { title: 'Layout 2', active: false, defaultWidgets: defaultWidgets },
+        { title: 'Layout 3', active: false, defaultWidgets: defaultWidgets }
       ]
     };
     $scope.randomValue = Math.random();

@@ -258,15 +258,16 @@ The `layoutOptions` object passed to dashboard-layouts tries to mirror `dashboar
 
 key | type | default value | required | description 
 --- | ---- | ------------- | -------- | -----------
- widgetDefinitions | Array | n/a | yes | Same as in dashboardOptions 
- defaultLayouts    | Array | n/a | yes | List of objects where an object is `{ title: [TITLE_OF_LAYOUT], active: [BOOLEAN_ACTIVE_STATE], dashboard: [dashboardOptions] }`. Note that 
- widgetButtons     | Boolean | true | no | Display buttons for adding and removing widgets. 
- storage   | Object | null | no | If defined, this object should implement three methods: `setItem`, `getItem`, and `removeItem`. See the **Persistence** section below.
- storageId | String | null | no (yes if `storage` is defined) | This is used as the first parameter passed to the three `storage` methods above. See the **Persistence** section below.
- storageHash | String | '' | no | This is used to validate/invalidate loaded state. See the **Persistence** section below.
- stringifyStorage | Boolean | true | no | If set to true, the dashboard state will be converted to a JSON string before being passed to `storage.setItem`. Likewise, it will be passed through JSON.parse after being retrieved from `storage.getItem`. See the **Persistence** section below.
- explicitSave | Boolean | false | no | The dashboard will not automatically save to storage for every change. Saves must instead be called explicitly using the `saveDashboard` method that is attached to the option event upon initialization.
+ widgetDefinitions | Array | n/a | yes | Same as in `dashboardOptions` 
+ defaultLayouts    | Array | n/a | yes | List of objects where an object is `{ title: [STRING_LAYOUT_TITLE], active: [BOOLEAN_ACTIVE_STATE], defaultWidgets: [ARRAY_DEFAULT_WIDGETS] }`. Note that `defaultWidgets` is the same as in `dashboardOptions`.
+ widgetButtons     | Boolean | true | no | Same as in `dashboardOptions`
+ storage   | Object | null | no | Same as in `dashboardOptions`, only the saved objects look like: `{ layouts: [...], states: {...}, storageHash: '' }`
+ storageId | String | null | no (yes if `storage` is defined) | This is used as the first parameter passed to the three `storage` methods `setItem`, `getItem`, `removeItem`. See the **Persistence** section above.
+ storageHash | String | '' | no | Same as in `dashboardOptions`
+ stringifyStorage | Boolean | true | no | Same as in `dashboardOptions`
+ explicitSave | Boolean | false | no | Same as in `dashboardOptions`
 
+As with `dashboardOptions`, `layoutOptions` gets endowed with the methods `addWidget`, `loadWidgets`, `saveDashboard` and `loadDashboard`. These will be applied to the currently active dashboard layout. Additionally, a method called `saveLayouts` is attached to the `layoutOptions` object. This method will save the state of the layouts explicitly.
 
 Links
 -----

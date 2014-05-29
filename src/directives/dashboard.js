@@ -222,6 +222,7 @@ angular.module('ui.dashboard')
 
         // Success handler
         function handleStateLoad(saved) {
+          scope.options.unsavedChangeCount = 0;
           if (saved && saved.length) {
             scope.loadWidgets(saved);
           } else if (scope.defaultWidgets) {

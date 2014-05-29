@@ -29,7 +29,11 @@ angular.module('ui.dashboard')
       this.stringify = options.stringifyStorage;
       this.widgetDefinitions = options.widgetDefinitions;
       this.defaultLayouts = options.defaultLayouts;
-      
+      this.widgetButtons = options.widgetButtons;
+      this.explicitSave = options.explicitSave;
+      this.options = options;
+      this.options.unsavedChangeCount = 0;
+
       this.layouts = [];
       this.states = {};
       this.load();
@@ -50,11 +54,14 @@ angular.module('ui.dashboard')
           layout.dashboard.storageId = layout.id = self.layouts.length + 1;
           layout.dashboard.widgetDefinitions = self.widgetDefinitions;
           layout.dashboard.stringifyStorage = false;
+          layout.dashboard.defaultWidgets = layout.defaultWidgets;
+          layout.dashboard.widgetButtons = self.widgetButtons;
+          layout.dashboard.explicitSave = self.explicitSave;
           self.layouts.push(layout);
         });
       },
 
-      save: function() {
+      save: function(force) {
 
         var state = {
           layouts: this._serializeLayouts(),
@@ -66,7 +73,13 @@ angular.module('ui.dashboard')
           state = JSON.stringify(state);
         }
 
-        this.storage.setItem(this.id, state);
+        if (!this.explicitSave || force) {
+          this.storage.setItem(this.id, state);
+          this.options.unsavedChangeCount = 0;
+        } else {
+          this.options.unsavedChangeCount++;
+        }
+        
       },
 
       load: function() {
@@ -104,13 +117,25 @@ angular.module('ui.dashboard')
         this.save();
       },
 
+      getActiveLayout: function() {
+        var len = this.layouts.length;
+        for (var i = 0; i < len; i++) {
+          var layout = this.layouts[i];
+          if (layout.active) {
+            return layout;
+          }
+        }
+        return false;
+      },
+
       _serializeLayouts: function() {
         var result = [];
         angular.forEach(this.layouts, function(l) {
           result.push({
             title: l.title,
             id: l.id,
-            active: l.active
+            active: l.active,
+            defaultWidgets: l.dashboard.defaultWidgets
           });
         });
         return result;

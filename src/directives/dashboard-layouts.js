@@ -17,7 +17,7 @@
 'use strict';
 
 angular.module('ui.dashboard')
-  .directive('dashboardLayouts', ['LayoutStorage', '$timeout', function(LayoutStorage, $timeout) {
+  .directive('dashboardLayouts', ['LayoutStorage', '$timeout', '$modal', function(LayoutStorage, $timeout, $modal) {
     return {
       scope: true,
       templateUrl: 'template/dashboard-layouts.html',
@@ -30,10 +30,44 @@ angular.module('ui.dashboard')
         scope.layouts = layoutStorage.layouts;
 
         scope.createNewLayout = function() {
-          layoutStorage.add({ title: 'Custom', dashboard: { defaultWidgets: [] } });
+          layoutStorage.add({ title: 'Custom', defaultWidgets: [] });
+          layoutStorage.save();
         };
 
         scope.makeLayoutActive = function(layout) {
+
+          var current = layoutStorage.getActiveLayout();
+
+          if (current && current.dashboard.unsavedChangeCount) {
+            var modalInstance = $modal.open({
+              templateUrl: 'template/save-changes-modal.html',
+              resolve: {
+                layout: function () {
+                  return layout;
+                }
+              },
+              controller: 'SaveChangesModalCtrl'
+            });
+
+            // Set resolve and reject callbacks for the result promise
+            modalInstance.result.then(
+              function () {
+                current.dashboard.saveDashboard();
+                scope._makeLayoutActive(layout);
+              },
+              function () {
+                scope._makeLayoutActive(layout);
+              }
+            );
+          }
+
+          else {
+            scope._makeLayoutActive(layout);
+          }
+          
+        };
+
+        scope._makeLayoutActive = function(layout) {
           angular.forEach(scope.layouts, function(l) {
             if (l !== layout) {
               l.active = false;
@@ -61,6 +95,28 @@ angular.module('ui.dashboard')
         scope.saveTitleEdit = function (layout) {
           layout.editingTitle = false;
           layoutStorage.save();
+        };
+
+        scope.options.saveLayouts = function() {
+          layoutStorage.save(true);
+        };
+        scope.options.addWidget = function() {
+          var layout = layoutStorage.getActiveLayout();
+          if (layout) {
+            layout.dashboard.addWidget.apply(layout.dashboard, arguments);
+          }
+        };
+        scope.options.loadWidgets = function() {
+          var layout = layoutStorage.getActiveLayout();
+          if (layout) {
+            layout.dashboard.loadWidgets.apply(layout.dashboard, arguments);
+          }
+        };
+        scope.options.saveDashboard = function() {
+          var layout = layoutStorage.getActiveLayout();
+          if (layout) {
+            layout.dashboard.saveDashboard.apply(layout.dashboard, arguments);
+          }
         };
       }
     };
