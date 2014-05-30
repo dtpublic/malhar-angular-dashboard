@@ -125,6 +125,13 @@ Include the dashboard directive on the element you wish to place widgets in:
 <div dashboard="dashboardOptions"></div>
 ```
 
+### Custom Template
+It is possible to use your own template for the dashboard and widget markup (replacing [template/dashboard.html](https://github.com/DataTorrent/malhar-angular-dashboard/blob/master/template/dashboard.html)). To do so, include a `template-url` attribute on the element to become dashboard:
+
+```HTML
+<div dashboard="dashboardOptions" template-url="path/to/my-template.html"></div>
+```
+
 ### dashboardOptions
 
 `dashboardOptions` in the above html is required and should be an object available on the current scope. The options on said object are as follows:
