@@ -83,8 +83,10 @@ Application will be available at http://127.0.0.1:9000
 With bower:
 
 ```
-bower install angular-ui-dashboard
+bower install malhar-angular-dashboard
 ```
+For legacy reasons, this bower module is also registered as `angular-ui-dashboard`.
+
 Manually:
 
 Download the zip of this repo and use the files in the `dist` folder.
