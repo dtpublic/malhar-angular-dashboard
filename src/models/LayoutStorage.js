@@ -69,7 +69,7 @@ angular.module('ui.dashboard')
 
       },
 
-      save: function(force) {
+      save: function() {
 
         var state = {
           layouts: this._serializeLayouts(),
@@ -81,13 +81,8 @@ angular.module('ui.dashboard')
           state = JSON.stringify(state);
         }
 
-        if (!this.explicitSave || force) {
-          this.storage.setItem(this.id, state);
-          this.options.unsavedChangeCount = 0;
-        } else {
-          this.options.unsavedChangeCount++;
-        }
-        
+        this.storage.setItem(this.id, state);
+        this.options.unsavedChangeCount = 0;
       },
 
       load: function() {
