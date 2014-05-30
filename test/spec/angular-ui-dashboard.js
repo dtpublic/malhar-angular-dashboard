@@ -18,7 +18,7 @@
 
 describe('Directive: dashboard', function () {
 
-  var $rootScope, element, childScope;
+  var $rootScope, element, childScope, DashboardState;
 
   // mock UI Sortable
   beforeEach(function () {
@@ -28,9 +28,12 @@ describe('Directive: dashboard', function () {
   // load the directive's module
   beforeEach(module('ui.dashboard'));
 
-  beforeEach(inject(function ($compile, _$rootScope_) {
+  beforeEach(inject(function ($compile, _$rootScope_, _DashboardState_) {
+    // services
     $rootScope = _$rootScope_;
+    DashboardState = _DashboardState_;
 
+    // options
     var widgetDefinitions = [
       {
         name: 'wt-one',
@@ -49,6 +52,7 @@ describe('Directive: dashboard', function () {
     };
     $rootScope.value = 10;
 
+    // element setup 
     element = $compile('<div dashboard="dashboardOptions"></div>')($rootScope);
     $rootScope.$digest();
     childScope = element.scope();
@@ -119,6 +123,18 @@ describe('Directive: dashboard', function () {
     $rootScope.$digest();
     var childScope2 = element2.scope();
     expect(childScope2.widgets instanceof Array).toEqual(true);
+  }));
+  
+  it('should set options.unsavedChangeCount to 0 upon load', function() {
+    expect($rootScope.dashboardOptions.unsavedChangeCount).toEqual(0);
+  });
+
+  it('should not call saveDashboard on load', inject(function($compile) {
+    spyOn(DashboardState.prototype, 'save');
+    var s = $rootScope.$new();
+    element = $compile('<div dashboard="dashboardOptions"></div>')(s);
+    $rootScope.$digest();
+    expect(DashboardState.prototype.save).not.toHaveBeenCalled();
   }));
 
   describe('the addWidget function', function() {
