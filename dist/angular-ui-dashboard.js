@@ -226,7 +226,7 @@ angular.module('ui.dashboard')
           if (saved && saved.length) {
             scope.loadWidgets(saved);
           } else if (scope.defaultWidgets) {
-            scope.resetWidgetsToDefault();
+            scope.loadWidgets(scope.defaultWidgets);
           } else {
             scope.clear(true);
           }

@@ -86,8 +86,10 @@ Application will be available at http://127.0.0.1:9000
 With bower:
 
 ```
-bower install angular-ui-dashboard
+bower install malhar-angular-dashboard
 ```
+For legacy reasons, this bower module is also registered as `angular-ui-dashboard`.
+
 Manually:
 
 Download the zip of this repo and use the files in the `dist` folder.
@@ -126,6 +128,13 @@ Include the dashboard directive on the element you wish to place widgets in:
 
 ```HTML
 <div dashboard="dashboardOptions"></div>
+```
+
+### Custom Template
+It is possible to use your own template for the dashboard and widget markup (replacing [template/dashboard.html](https://github.com/DataTorrent/malhar-angular-dashboard/blob/master/template/dashboard.html)). To do so, include a `template-url` attribute on the element to become dashboard:
+
+```HTML
+<div dashboard="dashboardOptions" template-url="path/to/my-template.html"></div>
 ```
 
 ### dashboardOptions
