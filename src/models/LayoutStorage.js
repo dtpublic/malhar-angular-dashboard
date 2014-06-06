@@ -19,16 +19,18 @@
 angular.module('ui.dashboard')
   .factory('LayoutStorage', function() {
 
+    var noopStorage = {
+      setItem: function() {},
+      getItem: function() {},
+      removeItem: function() {}
+    };
+
     function LayoutStorage(options) {
 
       angular.extend(options, { stringifyStorage: true }, options);
 
-      if (!options.storage || typeof options.storage !== 'object') {
-        throw new TypeError('The "storage" object in options is required.');
-      }
-
       this.id = options.storageId;
-      this.storage = options.storage;
+      this.storage = options.storage || noopStorage;
       this.storageHash = options.storageHash || '';
       this.stringify = options.stringifyStorage;
       this.widgetDefinitions = options.widgetDefinitions;

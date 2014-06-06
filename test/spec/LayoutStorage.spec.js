@@ -47,11 +47,13 @@ describe('Factory: LayoutStorage', function () {
       storage = new LayoutStorage(options);
     });
 
-    it('should throw a TypeError if storage is not provided', function() {
+    it('should provide an empty implementation of storage if it is not provided', function() {
       delete options.storage;
-      expect(function() {
-        new LayoutStorage(options);
-      }).toThrow(new TypeError('The "storage" object in options is required.'));
+      var stateless = new LayoutStorage(options);
+      var storage = stateless.storage;
+      angular.forEach(['setItem', 'getItem', 'removeItem'], function(method) {
+        expect(typeof storage[method]).toEqual('function');
+      });
     });
 
     it('should set a subset of the options directly on the LayoutStorage instance itself', function() {
