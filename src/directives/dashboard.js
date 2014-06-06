@@ -21,7 +21,9 @@ angular.module('ui.dashboard')
   .directive('dashboard', ['WidgetModel', 'WidgetDefCollection', '$modal', 'DashboardState', function (WidgetModel, WidgetDefCollection, $modal, DashboardState) {
     return {
       restrict: 'A',
-      templateUrl: function(element, attr) { return attr.templateUrl ? attr.templateUrl : 'template/dashboard.html'; },
+      templateUrl: function(element, attr) {
+        return attr.templateUrl ? attr.templateUrl : 'template/dashboard.html';
+      },
       scope: true,
 
       controller: ['$scope',function ($scope) {
