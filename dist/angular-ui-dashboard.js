@@ -21,7 +21,9 @@ angular.module('ui.dashboard')
   .directive('dashboard', ['WidgetModel', 'WidgetDefCollection', '$modal', 'DashboardState', function (WidgetModel, WidgetDefCollection, $modal, DashboardState) {
     return {
       restrict: 'A',
-      templateUrl: function(element, attr) { return attr.templateUrl ? attr.templateUrl : 'template/dashboard.html'; },
+      templateUrl: function(element, attr) {
+        return attr.templateUrl ? attr.templateUrl : 'template/dashboard.html';
+      },
       scope: true,
 
       controller: ['$scope',function ($scope) {
@@ -280,7 +282,9 @@ angular.module('ui.dashboard')
   .directive('dashboardLayouts', ['LayoutStorage', '$timeout', '$modal', function(LayoutStorage, $timeout, $modal) {
     return {
       scope: true,
-      templateUrl: 'template/dashboard-layouts.html',
+      templateUrl: function(element, attr) {
+        return attr.templateUrl ? attr.templateUrl : 'template/dashboard-layouts.html';
+      },
       link: function(scope, element, attrs) {
 
         scope.options = scope.$eval(attrs.dashboardLayouts);
@@ -1266,7 +1270,7 @@ angular.module("ui.dashboard").run(["$templateCache", function($templateCache) {
     "        </a>\n" +
     "    </li>\n" +
     "</ul>\n" +
-    "<div ng-repeat=\"layout in layouts | filter:isActive\" dashboard=\"layout.dashboard\"></div>"
+    "<div ng-repeat=\"layout in layouts | filter:isActive\" dashboard=\"layout.dashboard\" templateUrl=\"template/dashboard.html\"></div>"
   );
 
   $templateCache.put("template/dashboard.html",

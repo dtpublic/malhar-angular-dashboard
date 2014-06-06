@@ -20,7 +20,9 @@ angular.module('ui.dashboard')
   .directive('dashboardLayouts', ['LayoutStorage', '$timeout', '$modal', function(LayoutStorage, $timeout, $modal) {
     return {
       scope: true,
-      templateUrl: 'template/dashboard-layouts.html',
+      templateUrl: function(element, attr) {
+        return attr.templateUrl ? attr.templateUrl : 'template/dashboard-layouts.html';
+      },
       link: function(scope, element, attrs) {
 
         scope.options = scope.$eval(attrs.dashboardLayouts);
