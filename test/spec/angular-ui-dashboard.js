@@ -136,6 +136,20 @@ describe('Directive: dashboard', function () {
     $rootScope.$digest();
     expect(DashboardState.prototype.save).not.toHaveBeenCalled();
   }));
+
+  describe('the sortableOptions', function() {
+
+    it('should exist', function() {
+      expect(typeof childScope.sortableOptions).toEqual('object');
+    });
+
+    it('should have a stop function that calls $scope.saveDashboard', function() {
+      expect(typeof childScope.sortableOptions.stop).toEqual('function');
+      spyOn(childScope, 'saveDashboard');
+      childScope.sortableOptions.stop();
+      expect(childScope.saveDashboard).toHaveBeenCalled();
+    });
+  });
   
   describe('the addWidget function', function() {
 
@@ -271,6 +285,32 @@ describe('Directive: dashboard', function () {
 
   });
 
+  describe('the removeWidget function', function() {
+    
+    it('should be a function', function() {
+      expect(typeof childScope.removeWidget).toEqual('function');
+    });
+
+    it('should remove the provided widget from childScope.widgets array', function() {
+      var startingLength = childScope.widgets.length;
+      var expectedLength = startingLength - 1;
+
+      var widgetToRemove = childScope.widgets[0];
+      childScope.removeWidget(widgetToRemove);
+
+      expect(childScope.widgets.length).toEqual(expectedLength);
+      expect(childScope.widgets.indexOf(widgetToRemove)).toEqual(-1);
+    });
+
+    it('should call saveDashboard', function() {
+      spyOn(childScope, 'saveDashboard');
+      var widgetToRemove = childScope.widgets[0];
+      childScope.removeWidget(widgetToRemove);      
+      expect(childScope.saveDashboard).toHaveBeenCalled();
+    });
+
+  });
+
   describe('the saveDashboard function', function() {
     
     it('should be attached to the options object after initialization', function() {
@@ -361,6 +401,27 @@ describe('Directive: dashboard', function () {
       expect(childScope.addWidget.calls.argsFor(0)).toEqual( [ widgets[0], true] );
       expect(childScope.addWidget.calls.argsFor(1)).toEqual( [ widgets[1], true] );
       expect(childScope.addWidget.calls.argsFor(2)).toEqual( [ widgets[2], true] );
+    });
+
+  });
+
+  describe('the clear function', function() {
+    
+    it('should set the scope to an empty array', function() {
+      childScope.clear();
+      expect(childScope.widgets).toEqual([]);
+    });
+
+    it('should not call saveDashboard if first arg is true', function() {
+      spyOn(childScope, 'saveDashboard');
+      childScope.clear(true);
+      expect(childScope.saveDashboard).not.toHaveBeenCalled();
+    });
+
+    it('should call saveDashboard if first arg is not true', function() {
+      spyOn(childScope, 'saveDashboard');
+      childScope.clear();
+      expect(childScope.saveDashboard).toHaveBeenCalled();
     });
 
   });
