@@ -294,8 +294,11 @@ angular.module('ui.dashboard')
         scope.layouts = layoutStorage.layouts;
 
         scope.createNewLayout = function() {
-          layoutStorage.add({ title: 'Custom', defaultWidgets: [] });
+          var newLayout = { title: 'Custom', defaultWidgets: [] }
+          layoutStorage.add(newLayout);
+          scope.makeLayoutActive(newLayout);
           layoutStorage.save();
+          return newLayout;
         };
 
         scope.removeLayout = function(layout) {
