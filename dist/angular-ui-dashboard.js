@@ -21,7 +21,9 @@ angular.module('ui.dashboard')
   .directive('dashboard', ['WidgetModel', 'WidgetDefCollection', '$modal', 'DashboardState', function (WidgetModel, WidgetDefCollection, $modal, DashboardState) {
     return {
       restrict: 'A',
-      templateUrl: function(element, attr) { return attr.templateUrl ? attr.templateUrl : 'template/dashboard.html'; },
+      templateUrl: function(element, attr) {
+        return attr.templateUrl ? attr.templateUrl : 'template/dashboard.html';
+      },
       scope: true,
 
       controller: ['$scope',function ($scope) {
@@ -277,6 +279,139 @@ angular.module('ui.dashboard')
 'use strict';
 
 angular.module('ui.dashboard')
+  .directive('dashboardLayouts', ['LayoutStorage', '$timeout', '$modal', function(LayoutStorage, $timeout, $modal) {
+    return {
+      scope: true,
+      templateUrl: function(element, attr) {
+        return attr.templateUrl ? attr.templateUrl : 'template/dashboard-layouts.html';
+      },
+      link: function(scope, element, attrs) {
+
+        scope.options = scope.$eval(attrs.dashboardLayouts);
+
+        var layoutStorage = new LayoutStorage(scope.options);
+
+        scope.layouts = layoutStorage.layouts;
+
+        scope.createNewLayout = function() {
+          var newLayout = { title: 'Custom', defaultWidgets: scope.options.defaultWidgets || [] }
+          layoutStorage.add(newLayout);
+          scope.makeLayoutActive(newLayout);
+          layoutStorage.save();
+          return newLayout;
+        };
+
+        scope.removeLayout = function(layout) {
+          layoutStorage.remove(layout);
+          layoutStorage.save();
+        };
+
+        scope.makeLayoutActive = function(layout) {
+
+          var current = layoutStorage.getActiveLayout();
+
+          if (current && current.dashboard.unsavedChangeCount) {
+            var modalInstance = $modal.open({
+              templateUrl: 'template/save-changes-modal.html',
+              resolve: {
+                layout: function () {
+                  return layout;
+                }
+              },
+              controller: 'SaveChangesModalCtrl'
+            });
+
+            // Set resolve and reject callbacks for the result promise
+            modalInstance.result.then(
+              function () {
+                current.dashboard.saveDashboard();
+                scope._makeLayoutActive(layout);
+              },
+              function () {
+                scope._makeLayoutActive(layout);
+              }
+            );
+          }
+
+          else {
+            scope._makeLayoutActive(layout);
+          }
+          
+        };
+
+        scope._makeLayoutActive = function(layout) {
+          angular.forEach(scope.layouts, function(l) {
+            if (l !== layout) {
+              l.active = false;
+            } else {
+              l.active = true;
+            }
+          });
+          layoutStorage.save();
+        };
+
+        scope.isActive = function(layout) {
+          return !! layout.active;
+        };
+
+        scope.editTitle = function (layout) {
+          var input = element.find('input[data-layout="' + layout.id + '"]');
+          layout.editingTitle = true;
+
+          $timeout(function() {
+            input.focus()[0].setSelectionRange(0, 9999);
+          });
+        };
+
+        // saves whatever is in the title input as the new title
+        scope.saveTitleEdit = function (layout) {
+          layout.editingTitle = false;
+          layoutStorage.save();
+        };
+
+        scope.options.saveLayouts = function() {
+          layoutStorage.save(true);
+        };
+        scope.options.addWidget = function() {
+          var layout = layoutStorage.getActiveLayout();
+          if (layout) {
+            layout.dashboard.addWidget.apply(layout.dashboard, arguments);
+          }
+        };
+        scope.options.loadWidgets = function() {
+          var layout = layoutStorage.getActiveLayout();
+          if (layout) {
+            layout.dashboard.loadWidgets.apply(layout.dashboard, arguments);
+          }
+        };
+        scope.options.saveDashboard = function() {
+          var layout = layoutStorage.getActiveLayout();
+          if (layout) {
+            layout.dashboard.saveDashboard.apply(layout.dashboard, arguments);
+          }
+        };
+      }
+    };
+  }]);
+/*
+ * Copyright (c) 2014 DataTorrent, Inc. ALL Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+'use strict';
+
+angular.module('ui.dashboard')
   .directive('widget', function () {
 
     return {
@@ -302,6 +437,256 @@ angular.module('ui.dashboard')
       }
 
     };
+  });
+/*
+ * Copyright (c) 2014 DataTorrent, Inc. ALL Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+'use strict';
+
+angular.module('ui.dashboard')
+  .factory('LayoutStorage', function() {
+
+    var noopStorage = {
+      setItem: function() {
+
+      },
+      getItem: function() {
+
+      },
+      removeItem: function() {
+
+      }
+    };
+
+    
+
+    function LayoutStorage(options) {
+
+      var defaults = {
+        storage: noopStorage,
+        storageHash: '',
+        stringifyStorage: true
+      }
+
+      angular.extend(defaults, options);
+      angular.extend(options, defaults);
+
+      this.id = options.storageId;
+      this.storage = options.storage;
+      this.storageHash = options.storageHash;
+      this.stringifyStorage = options.stringifyStorage;
+      this.widgetDefinitions = options.widgetDefinitions;
+      this.defaultLayouts = options.defaultLayouts;
+      this.widgetButtons = options.widgetButtons;
+      this.explicitSave = options.explicitSave;
+      this.defaultWidgets = options.defaultWidgets;
+      this.options = options;
+      this.options.unsavedChangeCount = 0;
+
+      this.layouts = [];
+      this.states = {};
+      this.load();
+      this._ensureActiveLayout();
+    }
+
+    LayoutStorage.prototype = {
+
+      add: function(layouts) {
+        if ( !(layouts instanceof Array) ) {
+          layouts = [layouts];
+        }
+        var self = this;
+        angular.forEach(layouts, function(layout) {
+          layout.dashboard = layout.dashboard || {};
+          layout.dashboard.storage = self;
+          layout.dashboard.storageId = layout.id = self._getLayoutId.call(self,layout);
+          layout.dashboard.widgetDefinitions = self.widgetDefinitions;
+          layout.dashboard.stringifyStorage = false;
+          layout.dashboard.defaultWidgets = layout.defaultWidgets || self.defaultWidgets;
+          layout.dashboard.widgetButtons = self.widgetButtons;
+          layout.dashboard.explicitSave = self.explicitSave;
+          self.layouts.push(layout);
+        });
+      },
+
+      remove: function(layout) {
+        var index = this.layouts.indexOf(layout);
+        if (index >= 0) {
+          this.layouts.splice(index, 1);
+          delete this.states[layout.id];
+
+          // check for active
+          if (layout.active && this.layouts.length) {
+              var nextActive = index > 0 ? index - 1 : 0;
+              this.layouts[nextActive].active = true;
+          }
+        }
+      },
+
+      save: function() {
+
+        var state = {
+          layouts: this._serializeLayouts(),
+          states: this.states,
+          storageHash: this.storageHash
+        };
+
+        if (this.stringifyStorage) {
+          state = JSON.stringify(state);
+        }
+
+        this.storage.setItem(this.id, state);
+        this.options.unsavedChangeCount = 0;
+      },
+
+      load: function() {
+
+        var serialized = this.storage.getItem(this.id);
+        var self = this;
+
+        this.clear();
+
+        if (serialized) {
+          
+          // check for promise
+          if (typeof serialized === 'object' && typeof serialized.then === 'function') {
+            this._handleAsyncLoad(serialized);
+          }
+           else {
+            this._handleSyncLoad(serialized);
+          }
+
+        }
+
+        else {
+          this._addDefaultLayouts();
+        }
+      },
+
+      clear: function() {
+        this.layouts = [];
+        this.states = {};
+      },
+
+      setItem: function(id, value) {
+        this.states[id] = value;
+        this.save();
+      },
+
+      getItem: function(id) {
+        return this.states[id];
+      },
+
+      removeItem: function(id) {
+        delete this.states[id];
+        this.save();
+      },
+
+      getActiveLayout: function() {
+        var len = this.layouts.length;
+        for (var i = 0; i < len; i++) {
+          var layout = this.layouts[i];
+          if (layout.active) {
+            return layout;
+          }
+        }
+        return false;
+      },
+
+      _addDefaultLayouts: function() {
+        var self = this;
+        angular.forEach(this.defaultLayouts, function(layout) {
+          self.add(angular.extend({}, layout));
+        });
+      },
+
+      _serializeLayouts: function() {
+        var result = [];
+        angular.forEach(this.layouts, function(l) {
+          result.push({
+            title: l.title,
+            id: l.id,
+            active: l.active,
+            defaultWidgets: l.dashboard.defaultWidgets
+          });
+        });
+        return result;
+      },
+
+      _handleSyncLoad: function(serialized) {
+        
+        var deserialized;
+
+        if (this.stringifyStorage) {
+          try {
+
+            deserialized = JSON.parse(serialized);
+
+          } catch (e) {
+            this._addDefaultLayouts();
+            return;
+          }
+        } else {
+
+          deserialized = serialized;
+
+        }
+
+        if (this.storageHash !== deserialized.storageHash) {
+          this._addDefaultLayouts();
+          return;
+        }
+        this.states = deserialized.states;
+        this.add(deserialized.layouts);
+      },
+
+      _handleAsyncLoad: function(promise) {
+        var self = this;
+        promise.then(
+          angular.bind(self, this._handleSyncLoad),
+          angular.bind(self, this._addDefaultLayouts)
+        );
+      },
+
+      _ensureActiveLayout: function() {
+        for (var i = 0; i < this.layouts.length; i++) {
+          var layout = this.layouts[i];
+          if (layout.active) {
+            return;
+          }
+        };
+        if (this.layouts[0]) {
+          this.layouts[0].active = true;
+        }
+      },
+
+      _getLayoutId: function(layout) {
+        if (layout.id) {
+          return layout.id;
+        }
+        var max = 0;
+        for (var i = 0; i < this.layouts.length; i++) {
+          var id = this.layouts[i].id;
+          max = Math.max(max, id * 1);
+        }
+        return max + 1;
+      }
+
+    };
+    return LayoutStorage;
   });
 /*
  * Copyright (c) 2014 DataTorrent, Inc. ALL Rights Reserved.
@@ -665,6 +1050,38 @@ angular.module('ui.dashboard')
 'use strict';
 
 angular.module('ui.dashboard')
+  .controller('SaveChangesModalCtrl', ['$scope', '$modalInstance', 'layout', function ($scope, $modalInstance, layout) {
+    
+    // add layout to scope
+    $scope.layout = layout;
+
+    $scope.ok = function () {
+      $modalInstance.close();
+    };
+
+    $scope.cancel = function () {
+      $modalInstance.dismiss();
+    };
+  }]);
+/*
+ * Copyright (c) 2014 DataTorrent, Inc. ALL Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+'use strict';
+
+angular.module('ui.dashboard')
   .controller('DashboardWidgetCtrl', ['$scope', '$element', '$compile', '$window', '$timeout', function($scope, $element, $compile, $window, $timeout) {
 
     // Fills "container" with compiled view
@@ -900,6 +1317,28 @@ angular.module("ui.dashboard").run(["$templateCache", function($templateCache) {
     "</div>\n"
   );
 
+  $templateCache.put("template/dashboard-layouts.html",
+    "<ul class=\"nav nav-tabs layout-tabs\">\n" +
+    "    <li ng-repeat=\"layout in layouts\" ng-class=\"{ active: layout.active }\">\n" +
+    "        <a ng-click=\"makeLayoutActive(layout)\">\n" +
+    "            <span ng-dblclick=\"editTitle(layout)\" ng-show=\"!layout.editingTitle\">{{layout.title}}</span>\n" +
+    "            <form action=\"\" class=\"layout-title\" ng-show=\"layout.editingTitle\" ng-submit=\"saveTitleEdit(layout)\">\n" +
+    "                <input type=\"text\" ng-model=\"layout.title\" class=\"form-control\" data-layout=\"{{layout.id}}\">\n" +
+    "            </form>\n" +
+    "            <span ng-click=\"removeLayout(layout)\" class=\"glyphicon glyphicon-remove remove-layout-icon\"></span>\n" +
+    "            <!-- <span class=\"glyphicon glyphicon-pencil\"></span> -->\n" +
+    "            <!-- <span class=\"glyphicon glyphicon-remove\"></span> -->\n" +
+    "        </a>\n" +
+    "    </li>\n" +
+    "    <li>\n" +
+    "        <a ng-click=\"createNewLayout()\">\n" +
+    "            <span class=\"glyphicon glyphicon-plus\"></span>\n" +
+    "        </a>\n" +
+    "    </li>\n" +
+    "</ul>\n" +
+    "<div ng-repeat=\"layout in layouts | filter:isActive\" dashboard=\"layout.dashboard\" templateUrl=\"template/dashboard.html\"></div>"
+  );
+
   $templateCache.put("template/dashboard.html",
     "<div>\n" +
     "    <div class=\"btn-toolbar\" ng-if=\"!options.hideToolbar\">\n" +
@@ -946,6 +1385,22 @@ angular.module("ui.dashboard").run(["$templateCache", function($templateCache) {
     "            </div>\n" +
     "        </div>\n" +
     "    </div>\n" +
+    "</div>"
+  );
+
+  $templateCache.put("template/save-changes-modal.html",
+    "<div class=\"modal-header\">\n" +
+    "    <button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-hidden=\"true\" ng-click=\"cancel()\">&times;</button>\n" +
+    "  <h3>Unsaved Changes to \"{{layout.title}}\"</h3>\n" +
+    "</div>\n" +
+    "\n" +
+    "<div class=\"modal-body\">\n" +
+    "    <p>You have {{layout.dashboard.unsavedChangeCount}} unsaved changes on this dashboard. Would you like to save them?</p>\n" +
+    "</div>\n" +
+    "\n" +
+    "<div class=\"modal-footer\">\n" +
+    "    <button type=\"button\" class=\"btn btn-default\" ng-click=\"cancel()\">Don't Save</button>\n" +
+    "    <button type=\"button\" class=\"btn btn-primary\" ng-click=\"ok()\">Save</button>\n" +
     "</div>"
   );
 

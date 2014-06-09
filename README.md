@@ -15,7 +15,7 @@ Features:
 
  - Widgets drag and drop (with jQuery UI Sortable)
 
- - Fluid layout (widgets can have percentage width)
+ - Fluid layout (widgets can have percentage-based width, or have width set in any other unit)
 
  - Any directive can be a widget (e.g. AngularUI directives)
 
@@ -24,6 +24,8 @@ Features:
  - Changing widget data source dynamically (from widget options)
 
  - Saving widgets state to local storage
+
+ - Multiple Dashboard Layouts
 
 Contributing
 ------------
@@ -73,6 +75,7 @@ See [simple demo](demo) (two widgets) for a quick start.
 Running demo with Grunt.
 
  ``` bash
+    $ bower install
     $ grunt demo
  ```
 
@@ -249,6 +252,31 @@ This string will be stored along with the dashboard state. Then later, when stat
 
 ### `stringifyStorage` (Boolean)
 By default (`stringifyStorage=true`), the dashboard will convert its state (a JavaScript Object) to a string using `JSON.stringify` before passing it to `storage.setItem`. Additionally, the dashboard will assume that `storage.getItem` will return a JSON string and try to parse it with `JSON.parse`. This works with `window.localStorage` nicely, since objects cannot be used as `value` in `localStorage.setItem(key, value)`. However, if you are implementing your own `storage` and would not like this stringification business, set `stringifyStorage` to `false`.
+
+
+Dashboard Layouts
+-----------------
+One common requirement for user-customizable dashboards is the ability to have multiple layouts consisting of the same set of widget definitions. This sounds more confusing than it is, so the best way to understand it is to take a look at the [layouts demo](http://datatorrent.github.io/malhar-angular-dashboard/#/layouts). You can also see this demo by running `grunt demo` and navigating to `/#/layouts` (or `/#/layouts/explicit-saving`, behavior when `options.explicitSave` is `true`). This is achieved by using the `dashboard-layouts` directive:
+
+```HTML
+<div dashboard-layouts="layoutOptions"></div>
+```
+
+### layoutOptions
+The `layoutOptions` object passed to dashboard-layouts tries to mirror `dashboardOptions` as closely as possible:
+
+key | type | default value | required | description 
+--- | ---- | ------------- | -------- | -----------
+ widgetDefinitions | Array | n/a | yes | Same as in `dashboardOptions` 
+ defaultLayouts    | Array | n/a | yes | List of objects where an object is `{ title: [STRING_LAYOUT_TITLE], active: [BOOLEAN_ACTIVE_STATE], defaultWidgets: [ARRAY_DEFAULT_WIDGETS] }`. Note that `defaultWidgets` is the same as in `dashboardOptions`.
+ widgetButtons     | Boolean | true | no | Same as in `dashboardOptions`
+ storage   | Object | null | no | Same as in `dashboardOptions`, only the saved objects look like: `{ layouts: [...], states: {...}, storageHash: '' }`
+ storageId | String | null | no (yes if `storage` is defined) | This is used as the first parameter passed to the three `storage` methods `setItem`, `getItem`, `removeItem`. See the **Persistence** section above.
+ storageHash | String | '' | no | Same as in `dashboardOptions`
+ stringifyStorage | Boolean | true | no | Same as in `dashboardOptions`
+ explicitSave | Boolean | false | no | Same as in `dashboardOptions`
+
+As with `dashboardOptions`, `layoutOptions` gets endowed with the methods `addWidget`, `loadWidgets`, `saveDashboard` and `loadDashboard`. These will be applied to the currently active dashboard layout. Additionally, a method called `saveLayouts` is attached to the `layoutOptions` object. This method will save the state of the layouts explicitly.
 
 Links
 -----

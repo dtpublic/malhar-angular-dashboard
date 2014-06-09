@@ -30,6 +30,14 @@ angular.module('app', [
         templateUrl: 'view.html',
         controller: 'ExplicitSaveDemoCtrl'
       })
+      .when('/layouts', {
+        templateUrl: 'layouts.html',
+        controller: 'LayoutsDemoCtrl'
+      })
+      .when('/layouts/explicit-saving', {
+        templateUrl: 'layouts.html',
+        controller: 'LayoutsDemoExplicitSaveCtrl'
+      })
       .otherwise({
         redirectTo: '/'
       });
@@ -81,7 +89,7 @@ angular.module('app', [
       storage: $window.localStorage,
       storageId: 'demo'
     };
-
+    $scope.randomValue = Math.random();
     $interval(function () {
       $scope.randomValue = Math.random();
     }, 500);
@@ -96,10 +104,50 @@ angular.module('app', [
       storageId: 'explicitSave',
       explicitSave: true
     };
-
+    $scope.randomValue = Math.random();
     $interval(function () {
       $scope.randomValue = Math.random();
     }, 500);
+  })
+  .controller('LayoutsDemoCtrl', function($scope, widgetDefinitions, defaultWidgets, LayoutStorage, $interval) {
+    $scope.layoutOptions = {
+      storageId: 'demo-layouts',
+      storage: localStorage,
+      storageHash: 'fs4df4d51',
+      widgetDefinitions: widgetDefinitions,
+      defaultWidgets: defaultWidgets,
+      defaultLayouts: [
+        { title: 'Layout 1', active: true , defaultWidgets: defaultWidgets },
+        { title: 'Layout 2', active: false, defaultWidgets: defaultWidgets },
+        { title: 'Layout 3', active: false, defaultWidgets: defaultWidgets }
+      ]
+    };
+    $scope.randomValue = Math.random();
+    $interval(function () {
+      $scope.randomValue = Math.random();
+    }, 500);
+
+  })
+  .controller('LayoutsDemoExplicitSaveCtrl', function($scope, widgetDefinitions, defaultWidgets, LayoutStorage, $interval) {
+
+    $scope.layoutOptions = {
+      storageId: 'demo-layouts',
+      storage: localStorage,
+      storageHash: 'fs4df4d51',
+      widgetDefinitions: widgetDefinitions,
+      defaultWidgets: defaultWidgets,
+      explicitSave: true,
+      defaultLayouts: [
+        { title: 'Layout 1', active: true , defaultWidgets: defaultWidgets },
+        { title: 'Layout 2', active: false, defaultWidgets: defaultWidgets },
+        { title: 'Layout 3', active: false, defaultWidgets: defaultWidgets }
+      ]
+    };
+    $scope.randomValue = Math.random();
+    $interval(function () {
+      $scope.randomValue = Math.random();
+    }, 500);
+
   })
   .directive('wtTime', function ($interval) {
     return {
@@ -111,6 +159,8 @@ angular.module('app', [
         function update() {
           scope.time = new Date().toLocaleTimeString();
         }
+
+        update();
 
         var promise = $interval(update, 500);
 
@@ -137,6 +187,7 @@ angular.module('app', [
     RandomDataModel.prototype = Object.create(WidgetDataModel.prototype);
 
     RandomDataModel.prototype.init = function () {
+      this.updateScope('-');
       this.intervalPromise = $interval(function () {
         var value = Math.floor(Math.random() * 100);
         this.updateScope(value);

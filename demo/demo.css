@@ -1,3 +1,9 @@
 body {
     margin: 15px;
 }
+a {
+    cursor: pointer;
+}
+.layout-tabs {
+    margin-bottom: 10px;
+}
