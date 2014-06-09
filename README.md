@@ -256,7 +256,7 @@ By default (`stringifyStorage=true`), the dashboard will convert its state (a Ja
 
 Dashboard Layouts
 -----------------
-One common requirement for user-customizable dashboards is the ability to have multiple layouts consisting of the same set of widget definitions. This sounds more confusing than it is, so the best way to understand it is to take a look at the [layouts demo](http://datatorrent.github.io/malhar-angular-dashboard/#/layouts). You can also see this demo by running `grunt demo` and navigating to `/#/layouts`. This is achieved by using the `dashboard-layouts` directive:
+One common requirement for user-customizable dashboards is the ability to have multiple layouts consisting of the same set of widget definitions. This sounds more confusing than it is, so the best way to understand it is to take a look at the [layouts demo](http://datatorrent.github.io/malhar-angular-dashboard/#/layouts). You can also see this demo by running `grunt demo` and navigating to `/#/layouts` (or `/#/layouts/explicit-saving`, behavior when `options.explicitSave` is `true`). This is achieved by using the `dashboard-layouts` directive:
 
 ```HTML
 <div dashboard-layouts="layoutOptions"></div>
