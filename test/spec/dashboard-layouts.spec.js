@@ -18,7 +18,7 @@
 
 describe('Directive: dashboard-layouts', function () {
 
-  var $rootScope, element, childScope, DashboardState, LayoutStorage, $mockModal;
+  var $rootScope, element, options, childScope, DashboardState, LayoutStorage, $mockModal, $mockTimeout, toFn;
 
   // mock UI Sortable
   beforeEach(function () {
@@ -30,7 +30,11 @@ describe('Directive: dashboard-layouts', function () {
     $mockModal = {
       open: function() {}
     };
+    $mockTimeout = function(fn, delay) {
+      toFn = fn;
+    };
     $provide.value('$modal', $mockModal);
+    $provide.value('$timeout', $mockTimeout);
   }));
 
   beforeEach(inject(function ($compile, _$rootScope_, _DashboardState_, _LayoutStorage_) {
@@ -51,7 +55,7 @@ describe('Directive: dashboard-layouts', function () {
       }
     ];
     var defaultWidgets = _.clone(widgetDefinitions);
-    $rootScope.dashboardOptions = {
+    $rootScope.dashboardOptions = options = {
       widgetButtons: true,
       widgetDefinitions: widgetDefinitions,
       defaultLayouts: [
@@ -92,6 +96,7 @@ describe('Directive: dashboard-layouts', function () {
       var noStorageEl = $compile('<div dashboard-layouts="dashboardOptions"></div>')($rootScope);
       $rootScope.$digest();
     }).not.toThrow();
+
   }));
 
   it('should be able to use a different dashboard-layouts template', inject(function($compile, $templateCache) {
@@ -120,6 +125,24 @@ describe('Directive: dashboard-layouts', function () {
     var customElement = $compile('<div dashboard-layouts="dashboardOptions" template-url="myCustomTemplate.html"></div>')($rootScope);
     $rootScope.$digest();
     expect(customElement.find('ul.my-custom-tabs').length).toEqual(1);
+
+  }));
+
+  it('should set the first dashboard to active if there is not one already active', inject(function($compile) {
+    options.defaultLayouts[0].active = options.defaultLayouts[1].active = false;
+    element = $compile('<div dashboard-layouts="dashboardOptions"></div>')($rootScope);
+    $rootScope.$digest();
+    childScope = element.scope();
+    
+    var layouts = childScope.layouts;
+    var active;
+    for (var i = 0; i < layouts.length; i++) {
+      if (layouts[i].active) {
+        active = layouts[i];
+        break;
+      }
+    };
+    expect(active).not.toBeUndefined();
   }));
 
   describe('the createNewLayout method', function() {
@@ -226,7 +249,122 @@ describe('Directive: dashboard-layouts', function () {
 
     });
 
+  });
+
+  describe('the editTitle method', function() {
+
+    it('should set the editingTitle attribute to true on the layout it is passed', function() {
+      var layout = { id: '1' };
+      childScope.editTitle(layout);
+      $rootScope.$digest();
+      expect(layout.editingTitle).toEqual(true);
+      toFn();
+    });
+
+  });
+
+  describe('the saveTitleEdit method', function() {
+
+    it('should set editingTitle to false', function() {
+      var layout = { id: '1' };
+      childScope.saveTitleEdit(layout);
+      expect(layout.editingTitle).toEqual(false);
+    });
+
+    it('should call layoutStorage.save', function() {
+      var layout = { id: '1' };
+      spyOn(LayoutStorage.prototype, 'save').and.callThrough();
+      childScope.saveTitleEdit(layout);
+      expect(LayoutStorage.prototype.save).toHaveBeenCalled();
+    });
+
+  });
+
+  describe('the saveLayouts method', function() {
+
+    it('should call LayoutStorage.save', function() {
+      spyOn(LayoutStorage.prototype, 'save').and.callThrough();
+      $rootScope.dashboardOptions.saveLayouts();
+      expect(LayoutStorage.prototype.save).toHaveBeenCalled();
+    });
+
+    it('should call LayoutStorage.save with true as the first arg', function() {
+      spyOn(LayoutStorage.prototype, 'save').and.callThrough();
+      $rootScope.dashboardOptions.saveLayouts();
+      expect(LayoutStorage.prototype.save.calls.argsFor(0)[0]).toEqual(true);
+    });
+
+  });
+  describe('the proxy methods to active layout', function() {
+
+    var mockDash, galSpy;
+
+    beforeEach(function() {
+      mockDash = {
+        active: true,
+        dashboard: {
+          addWidget: function() {},
+          loadWidgets: function() {},
+          saveDashboard: function() {}
+        }
+      };
+      spyOn(mockDash.dashboard, 'addWidget');
+      spyOn(mockDash.dashboard, 'loadWidgets');
+      spyOn(mockDash.dashboard, 'saveDashboard');
+      galSpy = spyOn(LayoutStorage.prototype, 'getActiveLayout').and;
+      galSpy.returnValue(mockDash);
+    });
     
+    describe('the addWidget method', function() {
+
+      it('should call dashboard.addWidget method of the active layout', function() {
+        options.addWidget(1,2,3);
+        expect(mockDash.dashboard.addWidget).toHaveBeenCalled();
+        expect(mockDash.dashboard.addWidget.calls.first()).toEqual({object: mockDash.dashboard, args: [1,2,3]});
+      });
+
+      it('should do nothing if there is no active layout', function() {
+        galSpy.returnValue(null);
+        expect(function() {
+          options.addWidget();
+        }).not.toThrow();
+      });
+
+    });
+
+    describe('the loadWidgets method', function() {
+
+      it('should call dashboard.loadWidgets of the current layout', function() {
+        options.loadWidgets(1,2,3);
+        expect(mockDash.dashboard.loadWidgets).toHaveBeenCalled();
+        expect(mockDash.dashboard.loadWidgets.calls.first()).toEqual({object: mockDash.dashboard, args: [1,2,3]});
+      });
+
+      it('should do nothing if there is no active layout', function() {
+        galSpy.returnValue(null);
+        expect(function() {
+          options.loadWidgets();
+        }).not.toThrow();
+      });
+
+    });
+
+    describe('the saveDashboard method', function() {
+
+      it('should call dashboard.saveDashboard of the current layout', function() {
+        options.saveDashboard(1,2,3);
+        expect(mockDash.dashboard.saveDashboard).toHaveBeenCalled();
+        expect(mockDash.dashboard.saveDashboard.calls.first()).toEqual({object: mockDash.dashboard, args: [1,2,3]});
+      });
+
+      it('should do nothing if there is no active layout', function() {
+        galSpy.returnValue(null);
+        expect(function() {
+          options.saveDashboard();
+        }).not.toThrow();
+      });
+
+    });
 
   });
 

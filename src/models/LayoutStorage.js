@@ -59,6 +59,7 @@ angular.module('ui.dashboard')
       this.layouts = [];
       this.states = {};
       this.load();
+      this._ensureActiveLayout();
     }
 
     LayoutStorage.prototype = {
@@ -219,6 +220,18 @@ angular.module('ui.dashboard')
           angular.bind(self, this._handleSyncLoad),
           angular.bind(self, this._addDefaultLayouts)
         );
+      },
+
+      _ensureActiveLayout: function() {
+        for (var i = 0; i < this.layouts.length; i++) {
+          var layout = this.layouts[i];
+          if (layout.active) {
+            return;
+          }
+        };
+        if (this.layouts[0]) {
+          this.layouts[0].active = true;
+        }
       }
 
     };

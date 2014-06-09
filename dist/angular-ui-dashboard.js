@@ -460,29 +460,46 @@ angular.module('ui.dashboard')
   .factory('LayoutStorage', function() {
 
     var noopStorage = {
-      setItem: function() {},
-      getItem: function() {},
-      removeItem: function() {}
+      setItem: function() {
+
+      },
+      getItem: function() {
+
+      },
+      removeItem: function() {
+
+      }
     };
+
+    
 
     function LayoutStorage(options) {
 
-      angular.extend(options, { stringifyStorage: true }, options);
+      var defaults = {
+        storage: noopStorage,
+        storageHash: '',
+        stringifyStorage: true
+      }
+
+      angular.extend(defaults, options);
+      angular.extend(options, defaults);
 
       this.id = options.storageId;
-      this.storage = options.storage || noopStorage;
-      this.storageHash = options.storageHash || '';
-      this.stringify = options.stringifyStorage;
+      this.storage = options.storage;
+      this.storageHash = options.storageHash;
+      this.stringifyStorage = options.stringifyStorage;
       this.widgetDefinitions = options.widgetDefinitions;
       this.defaultLayouts = options.defaultLayouts;
       this.widgetButtons = options.widgetButtons;
       this.explicitSave = options.explicitSave;
+      this.defaultWidgets = options.defaultWidgets;
       this.options = options;
       this.options.unsavedChangeCount = 0;
 
       this.layouts = [];
       this.states = {};
       this.load();
+      this._ensureActiveLayout();
     }
 
     LayoutStorage.prototype = {
@@ -500,15 +517,24 @@ angular.module('ui.dashboard')
           layout.dashboard.storageId = layout.id = self.layouts.length + 1;
           layout.dashboard.widgetDefinitions = self.widgetDefinitions;
           layout.dashboard.stringifyStorage = false;
-          layout.dashboard.defaultWidgets = layout.defaultWidgets;
+          layout.dashboard.defaultWidgets = layout.defaultWidgets || self.defaultWidgets;
           layout.dashboard.widgetButtons = self.widgetButtons;
           layout.dashboard.explicitSave = self.explicitSave;
           self.layouts.push(layout);
         });
       },
 
-      remove: function() {
+      remove: function(layout) {
+        var index = this.layouts.indexOf(layout);
+        if (index >= 0) {
+          this.layouts.splice(index, 1);
 
+          // check for active
+          if (layout.active && this.layouts.length) {
+              var nextActive = index > 0 ? index - 1 : 0;
+              this.layouts[nextActive].active = true;
+          }
+        }
       },
 
       save: function() {
@@ -519,7 +545,7 @@ angular.module('ui.dashboard')
           storageHash: this.storageHash
         };
 
-        if (this.stringify) {
+        if (this.stringifyStorage) {
           state = JSON.stringify(state);
         }
 
@@ -530,6 +556,9 @@ angular.module('ui.dashboard')
       load: function() {
 
         var serialized = this.storage.getItem(this.id);
+        var self = this;
+
+        this.clear();
 
         if (serialized) {
           
@@ -544,8 +573,13 @@ angular.module('ui.dashboard')
         }
 
         else {
-          this.add(this.defaultLayouts);
+          this._addDefaultLayouts();
         }
+      },
+
+      clear: function() {
+        this.layouts = [];
+        this.states = {};
       },
 
       setItem: function(id, value) {
@@ -573,6 +607,13 @@ angular.module('ui.dashboard')
         return false;
       },
 
+      _addDefaultLayouts: function() {
+        var self = this;
+        angular.forEach(this.defaultLayouts, function(layout) {
+          self.add(angular.extend({}, layout));
+        });
+      },
+
       _serializeLayouts: function() {
         var result = [];
         angular.forEach(this.layouts, function(l) {
@@ -590,14 +631,13 @@ angular.module('ui.dashboard')
         
         var deserialized;
 
-        if (this.stringify) {
+        if (this.stringifyStorage) {
           try {
 
             deserialized = JSON.parse(serialized);
 
           } catch (e) {
-
-            this.add(this.defaultLayouts);
+            this._addDefaultLayouts();
             return;
           }
         } else {
@@ -607,7 +647,7 @@ angular.module('ui.dashboard')
         }
 
         if (this.storageHash !== deserialized.storageHash) {
-          this.add(this.defaultLayouts);
+          this._addDefaultLayouts();
           return;
         }
         this.states = deserialized.states;
@@ -617,11 +657,21 @@ angular.module('ui.dashboard')
       _handleAsyncLoad: function(promise) {
         var self = this;
         promise.then(
-          this._handleSyncLoad,
-          function() {
-            self.add(self.defaultLayouts);
-          }
+          angular.bind(self, this._handleSyncLoad),
+          angular.bind(self, this._addDefaultLayouts)
         );
+      },
+
+      _ensureActiveLayout: function() {
+        for (var i = 0; i < this.layouts.length; i++) {
+          var layout = this.layouts[i];
+          if (layout.active) {
+            return;
+          }
+        };
+        if (this.layouts[0]) {
+          this.layouts[0].active = true;
+        }
       }
 
     };
