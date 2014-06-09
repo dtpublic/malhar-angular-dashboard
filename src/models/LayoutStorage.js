@@ -86,6 +86,7 @@ angular.module('ui.dashboard')
         var index = this.layouts.indexOf(layout);
         if (index >= 0) {
           this.layouts.splice(index, 1);
+          delete this.states[layout.id];
 
           // check for active
           if (layout.active && this.layouts.length) {

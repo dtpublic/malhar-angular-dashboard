@@ -366,6 +366,7 @@ describe('Factory: LayoutStorage', function () {
 
     it('should delete the state', function() {
       var layout = storage.layouts[1];
+      storage.setItem(layout.id, {});
       storage.remove(layout);
       expect(storage.states[layout.id]).toBeUndefined();
     });

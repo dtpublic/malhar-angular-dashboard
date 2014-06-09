@@ -526,6 +526,7 @@ angular.module('ui.dashboard')
         var index = this.layouts.indexOf(layout);
         if (index >= 0) {
           this.layouts.splice(index, 1);
+          delete this.states[layout.id];
 
           // check for active
           if (layout.active && this.layouts.length) {
@@ -1312,7 +1313,7 @@ angular.module("ui.dashboard").run(["$templateCache", function($templateCache) {
     "            <form action=\"\" class=\"layout-title\" ng-show=\"layout.editingTitle\" ng-submit=\"saveTitleEdit(layout)\">\n" +
     "                <input type=\"text\" ng-model=\"layout.title\" class=\"form-control\" data-layout=\"{{layout.id}}\">\n" +
     "            </form>\n" +
-    "            <span ng-click=\"removeLayout(layout)\" class=\"glyphicon glyphicon-remove\"></span>\n" +
+    "            <span ng-click=\"removeLayout(layout)\" class=\"glyphicon glyphicon-remove remove-layout-icon\"></span>\n" +
     "            <!-- <span class=\"glyphicon glyphicon-pencil\"></span> -->\n" +
     "            <!-- <span class=\"glyphicon glyphicon-remove\"></span> -->\n" +
     "        </a>\n" +
