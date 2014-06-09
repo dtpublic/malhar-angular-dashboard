@@ -68,9 +68,7 @@ angular.module('ui.dashboard')
         if ( !(layouts instanceof Array) ) {
           layouts = [layouts];
         }
-
         var self = this;
-
         angular.forEach(layouts, function(layout) {
           layout.dashboard = layout.dashboard || {};
           layout.dashboard.storage = self;

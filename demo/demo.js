@@ -110,12 +110,12 @@ angular.module('app', [
     }, 500);
   })
   .controller('LayoutsDemoCtrl', function($scope, widgetDefinitions, defaultWidgets, LayoutStorage, $interval) {
-
     $scope.layoutOptions = {
       storageId: 'demo-layouts',
       storage: localStorage,
       storageHash: 'fs4df4d51',
       widgetDefinitions: widgetDefinitions,
+      defaultWidgets: defaultWidgets,
       defaultLayouts: [
         { title: 'Layout 1', active: true , defaultWidgets: defaultWidgets },
         { title: 'Layout 2', active: false, defaultWidgets: defaultWidgets },
@@ -135,6 +135,7 @@ angular.module('app', [
       storage: localStorage,
       storageHash: 'fs4df4d51',
       widgetDefinitions: widgetDefinitions,
+      defaultWidgets: defaultWidgets,
       explicitSave: true,
       defaultLayouts: [
         { title: 'Layout 1', active: true , defaultWidgets: defaultWidgets },

@@ -294,7 +294,7 @@ angular.module('ui.dashboard')
         scope.layouts = layoutStorage.layouts;
 
         scope.createNewLayout = function() {
-          var newLayout = { title: 'Custom', defaultWidgets: [] }
+          var newLayout = { title: 'Custom', defaultWidgets: scope.options.defaultWidgets || [] }
           layoutStorage.add(newLayout);
           scope.makeLayoutActive(newLayout);
           layoutStorage.save();
@@ -508,9 +508,7 @@ angular.module('ui.dashboard')
         if ( !(layouts instanceof Array) ) {
           layouts = [layouts];
         }
-
         var self = this;
-
         angular.forEach(layouts, function(layout) {
           layout.dashboard = layout.dashboard || {};
           layout.dashboard.storage = self;

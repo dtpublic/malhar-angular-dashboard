@@ -70,6 +70,7 @@ describe('Directive: dashboard-layouts', function () {
           defaultWidgets: defaultWidgets
         }
       ],
+      defaultWidgets: defaultWidgets,
       storage: {
         setItem: function(key, val) {
 
@@ -165,6 +166,20 @@ describe('Directive: dashboard-layouts', function () {
       var result = childScope.createNewLayout();
       expect(result.active).toEqual(true);
     });
+
+    it('should set defaultWidgets to dashboardOptions.defaultWidgets if it is present', function() {
+      var result = childScope.createNewLayout();
+      expect(result.defaultWidgets === options.defaultWidgets).toEqual(true);
+    });
+
+    it('should set defaultWidgets to an empty array if dashboardOptions.defaultWidgets is not present', inject(function($compile) {
+      delete options.defaultWidgets;
+      element = $compile('<div dashboard-layouts="dashboardOptions"></div>')($rootScope);
+      $rootScope.$digest();
+      childScope = element.scope();
+      var result = childScope.createNewLayout();
+      expect(result.defaultWidgets).toEqual([]);
+    }));
 
   });
 

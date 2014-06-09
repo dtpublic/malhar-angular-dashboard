@@ -316,6 +316,16 @@ describe('Factory: LayoutStorage', function () {
 
       var newLayouts = [ { title: 'my-layout', defaultWidgets: [] }, { title: 'my-layout-2' } ];
       storage.add(newLayouts);
+      expect(newLayouts[0].dashboard.defaultWidgets === newLayouts[0].defaultWidgets).toEqual(true);
+      expect(newLayouts[1].dashboard.defaultWidgets === options.defaultWidgets).toEqual(true);
+    });
+
+    it('should use defaultWidgets if supplied in the layout definition', function() {
+      options.defaultWidgets = [{name: 'a'}, {name: 'b'}, {name: 'c'}];
+      storage = new LayoutStorage(options);
+
+      var newLayouts = [ { title: 'my-layout', defaultWidgets: [] }, { title: 'my-layout-2' } ];
+      storage.add(newLayouts);
       expect(newLayouts[0].dashboard.defaultWidgets).toEqual([]);
       expect(newLayouts[1].dashboard.defaultWidgets).toEqual(options.defaultWidgets);
     });
