@@ -512,7 +512,7 @@ angular.module('ui.dashboard')
         angular.forEach(layouts, function(layout) {
           layout.dashboard = layout.dashboard || {};
           layout.dashboard.storage = self;
-          layout.dashboard.storageId = layout.id = self.layouts.length + 1;
+          layout.dashboard.storageId = layout.id = self._getLayoutId.call(self,layout);
           layout.dashboard.widgetDefinitions = self.widgetDefinitions;
           layout.dashboard.stringifyStorage = false;
           layout.dashboard.defaultWidgets = layout.defaultWidgets || self.defaultWidgets;
@@ -671,6 +671,18 @@ angular.module('ui.dashboard')
         if (this.layouts[0]) {
           this.layouts[0].active = true;
         }
+      },
+
+      _getLayoutId: function(layout) {
+        if (layout.id) {
+          return layout.id;
+        }
+        var max = 0;
+        for (var i = 0; i < this.layouts.length; i++) {
+          var id = this.layouts[i].id;
+          max = Math.max(max, id * 1);
+        }
+        return max + 1;
       }
 
     };

@@ -74,3 +74,6 @@
 .remove-layout-icon:hover {
     opacity: 1;
 }
+.layout-title {
+    display: inline-block;
+}
