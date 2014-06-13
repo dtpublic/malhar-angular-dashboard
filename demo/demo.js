@@ -200,5 +200,37 @@ angular.module('app', [
     };
 
     return RandomDataModel;
+  })
+  .directive('wtDashboard', function () {
+    return {
+      restrict: 'A',
+      transclude: true,
+      templateUrl: 'wt-dashboard.html',
+      scope: {
+        value: '='
+      },
+      controller: function ($scope) {
+        $scope.widgets = [];
+
+        this.addWidget = function (widget) {
+          $scope.widgets.push(widget);
+        }
+      }
+    };
+  })
+  .directive('wtWidget', function () {
+    return {
+      restrict: 'A',
+      require: '^wtDashboard',
+      transclude: true,
+      replace: true,
+      scope: {
+        title: '@'
+      },
+      templateUrl: 'wt-widget.html',
+      link: function(scope, element, attrs, dashboardCtrl) {
+        dashboardCtrl.addWidget(attrs.title);
+      }
+    };
   });
 
