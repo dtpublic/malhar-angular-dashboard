@@ -1,16 +1,31 @@
 <div class="row">
     <div class="col-md-12">
         <div wt-dashboard>
-            <div wt-widget title="w1" style="width: 33%;">widget {{10 + 1}}</div>
-            <div wt-widget title="w2" style="width: 33%;">widget {{20 + 1}}</div>
-            <div wt-widget title="w3" style="width: 34%;">widget {{30 + 1}}</div>
-            <div wt-widget title="w4" style="width: 50%;">widget {{40 + 1}}</div>
-            <div wt-widget title="w5" style="width: 50%;">widget {{40 + 1}}</div>
+            <div wt-widget title="w1"
+                    dataAttrName="value"
+                    model-type="RandomDataModel"
+                    style="width: 33%;">
+                <div>
+                    widget {{10 + 1}}
+                    <div wt-scope-watch value="widgetData"></div>
+                </div>
+            </div>
+            <div wt-widget title="w2"
+                    model-type="RandomDataModel"
+                    style="width: 33%;">
+                <div>
+                    widget {{20 + 1}}
+                    <p>{{widgetData}}</p>
+                    <p>{{randomValue}}</p>
+                </div>
+            </div>
+            <div wt-widget title="w3"
+                    style="width: 33%;">
+                <div>
+                    widget {{20 + 1}}
+                    <div wt-time></div>
+                </div>
+            </div>
         </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col-md-12">
-        <div dashboard="dashboardOptions" class="dashboard-container"></div>
     </div>
 </div>
