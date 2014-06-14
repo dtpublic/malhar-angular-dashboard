@@ -206,9 +206,7 @@ angular.module('app', [
       restrict: 'A',
       transclude: true,
       templateUrl: 'wt-dashboard.html',
-      scope: {
-        value: '='
-      },
+      scope: true,
       controller: function ($scope) {
         $scope.widgets = [];
 
@@ -218,7 +216,7 @@ angular.module('app', [
       }
     };
   })
-  .directive('wtWidget', function () {
+  .directive('wtWidget', function ($injector) {
     return {
       restrict: 'A',
       require: '^wtDashboard',
@@ -230,6 +228,32 @@ angular.module('app', [
       templateUrl: 'wt-widget.html',
       link: function(scope, element, attrs, dashboardCtrl) {
         dashboardCtrl.addWidget(attrs.title);
+
+        //TODO Important. This is hack. Workaround to find included widget content scope.
+        //TODO In AngularJS transclude directive creates sibling scope, this should be fixed in AngularJS 1.3
+        //TODO Issue https://github.com/angular/angular.js/issues/5489
+        function getTranscludeScope() {
+          var transcludeElem = jQuery(element).find('[ng-transclude]:first');
+          var transcludeElemChild = angular.element(transcludeElem.children()[0]);
+          return transcludeElemChild.scope();
+        }
+
+        var dataModelType = attrs.modelType;
+
+        if (dataModelType) {
+          var dataScope = getTranscludeScope();
+
+          var widget = {
+            dataAttrName: 'value'
+          }
+          $injector.invoke([dataModelType, function(dataModelType) {
+            var ds = new dataModelType();
+            widget.dataModel = ds;
+            ds.setup(widget, dataScope);
+            ds.init();
+            dataScope.$on('$destroy', _.bind(ds.destroy, ds));
+          }]);
+        }
       }
     };
   });
