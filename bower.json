@@ -4,14 +4,14 @@
   "version": "0.3.0",
   "license": "Apache License, v2.0",
   "dependencies": {
-    "angular": "~1.2.6",
+    "jquery": "~2.0.3",
     "underscore": "~1.5.2",
+    "angular": "~1.2.6",
     "angular-bootstrap": "0.9.0",
     "angular-ui-sortable": "~0.12.8",
     "jquery-ui": "~1.10.4"
   },
   "devDependencies": {
-    "jquery": "~2.0.3",
     "angular-mocks": "~1.2.1",
     "bootstrap": "~3.0.3",
     "angular-bootstrap": "0.9.0",
