@@ -21,7 +21,7 @@ angular.module('ui.dashboard')
     return {
       restrict: 'A',
       transclude: true,
-      templateUrl: 'wt-dashboard.html',
+      templateUrl: 'template/wt-dashboard.html',
       scope: true,
       controller: function ($scope) {
         $scope.widgets = [];

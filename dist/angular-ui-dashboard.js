@@ -461,7 +461,7 @@ angular.module('ui.dashboard')
     return {
       restrict: 'A',
       transclude: true,
-      templateUrl: 'wt-dashboard.html',
+      templateUrl: 'template/wt-dashboard.html',
       scope: true,
       controller: function ($scope) {
         $scope.widgets = [];
@@ -501,7 +501,7 @@ angular.module('ui.dashboard')
         title: '@',
         modelType: '@'
       },
-      templateUrl: 'wt-widget.html',
+      templateUrl: 'template/wt-widget.html',
       link: function (scope, element, attrs, dashboardCtrl) {
         dashboardCtrl.addWidget(attrs.title);
 
@@ -1524,6 +1524,28 @@ angular.module("ui.dashboard").run(["$templateCache", function($templateCache) {
     "<div class=\"modal-footer\">\n" +
     "    <button type=\"button\" class=\"btn btn-default\" ng-click=\"cancel()\">Cancel</button>\n" +
     "    <button type=\"button\" class=\"btn btn-primary\" ng-click=\"ok()\">OK</button>\n" +
+    "</div>"
+  );
+
+  $templateCache.put("template/wt-dashboard.html",
+    "<div style=\"padding: 10px;\">\n" +
+    "    <p>Declarative Dashboard</p>\n" +
+    "    Widgets: {{widgets}}\n" +
+    "    <div ui-sortable=\"sortableOptions\" class=\"dashboard-widget-area\" ng-transclude>\n" +
+    "    </div>\n" +
+    "</div>\n"
+  );
+
+  $templateCache.put("template/wt-widget.html",
+    "<div class=\"widget-container\">\n" +
+    "<div class=\"widget panel panel-default\">\n" +
+    "    <div class=\"widget-header panel-heading\">\n" +
+    "        {{title}}\n" +
+    "    </div>\n" +
+    "    <div class=\"panel-body\">\n" +
+    "        <div ng-transclude></div>\n" +
+    "    </div>\n" +
+    "</div>\n" +
     "</div>"
   );
 

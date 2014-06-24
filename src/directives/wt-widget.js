@@ -27,7 +27,7 @@ angular.module('ui.dashboard')
         title: '@',
         modelType: '@'
       },
-      templateUrl: 'wt-widget.html',
+      templateUrl: 'template/wt-widget.html',
       link: function (scope, element, attrs, dashboardCtrl) {
         dashboardCtrl.addWidget(attrs.title);
 
