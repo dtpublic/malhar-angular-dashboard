@@ -223,7 +223,8 @@ angular.module('app', [
       transclude: true,
       replace: true,
       scope: {
-        title: '@'
+        title: '@',
+        modelType: '@'
       },
       templateUrl: 'wt-widget.html',
       link: function(scope, element, attrs, dashboardCtrl) {
