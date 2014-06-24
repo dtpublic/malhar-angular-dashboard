@@ -93,6 +93,7 @@ module.exports = function (grunt) {
         options: {
           open: true,
           base: [
+            '.',
             'demo',
             'dist'
           ]
