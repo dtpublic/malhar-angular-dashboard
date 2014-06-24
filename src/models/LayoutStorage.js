@@ -39,7 +39,7 @@ angular.module('ui.dashboard')
         storage: noopStorage,
         storageHash: '',
         stringifyStorage: true
-      }
+      };
 
       angular.extend(defaults, options);
       angular.extend(options, defaults);
@@ -90,8 +90,8 @@ angular.module('ui.dashboard')
 
           // check for active
           if (layout.active && this.layouts.length) {
-              var nextActive = index > 0 ? index - 1 : 0;
-              this.layouts[nextActive].active = true;
+            var nextActive = index > 0 ? index - 1 : 0;
+            this.layouts[nextActive].active = true;
           }
         }
       },
@@ -115,7 +115,6 @@ angular.module('ui.dashboard')
       load: function() {
 
         var serialized = this.storage.getItem(this.id);
-        var self = this;
 
         this.clear();
 
@@ -227,7 +226,7 @@ angular.module('ui.dashboard')
           if (layout.active) {
             return;
           }
-        };
+        }
         if (this.layouts[0]) {
           this.layouts[0].active = true;
         }

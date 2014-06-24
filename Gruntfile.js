@@ -93,6 +93,7 @@ module.exports = function (grunt) {
         options: {
           open: true,
           base: [
+            '.',
             'demo',
             'dist'
           ]
@@ -102,6 +103,7 @@ module.exports = function (grunt) {
   });
 
   grunt.registerTask('test', [
+    'jshint',
     'ngtemplates',
     'karma'
   ]);

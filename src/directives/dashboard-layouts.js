@@ -32,7 +32,7 @@ angular.module('ui.dashboard')
         scope.layouts = layoutStorage.layouts;
 
         scope.createNewLayout = function() {
-          var newLayout = { title: 'Custom', defaultWidgets: scope.options.defaultWidgets || [] }
+          var newLayout = { title: 'Custom', defaultWidgets: scope.options.defaultWidgets || [] };
           layoutStorage.add(newLayout);
           scope.makeLayoutActive(newLayout);
           layoutStorage.save();
