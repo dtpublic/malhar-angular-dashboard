@@ -4,19 +4,24 @@
             <div wt-widget title="w1"
                     dataAttrName="value"
                     model-type="RandomDataModel"
+                    model-options="{{ { scale: 1000 } }}"
                     style="width: 33%;">
                 <div>
                     widget {{10 + 1}}
+                    <p>{{randomValue}}</p>
                     <div wt-scope-watch value="widgetData"></div>
+                    <p>RandomDataModel value: {{widgetData}}</p>
                 </div>
             </div>
             <div wt-widget title="w2"
                     model-type="RandomDataModel"
+                    model-options="{{ { scale: 10 } }}"
                     style="width: 33%;">
                 <div>
                     widget {{20 + 1}}
                     <p>{{widgetData}}</p>
                     <p>{{randomValue}}</p>
+                    <p>RandomDataModel value: {{widgetData}}</p>
                 </div>
             </div>
             <div wt-widget title="w3"
