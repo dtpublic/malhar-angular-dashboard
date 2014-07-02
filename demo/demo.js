@@ -189,7 +189,8 @@ angular.module('app', [
     RandomDataModel.prototype.init = function () {
       this.updateScope('-');
       this.intervalPromise = $interval(function () {
-        var value = Math.floor(Math.random() * 100);
+        var scale = this.dataModelOptions ? this.dataModelOptions.scale : 100;
+        var value = Math.floor(Math.random() * scale);
         this.updateScope(value);
       }.bind(this), 500);
     };

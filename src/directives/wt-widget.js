@@ -25,9 +25,10 @@ angular.module('ui.dashboard')
       replace: true,
       scope: {
         title: '@',
-        modelType: '@'
+        modelType: '@',
+        modelOptions: '@'
       },
-      templateUrl: 'wt-widget.html',
+      templateUrl: 'template/wt-widget.html',
       link: function (scope, element, attrs, dashboardCtrl) {
         dashboardCtrl.addWidget(attrs.title);
 
@@ -41,12 +42,15 @@ angular.module('ui.dashboard')
         }
 
         var dataModelType = attrs.modelType;
+        var modelOptions = scope.$eval(attrs.modelOptions);
+        console.log(modelOptions);
 
         if (dataModelType) {
           var dataScope = getTranscludeScope();
 
           var widget = {
-            dataAttrName: 'value'
+            dataAttrName: 'value',
+            dataModelOptions: modelOptions
           };
 
           $injector.invoke([dataModelType, function (DataModelType) {
