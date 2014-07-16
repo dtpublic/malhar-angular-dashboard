@@ -6,15 +6,15 @@
   "dependencies": {
     "jquery": "~2.0.3",
     "underscore": "~1.5.2",
-    "angular": "~1.2.6",
+    "angular": "~1.2.20",
     "angular-bootstrap": "0.9.0",
     "angular-ui-sortable": "~0.12.8",
     "jquery-ui": "~1.10.4"
   },
   "devDependencies": {
-    "angular-mocks": "~1.2.1",
+    "angular-mocks": "~1.2.20",
     "bootstrap": "~3.0.3",
     "angular-bootstrap": "0.9.0",
-    "angular-route": "~1.2.15"
+    "angular-route": "~1.2.20"
   }
 }
