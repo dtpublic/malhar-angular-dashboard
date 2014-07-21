@@ -27,18 +27,6 @@ angular.module('ui.dashboard')
       scope: true,
 
       controller: ['$scope', '$attrs', function (scope, attrs) {
-        var defaults = {
-          stop: function () {
-            scope.saveDashboard();
-          },
-          handle: '.widget-header'
-        };
-        var options = scope.$eval(attrs.dashboard);
-        scope.sortableOptions = angular.extend({}, defaults, options.sortableOptions || {});
-
-      }],
-      link: function (scope, element, attrs) {
-
         // default options
         var defaults = {
           stringifyStorage: true
@@ -49,6 +37,17 @@ angular.module('ui.dashboard')
         // from dashboard="options"
         angular.extend(defaults, scope.options);
         angular.extend(scope.options, defaults);
+
+        var sortableDefaults = {
+          stop: function () {
+            scope.saveDashboard();
+          },
+          handle: '.widget-header'
+        };
+        scope.sortableOptions = angular.extend({}, sortableDefaults, scope.options.sortableOptions || {});
+
+      }],
+      link: function (scope) {
 
         // Save default widget config for reset
         scope.defaultWidgets = scope.options.defaultWidgets;
