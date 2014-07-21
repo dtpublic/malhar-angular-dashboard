@@ -48,11 +48,14 @@ describe('Directive: dashboard', function () {
     $rootScope.dashboardOptions = {
       widgetButtons: true,
       widgetDefinitions: widgetDefinitions,
-      defaultWidgets: defaultWidgets
+      defaultWidgets: defaultWidgets,
+      sortableOptions: {
+        testProperty: 'foobar'
+      }
     };
     $rootScope.value = 10;
 
-    // element setup 
+    // element setup
     element = $compile('<div dashboard="dashboardOptions"></div>')($rootScope);
     $rootScope.$digest();
     childScope = element.scope();
@@ -143,6 +146,10 @@ describe('Directive: dashboard', function () {
       expect(typeof childScope.sortableOptions).toEqual('object');
     });
 
+    it('should be possible to be extendable from the dashboardOptions', function() {
+      expect(childScope.sortableOptions.testProperty).toEqual('foobar');
+    })
+
     it('should have a stop function that calls $scope.saveDashboard', function() {
       expect(typeof childScope.sortableOptions.stop).toEqual('function');
       spyOn(childScope, 'saveDashboard');
@@ -150,7 +157,7 @@ describe('Directive: dashboard', function () {
       expect(childScope.saveDashboard).toHaveBeenCalled();
     });
   });
-  
+
   describe('the addWidget function', function() {
 
     var widgetCreated, widgetPassed, widgetDefault;
@@ -160,7 +167,7 @@ describe('Directive: dashboard', function () {
         widgetCreated = w;
       }
     });
-    
+
     it('should be a function', function() {
       expect(typeof childScope.addWidget).toEqual('function');
     });
@@ -273,7 +280,7 @@ describe('Directive: dashboard', function () {
     });
 
     describe('the doNotSave parameter', function() {
-      
+
       it('should prevent save from being called if set to true', function() {
         spyOn(childScope.widgetDefs, 'getByName').and.returnValue({ title: 'defaultTitle', name: 'A' });
         spyOn(childScope, 'saveDashboard');
@@ -286,7 +293,7 @@ describe('Directive: dashboard', function () {
   });
 
   describe('the removeWidget function', function() {
-    
+
     it('should be a function', function() {
       expect(typeof childScope.removeWidget).toEqual('function');
     });
@@ -305,14 +312,14 @@ describe('Directive: dashboard', function () {
     it('should call saveDashboard', function() {
       spyOn(childScope, 'saveDashboard');
       var widgetToRemove = childScope.widgets[0];
-      childScope.removeWidget(widgetToRemove);      
+      childScope.removeWidget(widgetToRemove);
       expect(childScope.saveDashboard).toHaveBeenCalled();
     });
 
   });
 
   describe('the saveDashboard function', function() {
-    
+
     it('should be attached to the options object after initialization', function() {
       expect(typeof $rootScope.dashboardOptions.saveDashboard).toEqual('function');
       expect($rootScope.dashboardOptions.saveDashboard === childScope.externalSaveDashboard).toEqual(true);
@@ -369,7 +376,7 @@ describe('Directive: dashboard', function () {
   });
 
   describe('the loadWidgets function', function() {
-    
+
     it('should be a function', function() {
       expect(typeof childScope.loadWidgets).toEqual('function');
     });
@@ -406,7 +413,7 @@ describe('Directive: dashboard', function () {
   });
 
   describe('the clear function', function() {
-    
+
     it('should set the scope to an empty array', function() {
       childScope.clear();
       expect(childScope.widgets).toEqual([]);
