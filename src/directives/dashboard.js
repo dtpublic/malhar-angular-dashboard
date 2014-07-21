@@ -26,14 +26,15 @@ angular.module('ui.dashboard')
       },
       scope: true,
 
-      controller: ['$scope',function ($scope) {
+      controller: ['$scope', '$attrs', function (scope, attrs) {
         var defaults = {
           stop: function () {
-            $scope.saveDashboard();
+            scope.saveDashboard();
           },
           handle: '.widget-header'
         };
-        $scope.sortableOptions = angular.extend({}, defaults, $scope.sortableOptions || {});
+        var options = scope.$eval(attrs.dashboard);
+        scope.sortableOptions = angular.extend({}, defaults, options.sortableOptions || {});
 
       }],
       link: function (scope, element, attrs) {
