@@ -142,25 +142,26 @@ It is possible to use your own template for the dashboard and widget markup (rep
 `dashboardOptions` in the above html is required and should be an object available on the current scope. The options on said object are as follows:
 
 
-key | type | default value | required | description 
+key | type | default value | required | description
 --- | ---- | ------------- | -------- | -----------
- widgetDefinitions | Array | n/a | yes | List of Widget Definition Objects. See below for available options on those. 
- defaultWidgets    | Array | n/a | yes | List of objects where an object is `{ name: [NAME_OF_WIDGET_DEFINITION] }`. TODO: Allow just list of names. 
- widgetButtons     | Boolean | true | no | Display buttons for adding and removing widgets. 
+ widgetDefinitions | Array | n/a | yes | List of Widget Definition Objects. See below for available options on those.
+ defaultWidgets    | Array | n/a | yes | List of objects where an object is `{ name: [NAME_OF_WIDGET_DEFINITION] }`. TODO: Allow just list of names.
+ widgetButtons     | Boolean | true | no | Display buttons for adding and removing widgets.
  storage   | Object | null | no | If defined, this object should implement three methods: `setItem`, `getItem`, and `removeItem`. See the **Persistence** section below.
  storageId | String | null | no (yes if `storage` is defined) | This is used as the first parameter passed to the three `storage` methods above. See the **Persistence** section below.
  storageHash | String | '' | no | This is used to validate/invalidate loaded state. See the **Persistence** section below.
  stringifyStorage | Boolean | true | no | If set to true, the dashboard state will be converted to a JSON string before being passed to `storage.setItem`. Likewise, it will be passed through JSON.parse after being retrieved from `storage.getItem`. See the **Persistence** section below.
  explicitSave | Boolean | false | no | The dashboard will not automatically save to storage for every change. Saves must instead be called explicitly using the `saveDashboard` method that is attached to the option event upon initialization.
+ sortableOptions | Object | n/a | no | Allows to specify the various [sortable options](http://api.jqueryui.com/sortable/#options) of the underlying jQuery UI Sortable.
 
-Upon instantiation, this options object is endowed with a few API methods for use by outside code: `addWidget`, `loadWidgets`, `saveDashboard` and `loadDashboard`. 
+Upon instantiation, this options object is endowed with a few API methods for use by outside code: `addWidget`, `loadWidgets`, `saveDashboard` and `loadDashboard`.
 
 ### Widget Definition Objects
 
 You can think of Widget Definition Objects as a __class__ and the widgets on the page as __instances__ of those classes. The options for a Widget Definition Object are:
 
 
-key               | type     | default value | required | description 
+key               | type     | default value | required | description
 ----------------- | ------   | ------------- | -------- | -----------
 name              | Object   | n/a           | true     | Name of Widget Definition Object. If no `templateUrl`, `template`, or `directive` are on the Widget Definition Object, this is assumed to be a directive name. In other words, the `directive` attribute is set to this value.
 title             | String   | n/a           | false    | Default title of widget instances
@@ -265,9 +266,9 @@ One common requirement for user-customizable dashboards is the ability to have m
 ### layoutOptions
 The `layoutOptions` object passed to dashboard-layouts tries to mirror `dashboardOptions` as closely as possible:
 
-key | type | default value | required | description 
+key | type | default value | required | description
 --- | ---- | ------------- | -------- | -----------
- widgetDefinitions | Array | n/a | yes | Same as in `dashboardOptions` 
+ widgetDefinitions | Array | n/a | yes | Same as in `dashboardOptions`
  defaultLayouts    | Array | n/a | yes | List of objects where an object is `{ title: [STRING_LAYOUT_TITLE], active: [BOOLEAN_ACTIVE_STATE], defaultWidgets: [ARRAY_DEFAULT_WIDGETS] }`. Note that `defaultWidgets` is the same as in `dashboardOptions`.
  widgetButtons     | Boolean | true | no | Same as in `dashboardOptions`
  storage   | Object | null | no | Same as in `dashboardOptions`, only the saved objects look like: `{ layouts: [...], states: {...}, storageHash: '' }`
