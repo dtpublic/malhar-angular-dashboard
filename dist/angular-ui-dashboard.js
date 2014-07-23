@@ -44,11 +44,35 @@ angular.module('ui.dashboard')
           }
         };
 
-        scope.options = scope.$eval(attrs.dashboard);
+        // from dashboard="options"
+        // scope.options = scope.$eval(attrs.dashboard);
+
+        // extend default settingsModalOptions
+        // scope.options.settingsModalOptions = scope.options.settingsModalOptions || {};
+
+        // extend options with defaults
+        // angular.extend(defaults.settingsModalOptions, scope.options.settingsModalOptions);
+        // angular.extend(scope.options.settingsModalOptions, defaults.settingsModalOptions);
+        // angular.extend(defaults, scope.options);
+        // angular.extend(scope.options, defaults);
 
         // from dashboard="options"
-        angular.extend(defaults, scope.options);
-        angular.extend(scope.options, defaults);
+        scope.options = scope.$eval(attrs.dashboard);
+
+        // Deep options
+        scope.options.settingsModalOptions = scope.options.settingsModalOptions || {};
+        _.each(['settingsModalOptions'], function(key) {
+          // Ensure it exists on scope.options
+          scope.options[key] = scope.options[key] || {};
+          // Set defaults
+          _.defaults(scope.options[key], defaults[key]);
+        });
+
+        // Shallow options
+        _.defaults(scope.options, defaults);
+
+        // jQuery.extend(true, defaults, scope.options);
+        // jQuery.extend(scope.options, defaults);
 
         var sortableDefaults = {
           stop: function () {
@@ -127,7 +151,7 @@ angular.module('ui.dashboard')
         scope.openWidgetSettings = function (widget) {
 
           // Set up $modal options 
-          var options = angular.extend({}, scope.options.settingsModalOptions, widget.settingsModalOptions);
+          var options = _.defaults({}, widget.settingsModalOptions, scope.options.settingsModalOptions);
 
           // Ensure widget is resolved
           options.resolve = {
@@ -1009,6 +1033,9 @@ angular.module('ui.dashboard')
           dataModelType: Class.dataModelType,
           //AW Need deep copy of options to support widget options editing
           dataModelOptions: Class.dataModelOptions,
+          settingsModalOptions: Class.settingsModalOptions,
+          onSettingsClose: Class.onSettingsClose,
+          onSettingsDismiss: Class.onSettingsDismiss,
           style: Class.style
         };
       overrides = overrides || {};
@@ -1270,8 +1297,6 @@ angular.module('ui.dashboard')
 
     // set up result object
     $scope.result = jQuery.extend(true, {}, widget);
-
-    console.log($scope.result);
 
     $scope.ok = function () {
       $modalInstance.close($scope.result);

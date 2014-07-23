@@ -24,8 +24,6 @@ angular.module('ui.dashboard')
     // set up result object
     $scope.result = jQuery.extend(true, {}, widget);
 
-    console.log($scope.result);
-
     $scope.ok = function () {
       $modalInstance.close($scope.result);
     };

@@ -524,7 +524,7 @@ describe('Directive: dashboard', function () {
       expect(modalOptions.templateUrl).toEqual(expected);
     });
 
-    it('should set the controller in modal options to the default ("WidgetDialogCtrl")', function() {
+    it('should set the controller in modal options to the default ("WidgetSettingsCtrl")', function() {
       var widget = {};
       var dfr = $q.defer();
       spyOn(mockModal, 'open').and.callFake(function(options) {
@@ -534,8 +534,108 @@ describe('Directive: dashboard', function () {
         };
       });
       childScope.openWidgetSettings(widget);
-      expect(modalOptions.templateUrl).toEqual('template/widget-template.html');
+      expect(modalOptions.controller).toEqual('WidgetSettingsCtrl');
     });
+
+    it('should set the controller in modal options to the default ("WidgetSettingsCtrl"), even when settingsModalOptions is supplied in options', inject(function($rootScope) {
+      
+      scope = $rootScope.$new();
+
+      // options
+      var widgetDefinitions = [
+        {
+          name: 'wt-one',
+          template: '<div class="wt-one-value">{{2 + 2}}</div>'
+        },
+        {
+          name: 'wt-two',
+          template: '<span class="wt-two-value">{{value}}</span>'
+        }
+      ];
+      var defaultWidgets = _.clone(widgetDefinitions);
+      scope.dashboardOptions = {
+        widgetButtons: true,
+        widgetDefinitions: widgetDefinitions,
+        defaultWidgets: defaultWidgets,
+        sortableOptions: {
+          testProperty: 'foobar'
+        },
+        settingsModalOptions: {
+          backdrop: false
+        }
+      };
+      scope.value = 10;
+
+      var dfr = $q.defer();
+      spyOn(mockModal, 'open').and.callFake(function(options) {
+        modalOptions = options;
+        return {
+          result: dfr.promise
+        };
+      });
+
+      // element setup
+      element = $compile('<div dashboard="dashboardOptions"></div>')(scope);
+      scope.$digest();
+      childScope = element.scope();
+
+      childScope.openWidgetSettings({});
+      expect(modalOptions.controller).toEqual('WidgetSettingsCtrl');
+
+    }));
+
+    it('should set the controller in modal options to the default ("WidgetSettingsCtrl"), even when settingsModalOptions is supplied in widget', inject(function($rootScope) {
+      
+      scope = $rootScope.$new();
+
+      // options
+      var widgetDefinitions = [
+        {
+          name: 'wt-one',
+          template: '<div class="wt-one-value">{{2 + 2}}</div>'
+        },
+        {
+          name: 'wt-two',
+          template: '<span class="wt-two-value">{{value}}</span>'
+        }
+      ];
+      var defaultWidgets = _.clone(widgetDefinitions);
+      scope.dashboardOptions = {
+        widgetButtons: true,
+        widgetDefinitions: widgetDefinitions,
+        defaultWidgets: defaultWidgets,
+        sortableOptions: {
+          testProperty: 'foobar'
+        },
+        settingsModalOptions: {
+          backdrop: false
+        }
+      };
+      scope.value = 10;
+
+      var dfr = $q.defer();
+      spyOn(mockModal, 'open').and.callFake(function(options) {
+        modalOptions = options;
+        return {
+          result: dfr.promise
+        };
+      });
+
+      // element setup
+      element = $compile('<div dashboard="dashboardOptions"></div>')(scope);
+      scope.$digest();
+      childScope = element.scope();
+
+      childScope.openWidgetSettings({
+        settingsModalOptions: {
+          templateUrl: 'custom/widget/template.html'
+        }
+      });
+      expect(modalOptions.controller).toEqual('WidgetSettingsCtrl');
+      expect(modalOptions.backdrop).toEqual(false);
+      expect(modalOptions.templateUrl).toEqual('custom/widget/template.html');
+
+    }));
 
     it('should set the controller to scope.options.settingsModalOptions.controller if provided', function() {
       scope.dashboardOptions.settingsModalOptions = {};
