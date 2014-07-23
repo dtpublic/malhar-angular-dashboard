@@ -18,7 +18,7 @@
 
 describe('Directive: dashboard', function () {
 
-  var scope, element, childScope, DashboardState, mockModal, modalOptions, $compile, $q;
+  var scope, element, childScope, DashboardState, mockModal, modalOptions, $compile, $q, mockLog;
 
   // mock UI Sortable
   beforeEach(function () {
@@ -32,7 +32,13 @@ describe('Directive: dashboard', function () {
         modalOptions = options;
       }
     };
+    mockLog = {
+      info: function() {
+
+      }
+    };
     $provide.value('$modal', mockModal);
+    $provide.value('$log', mockLog);
   }));
 
   beforeEach(inject(function (_$compile_, $rootScope, _DashboardState_, _$q_) {
@@ -701,6 +707,63 @@ describe('Directive: dashboard', function () {
       childScope.$digest();
       expect(scope.dashboardOptions.onSettingsDismiss).not.toHaveBeenCalled();
       expect(widget.onSettingsDismiss).toHaveBeenCalledWith('Testing failure', childScope);
+    });
+
+  });
+
+  describe('the default onSettingsClose callback', function() {
+
+    var onSettingsClose;
+
+    beforeEach(function() {
+      onSettingsClose = childScope.options.onSettingsClose;
+    });
+    
+    it('should exist', function() {
+      expect(typeof onSettingsClose).toEqual('function');
+    });
+
+    it('should deep extend widget with result', function() {
+      var result = {
+        title: 'andy',
+        style: {
+          'float': 'left'
+        }
+      };
+      var widget = {
+        title: 'scott',
+        style: {
+          width: '100px'
+        }
+      };
+      onSettingsClose(result, widget, {});
+      expect(widget).toEqual({
+        title: 'andy',
+        style: {
+          width: '100px',
+          'float': 'left'
+        }
+      });
+    });
+
+  });
+
+  describe('the default onSettingsDismiss callback', function() {
+    
+    var onSettingsDismiss;
+
+    beforeEach(function() {
+      onSettingsDismiss = childScope.options.onSettingsDismiss;
+    });
+
+    it('should exist', function() {
+      expect(typeof onSettingsDismiss).toEqual('function');
+    });
+
+    it('should call $log.info with the reason', function() {
+      spyOn(mockLog, 'info');
+      onSettingsDismiss('dismiss reason');
+      expect(mockLog.info).toHaveBeenCalled();
     });
 
   });

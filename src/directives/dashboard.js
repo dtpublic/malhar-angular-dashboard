@@ -18,7 +18,7 @@
 angular.module('ui.dashboard', ['ui.bootstrap', 'ui.sortable']);
 
 angular.module('ui.dashboard')
-  .directive('dashboard', ['WidgetModel', 'WidgetDefCollection', '$modal', 'DashboardState', function (WidgetModel, WidgetDefCollection, $modal, DashboardState) {
+  .directive('dashboard', ['WidgetModel', 'WidgetDefCollection', '$modal', 'DashboardState', '$log', function (WidgetModel, WidgetDefCollection, $modal, DashboardState, $log) {
     return {
       restrict: 'A',
       templateUrl: function(element, attr) {
@@ -36,11 +36,11 @@ angular.module('ui.dashboard')
             templateUrl: 'template/widget-template.html',
             controller: 'WidgetDialogCtrl'
           },
-          onSettingsClose: function(result, widget, scope) {
-
+          onSettingsClose: function(result, widget) { // NOTE: dashboard scope is also passed as 3rd argument
+            jQuery.extend(true, widget, result);
           },
-          onSettingsDismiss: function(reason, scope) {
-
+          onSettingsDismiss: function(reason) { // NOTE: dashboard scope is also passed as 2nd argument
+            $log.info('widget settings were dismissed. Reason: ', reason);
           }
         };
 
