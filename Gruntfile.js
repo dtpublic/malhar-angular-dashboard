@@ -18,6 +18,9 @@ module.exports = function (grunt) {
       unit: {
         configFile: 'karma.conf.js',
         singleRun: true
+      },
+      auto: {
+        configFile: 'karma.conf.js'
       }
     },
     concat: {
@@ -105,7 +108,13 @@ module.exports = function (grunt) {
   grunt.registerTask('test', [
     'jshint',
     'ngtemplates',
-    'karma'
+    'karma:unit'
+  ]);
+
+  grunt.registerTask('test_auto', [
+    'jshint',
+    'ngtemplates',
+    'karma:auto'
   ]);
 
   grunt.registerTask('demo', [
