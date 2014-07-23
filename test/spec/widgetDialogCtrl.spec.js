@@ -43,7 +43,7 @@ describe('Controller: WidgetDialogCtrl', function() {
     }));
 
     describe('the ok method', function() {
-      it('should call close with $scope.result', function() {
+      it('should call close with $scope.result and $scope.widget', function() {
         spyOn($modalInstance, 'close');
         $scope.ok();
         expect($modalInstance.close).toHaveBeenCalled();

@@ -18,7 +18,7 @@
 
 describe('Directive: dashboard', function () {
 
-  var $rootScope, element, childScope, DashboardState;
+  var scope, element, childScope, DashboardState, mockModal, modalOptions, $compile, $q;
 
   // mock UI Sortable
   beforeEach(function () {
@@ -26,12 +26,21 @@ describe('Directive: dashboard', function () {
   });
 
   // load the directive's module
-  beforeEach(module('ui.dashboard'));
+  beforeEach(module('ui.dashboard', function($provide) {
+    mockModal = {
+      open: function(options) {
+        modalOptions = options;
+      }
+    };
+    $provide.value('$modal', mockModal);
+  }));
 
-  beforeEach(inject(function ($compile, _$rootScope_, _DashboardState_) {
+  beforeEach(inject(function (_$compile_, $rootScope, _DashboardState_, _$q_) {
     // services
-    $rootScope = _$rootScope_;
+    scope = $rootScope.$new();
+    $compile = _$compile_;
     DashboardState = _DashboardState_;
+    $q = _$q_;
 
     // options
     var widgetDefinitions = [
@@ -45,7 +54,7 @@ describe('Directive: dashboard', function () {
       }
     ];
     var defaultWidgets = _.clone(widgetDefinitions);
-    $rootScope.dashboardOptions = {
+    scope.dashboardOptions = {
       widgetButtons: true,
       widgetDefinitions: widgetDefinitions,
       defaultWidgets: defaultWidgets,
@@ -53,11 +62,11 @@ describe('Directive: dashboard', function () {
         testProperty: 'foobar'
       }
     };
-    $rootScope.value = 10;
+    scope.value = 10;
 
     // element setup
-    element = $compile('<div dashboard="dashboardOptions"></div>')($rootScope);
-    $rootScope.$digest();
+    element = $compile('<div dashboard="dashboardOptions"></div>')(scope);
+    scope.$digest();
     childScope = element.scope();
   }));
 
@@ -87,15 +96,15 @@ describe('Directive: dashboard', function () {
   });
 
   it('should fill options with defaults', function() {
-    expect($rootScope.dashboardOptions.stringifyStorage).toEqual(true);
+    expect(scope.dashboardOptions.stringifyStorage).toEqual(true);
   });
 
   it('should not overwrite specified options with defaults', inject(function($compile) {
-    $rootScope.dashboardOptions.stringifyStorage = false;
-    element = $compile('<div dashboard="dashboardOptions"></div>')($rootScope);
-    $compile(element)($rootScope);
-    $rootScope.$digest();
-    expect($rootScope.dashboardOptions.stringifyStorage).toEqual(false);
+    scope.dashboardOptions.stringifyStorage = false;
+    element = $compile('<div dashboard="dashboardOptions"></div>')(scope);
+    $compile(element)(scope);
+    scope.$digest();
+    expect(scope.dashboardOptions.stringifyStorage).toEqual(false);
   }));
 
   it('should be able to use a different dashboard template', inject(function($compile, $templateCache) {
@@ -107,7 +116,7 @@ describe('Directive: dashboard', function () {
         '<h3 class="widget-header">' +
         '{{widget.title}}' +
         '<span ng-click="removeWidget(widget);" class="glyphicon glyphicon-remove" ng-if="!options.hideWidgetClose"></span>' +
-        '<span ng-click="openWidgetDialog(widget);" class="glyphicon glyphicon-cog" ng-if="!options.hideWidgetOptions"></span>' +
+        '<span ng-click="openWidgetSettings(widget);" class="glyphicon glyphicon-cog" ng-if="!options.hideWidgetSettings"></span>' +
         '</h3>' +
         '<div class="widget-content"></div>' +
         '<div class="widget-ew-resizer" ng-mousedown="grabResizer($event)"></div>' +
@@ -115,28 +124,28 @@ describe('Directive: dashboard', function () {
         '</div>' +
         '</div>'
     );
-    var customElement = $compile('<div dashboard="dashboardOptions" template-url="myCustomTemplate.html"></div>')($rootScope);
-    $rootScope.$digest();
+    var customElement = $compile('<div dashboard="dashboardOptions" template-url="myCustomTemplate.html"></div>')(scope);
+    scope.$digest();
     expect(customElement.find('.custom-widget').length).toEqual(2);
   }));
 
   it('should set scope.widgets to an empty array if no defaultWidgets are specified', inject(function($compile) {
-    delete $rootScope.dashboardOptions.defaultWidgets;
-    var element2 = $compile('<div dashboard="dashboardOptions"></div>')($rootScope);
-    $rootScope.$digest();
+    delete scope.dashboardOptions.defaultWidgets;
+    var element2 = $compile('<div dashboard="dashboardOptions"></div>')(scope);
+    scope.$digest();
     var childScope2 = element2.scope();
     expect(childScope2.widgets instanceof Array).toEqual(true);
   }));
 
   it('should set options.unsavedChangeCount to 0 upon load', function() {
-    expect($rootScope.dashboardOptions.unsavedChangeCount).toEqual(0);
+    expect(scope.dashboardOptions.unsavedChangeCount).toEqual(0);
   });
 
   it('should not call saveDashboard on load', inject(function($compile) {
     spyOn(DashboardState.prototype, 'save');
-    var s = $rootScope.$new();
+    var s = scope.$new();
     element = $compile('<div dashboard="dashboardOptions"></div>')(s);
-    $rootScope.$digest();
+    scope.$digest();
     expect(DashboardState.prototype.save).not.toHaveBeenCalled();
   }));
 
@@ -321,8 +330,8 @@ describe('Directive: dashboard', function () {
   describe('the saveDashboard function', function() {
 
     it('should be attached to the options object after initialization', function() {
-      expect(typeof $rootScope.dashboardOptions.saveDashboard).toEqual('function');
-      expect($rootScope.dashboardOptions.saveDashboard === childScope.externalSaveDashboard).toEqual(true);
+      expect(typeof scope.dashboardOptions.saveDashboard).toEqual('function');
+      expect(scope.dashboardOptions.saveDashboard === childScope.externalSaveDashboard).toEqual(true);
     });
 
     it('should call scope.dashboardState.save when called internally if explicitSave is falsey', function() {
@@ -332,7 +341,7 @@ describe('Directive: dashboard', function () {
     });
 
     it('should not call scope.dashboardState.save when called internally if explicitSave is truthy', function() {
-      $rootScope.dashboardOptions.explicitSave = true;
+      scope.dashboardOptions.explicitSave = true;
       spyOn(childScope.dashboardState, 'save').and.returnValue(true);
       childScope.saveDashboard();
       expect(childScope.dashboardState.save).not.toHaveBeenCalled();
@@ -341,27 +350,27 @@ describe('Directive: dashboard', function () {
     it('should call scope.dashboardState.save when called externally, no matter what explicitSave value is', function() {
       spyOn(childScope.dashboardState, 'save').and.returnValue(true);
 
-      $rootScope.dashboardOptions.explicitSave = false;
-      $rootScope.dashboardOptions.saveDashboard();
+      scope.dashboardOptions.explicitSave = false;
+      scope.dashboardOptions.saveDashboard();
       expect(childScope.dashboardState.save.calls.count()).toEqual(1);
 
-      $rootScope.dashboardOptions.explicitSave = true;
-      $rootScope.dashboardOptions.saveDashboard();
+      scope.dashboardOptions.explicitSave = true;
+      scope.dashboardOptions.saveDashboard();
       expect(childScope.dashboardState.save.calls.count()).toEqual(2);
     });
 
     it('should keep a count of unsaved changes as unsavedChangeCount', function() {
-      $rootScope.dashboardOptions.explicitSave = true;
+      scope.dashboardOptions.explicitSave = true;
       spyOn(childScope.dashboardState, 'save').and.returnValue(true);
       childScope.saveDashboard();
-      expect($rootScope.dashboardOptions.unsavedChangeCount).toEqual(1);
+      expect(scope.dashboardOptions.unsavedChangeCount).toEqual(1);
       childScope.saveDashboard();
       childScope.saveDashboard();
-      expect($rootScope.dashboardOptions.unsavedChangeCount).toEqual(3);
+      expect(scope.dashboardOptions.unsavedChangeCount).toEqual(3);
     });
 
     it('should reset the cound of unsaved changes if a successful force save occurs', function() {
-      $rootScope.dashboardOptions.explicitSave = true;
+      scope.dashboardOptions.explicitSave = true;
       spyOn(childScope.dashboardState, 'save').and.returnValue(true);
 
       childScope.saveDashboard();
@@ -370,7 +379,7 @@ describe('Directive: dashboard', function () {
 
       childScope.saveDashboard(true);
 
-      expect($rootScope.dashboardOptions.unsavedChangeCount).toEqual(0);
+      expect(scope.dashboardOptions.unsavedChangeCount).toEqual(0);
     });
 
   });
@@ -429,6 +438,269 @@ describe('Directive: dashboard', function () {
       spyOn(childScope, 'saveDashboard');
       childScope.clear();
       expect(childScope.saveDashboard).toHaveBeenCalled();
+    });
+
+  });
+
+  describe('the openWidgetSettings function', function() {
+
+    it('should be a function', function() {
+      expect(typeof childScope.openWidgetSettings).toEqual('function');
+    });
+
+    it('should call $modal.open with default options', function() {
+      var widget = {};
+      spyOn(mockModal, 'open').and.returnValue({
+        result: { then: function(fn) {} }
+      });
+      childScope.openWidgetSettings(widget);
+      expect(mockModal.open).toHaveBeenCalled();
+    });
+
+    it('should have widget in the resolve object', function() {
+      var widget = {};
+      var dfr = $q.defer();
+      spyOn(mockModal, 'open').and.callFake(function(options) {
+        modalOptions = options;
+        return {
+          result: dfr.promise
+        };
+      });
+      childScope.openWidgetSettings(widget);
+      expect(modalOptions.resolve.widget() === widget).toEqual(true);
+    });
+
+    it('should set the templateUrl in modal options to the default ("template/widget-template.html")', function() {
+      var widget = {};
+      var dfr = $q.defer();
+      spyOn(mockModal, 'open').and.callFake(function(options) {
+        modalOptions = options;
+        return {
+          result: dfr.promise
+        };
+      });
+      childScope.openWidgetSettings(widget);
+      expect(modalOptions.templateUrl).toEqual('template/widget-template.html');
+    });
+
+    it('should set the templateUrl in modal options to scope.options.settingsModalOptions.templateUrl', function() {
+      var other;
+      scope.dashboardOptions.settingsModalOptions = {
+        templateUrl: other = 'some/other/url.html'
+      };
+      var widget = {};
+      var dfr = $q.defer();
+      spyOn(mockModal, 'open').and.callFake(function(options) {
+        modalOptions = options;
+        return {
+          result: dfr.promise
+        };
+      });
+      childScope.openWidgetSettings(widget);
+      expect(modalOptions.templateUrl).toEqual(other);
+    });
+
+    it('should set the templateUrl in modal options to widget.settingsModalOptions.templateUrl, if present', function() {
+      var expected;
+      var widget = {
+        settingsModalOptions: {
+          templateUrl: expected = 'specific/template.html'
+        }
+      };
+      var dfr = $q.defer();
+      spyOn(mockModal, 'open').and.callFake(function(options) {
+        modalOptions = options;
+        return {
+          result: dfr.promise
+        };
+      });
+      childScope.openWidgetSettings(widget);
+      expect(modalOptions.templateUrl).toEqual(expected);
+    });
+
+    it('should set the controller in modal options to the default ("WidgetDialogCtrl")', function() {
+      var widget = {};
+      var dfr = $q.defer();
+      spyOn(mockModal, 'open').and.callFake(function(options) {
+        modalOptions = options;
+        return {
+          result: dfr.promise
+        };
+      });
+      childScope.openWidgetSettings(widget);
+      expect(modalOptions.templateUrl).toEqual('template/widget-template.html');
+    });
+
+    it('should set the controller to scope.options.settingsModalOptions.controller if provided', function() {
+      scope.dashboardOptions.settingsModalOptions = {};
+      var expected = scope.dashboardOptions.settingsModalOptions.controller = 'MyCustomCtrl';
+      var widget = {};
+      var dfr = $q.defer();
+      spyOn(mockModal, 'open').and.callFake(function(options) {
+        modalOptions = options;
+        return {
+          result: dfr.promise
+        };
+      });
+      childScope.openWidgetSettings(widget);
+      expect(modalOptions.controller).toEqual(expected);
+    });
+
+    it('should set the controller to widget.settingsModalOptions.controller if provided', function() {
+      var expected;
+      var widget = {
+        settingsModalOptions: {
+          controller: expected = 'MyWidgetCtrl'
+        }
+      };
+      var dfr = $q.defer();
+      spyOn(mockModal, 'open').and.callFake(function(options) {
+        modalOptions = options;
+        return {
+          result: dfr.promise
+        };
+      });
+      childScope.openWidgetSettings(widget);
+      expect(modalOptions.controller).toEqual(expected);
+    });
+
+    it('should pass in other modal options set in scope.options.settingsModalOptions', function() {
+      scope.dashboardOptions.settingsModalOptions = {
+        keyboard: false,
+        windowClass: 'my-extra-class'
+      };
+      var widget = {};
+      var dfr = $q.defer();
+      spyOn(mockModal, 'open').and.callFake(function(options) {
+        modalOptions = options;
+        return {
+          result: dfr.promise
+        };
+      });
+      childScope.openWidgetSettings(widget);
+      expect(modalOptions.keyboard).toEqual(false);
+      expect(modalOptions.windowClass).toEqual('my-extra-class');
+    });
+
+    it('should pass in other modal options set in widget.settingsModalOptions', function() {
+      scope.dashboardOptions.settingsModalOptions = {
+        keyboard: false,
+        windowClass: 'my-extra-class'
+      };
+      var widget = {
+        settingsModalOptions: {
+          keyboard: true,
+          size: 'sm'
+        }
+      };
+      var dfr = $q.defer();
+      spyOn(mockModal, 'open').and.callFake(function(options) {
+        modalOptions = options;
+        return {
+          result: dfr.promise
+        };
+      });
+      childScope.openWidgetSettings(widget);
+      expect(modalOptions.keyboard).toEqual(true);
+      expect(modalOptions.size).toEqual('sm');
+      expect(modalOptions.windowClass).toEqual('my-extra-class');
+    });
+
+    it('should emit a "widgetChanged" event on the childScope when the modal promise is called', function(done) {
+      var widget = {};
+      var result = {};
+      var dfr = $q.defer();
+      spyOn(mockModal, 'open').and.callFake(function(options) {
+        modalOptions = options;
+        return {
+          result: dfr.promise
+        };
+      });
+      spyOn(childScope.options, 'onSettingsClose');
+      childScope.openWidgetSettings(widget);
+      childScope.$on('widgetChanged', done);
+      dfr.resolve(result, widget);
+      childScope.$digest();
+    });
+
+    it('should call scope.options.onSettingsClose when the modal promise is resolved by default', function() {
+      var widget = {};
+      var result = {};
+      var dfr = $q.defer();
+      spyOn(mockModal, 'open').and.callFake(function(options) {
+        modalOptions = options;
+        return {
+          result: dfr.promise
+        };
+      });
+      spyOn(childScope.options, 'onSettingsClose');
+      childScope.openWidgetSettings(widget);
+      dfr.resolve(result);
+      childScope.$digest();
+      expect(scope.dashboardOptions.onSettingsClose).toHaveBeenCalledWith(result, widget, childScope);
+    });
+
+    it('should call scope.options.onSettingsDismiss when the modal promise is rejected by default', function() {
+      var widget = {};
+      var result = {};
+      var dfr = $q.defer();
+      spyOn(mockModal, 'open').and.callFake(function(options) {
+        modalOptions = options;
+        return {
+          result: dfr.promise
+        };
+      });
+      spyOn(childScope.options, 'onSettingsDismiss');
+      childScope.openWidgetSettings(widget);
+      dfr.reject('Testing failure');
+      childScope.$digest();
+      expect(scope.dashboardOptions.onSettingsDismiss).toHaveBeenCalledWith('Testing failure', childScope);
+    });
+
+    it('should call widget.onSettingsClose if provided when the modal promise is resolved', function() {
+      var widget = {
+        onSettingsClose: function(result, widget, scope) {
+
+        }
+      };
+      var result = {};
+      var dfr = $q.defer();
+      spyOn(widget, 'onSettingsClose');
+      spyOn(mockModal, 'open').and.callFake(function(options) {
+        modalOptions = options;
+        return {
+          result: dfr.promise
+        };
+      });
+      spyOn(childScope.options, 'onSettingsClose');
+      childScope.openWidgetSettings(widget);
+      dfr.resolve(result);
+      childScope.$digest();
+      expect(scope.dashboardOptions.onSettingsClose).not.toHaveBeenCalled();
+      expect(widget.onSettingsClose).toHaveBeenCalledWith(result, widget, childScope);
+    });
+
+    it('should call widget.onSettingsDismiss if provided when the modal promise is rejected', function() {
+      var widget = {
+        onSettingsDismiss: function(result, widget, scope) {
+
+        }
+      };
+      var result = {};
+      var dfr = $q.defer();
+      spyOn(widget, 'onSettingsDismiss');
+      spyOn(mockModal, 'open').and.callFake(function(options) {
+        modalOptions = options;
+        return {
+          result: dfr.promise
+        };
+      });
+      spyOn(childScope.options, 'onSettingsDismiss');
+      childScope.openWidgetSettings(widget);
+      dfr.reject('Testing failure');
+      childScope.$digest();
+      expect(scope.dashboardOptions.onSettingsDismiss).not.toHaveBeenCalled();
+      expect(widget.onSettingsDismiss).toHaveBeenCalledWith('Testing failure', childScope);
     });
 
   });

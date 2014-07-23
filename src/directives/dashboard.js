@@ -29,7 +29,19 @@ angular.module('ui.dashboard')
       controller: ['$scope', '$attrs', function (scope, attrs) {
         // default options
         var defaults = {
-          stringifyStorage: true
+          stringifyStorage: true,
+          hideWidgetSettings: false,
+          hideWidgetClose: false,
+          settingsModalOptions: {
+            templateUrl: 'template/widget-template.html',
+            controller: 'WidgetDialogCtrl'
+          },
+          onSettingsClose: function(result, widget, scope) {
+
+          },
+          onSettingsDismiss: function(reason, scope) {
+
+          }
         };
 
         scope.options = scope.$eval(attrs.dashboard);
@@ -112,37 +124,37 @@ angular.module('ui.dashboard')
          * Opens a dialog for setting and changing widget properties
          * @param  {Object} widget The widget instance object
          */
-        scope.openWidgetDialog = function (widget) {
-          var options = widget.editModalOptions;
+        scope.openWidgetSettings = function (widget) {
 
-          // use default options when none are supplied by widget
-          if (!options) {
-            options = {
-              templateUrl: 'template/widget-template.html',
-              resolve: {
-                widget: function () {
-                  return widget;
-                },
-                optionsTemplateUrl: function () {
-                  return scope.options.optionsTemplateUrl;
-                }
-              },
-              controller: 'WidgetDialogCtrl'
-            };
-          }
+          // Set up $modal options 
+          var options = angular.extend({}, scope.options.settingsModalOptions, widget.settingsModalOptions);
+
+          // Ensure widget is resolved
+          options.resolve = {
+            widget: function () {
+              return widget;
+            }
+          };
+          
+          // Create the modal
           var modalInstance = $modal.open(options);
+          var onClose = widget.onSettingsClose || scope.options.onSettingsClose;
+          var onDismiss = widget.onSettingsDismiss || scope.options.onSettingsDismiss;
 
           // Set resolve and reject callbacks for the result promise
           modalInstance.result.then(
             function (result) {
-              console.log('widget dialog closed');
-              console.log('result: ', result);
-              widget.title = result.title;
+              
+              // Call the close callback
+              onClose(result, widget, scope);
+
               //AW Persist title change from options editor
               scope.$emit('widgetChanged', widget);
             },
             function (reason) {
-              console.log('widget dialog dismissed: ', reason);
+              
+              // Call the dismiss callback
+              onDismiss(reason, scope);
 
             }
           );
