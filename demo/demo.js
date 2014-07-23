@@ -18,7 +18,8 @@
 
 angular.module('app', [
     'ngRoute',
-    'ui.dashboard'
+    'ui.dashboard',
+    'btford.markdown'
   ])
   .config(function ($routeProvider) {
     $routeProvider
@@ -56,7 +57,8 @@ angular.module('app', [
       .when('/layouts/explicit-saving', {
         templateUrl: 'layouts.html',
         controller: 'LayoutsDemoExplicitSaveCtrl',
-        title: 'layouts explicit saving'
+        title: 'layouts explicit saving',
+        description: 'This demo showcases dashboard layouts with explicit saving enabled.'
       })
       .otherwise({
         redirectTo: '/'

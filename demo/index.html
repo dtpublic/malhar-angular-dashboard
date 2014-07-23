@@ -42,20 +42,21 @@
 </nav>
 
 <div ng-controller="NavBarCtrl">
-  <div ng-if="$route.current.$$route.description" class="alert alert-success" role="alert">
-    <strong>Description:</strong> {{ $route.current.$$route.description }}
-  </div>
+  <div ng-if="$route.current.$$route.description" class="alert alert-success" role="alert" btf-markdown="'**Description:** ' + $route.current.$$route.description"></div>
 </div>
 
 <div ng-view=""></div>
 
 <script src="bower_components/underscore/underscore.js"></script>
 <script src="bower_components/jquery/jquery.js"></script>
+<script src="bower_components/showdown/src/showdown.js"></script>
 <script src="bower_components/jquery-ui/ui/jquery-ui.js"></script>
 <script src="bower_components/angular/angular.js"></script>
 <script src="bower_components/angular-route/angular-route.js"></script>
 <script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
 <script src="bower_components/angular-ui-sortable/sortable.js"></script>
+<script src="bower_components/angular-sanitize/angular-sanitize.js"></script>
+<script src="bower_components/angular-markdown-directive/markdown.js"></script>
 <script src="dist/angular-ui-dashboard.js"></script>
 <script src="demo.js"></script>
 
