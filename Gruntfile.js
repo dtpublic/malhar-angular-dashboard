@@ -126,7 +126,7 @@ module.exports = function (grunt) {
     'clean:dist',
     'jshint',
     'ngtemplates',
-    'karma',
+    'karma:unit',
     'concat',
     'copy:dist',
     'clean:templates'
