@@ -267,7 +267,7 @@ Custom Widget Settings
 ----------------------
 Unless the `hideWidgetSettings` option is set to true on the dashboard options, each widget by default has a "cog" button in the top right corner that, when clicked, opens up a "modal" (dialog box) with information about the widget and controls to change the title. As of this writing, the default functionality is very minimal; only the widget's title can be changed from this modal. In many cases, you will want to replace and extend the default functionality. In rarer cases, you may even want to override the functionality for a specific widget class. Both of these use-cases are possible using this module.
 
-## Principles
+### Principles
 To understand how these overrides work, it is beneficial to understand what's happening behind the scenes (if you are looking in the code, the relevant snippet is located in `src/directives/dashboard.js`, in the method `openWidgetSettings`). The widget settings modal uses a service called `$modal` from the [angular-bootstrap](http://angular-ui.github.io/bootstrap) project. Specifically, the dashboard calls `$modal.open(options)` where `options` is an object containing (ehem) options for the $modal service to use. The relevant options for understanding widget settings are:
  
  - `templateUrl`: Should point to the template to be used to build the modal markup. The default in this dashboard is `template/widget-settings-template.html`.
@@ -278,7 +278,7 @@ For a full list of options, visit the [angular-bootstrap](http://angular-ui.gith
 
 When the user is done viewing the modal, it is either **dismissed** (the user presses "cancel", meaning he wants to discard any changes made) or it is **closed** (the user presses "ok", meaning he wants to save his changes). These two outcomes are handled by a `$modalInstance` promise that is either resolved or rejected (for information on promises, see the [angular documentation](https://docs.angularjs.org/api/ng/service/$q)).
 
-## Overriding Widget Settings for Every Widget
+### Overriding Widget Settings for Every Widget
 To override the `options` object that gets passed to `$modal.open(options)` for all widgets (i.e. you want to provide a different default templateUrl and/or controller for all widget settings), you may assign an options object to the `settingsModalOptions` key in your dashboard options:
 
     // ... in your controller 
@@ -315,7 +315,7 @@ To override the callbacks that get passed to the `$modalInstance` promise, assig
       }
     };
 
-## Overriding Widget Settings for a Specific Widget Definition
+### Overriding Widget Settings for a Specific Widget Definition
 Overriding widget settings for a specific widget is almost exactly like overriding the default for the entire dashboard, except that you place `settingsModalOptions`, `onSettingsClose`, and `onSettingsDismiss` onto the Widget Definition Object itself:
 
     // ... in your controller 
