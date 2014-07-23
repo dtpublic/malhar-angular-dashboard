@@ -34,7 +34,7 @@ angular.module('ui.dashboard')
           hideWidgetClose: false,
           settingsModalOptions: {
             templateUrl: 'template/widget-template.html',
-            controller: 'WidgetDialogCtrl'
+            controller: 'WidgetSettingsCtrl'
           },
           onSettingsClose: function(result, widget) { // NOTE: dashboard scope is also passed as 3rd argument
             jQuery.extend(true, widget, result);

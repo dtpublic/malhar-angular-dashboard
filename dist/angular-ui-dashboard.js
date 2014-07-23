@@ -34,7 +34,7 @@ angular.module('ui.dashboard')
           hideWidgetClose: false,
           settingsModalOptions: {
             templateUrl: 'template/widget-template.html',
-            controller: 'WidgetDialogCtrl'
+            controller: 'WidgetSettingsCtrl'
           },
           onSettingsClose: function(result, widget) { // NOTE: dashboard scope is also passed as 3rd argument
             jQuery.extend(true, widget, result);
@@ -1264,17 +1264,14 @@ angular.module('ui.dashboard')
 'use strict';
 
 angular.module('ui.dashboard')
-  .controller('WidgetDialogCtrl', ['$scope', '$modalInstance', 'widget', 'optionsTemplateUrl', function ($scope, $modalInstance, widget, optionsTemplateUrl) {
+  .controller('WidgetSettingsCtrl', ['$scope', '$modalInstance', 'widget', function ($scope, $modalInstance, widget) {
     // add widget to scope
     $scope.widget = widget;
 
     // set up result object
-    $scope.result = {
-      title: widget.title
-    };
+    $scope.result = jQuery.extend(true, {}, widget);
 
-    // look for optionsTemplateUrl on widget
-    $scope.optionsTemplateUrl = optionsTemplateUrl || 'template/widget-default-content.html';
+    console.log($scope.result);
 
     $scope.ok = function () {
       $modalInstance.close($scope.result);
@@ -1324,7 +1321,7 @@ angular.module("ui.dashboard").run(["$templateCache", function($templateCache) {
     "                        </form>\n" +
     "                        <span class=\"label label-primary\" ng-if=\"!options.hideWidgetName\">{{widget.name}}</span>\n" +
     "                        <span ng-click=\"removeWidget(widget);\" class=\"glyphicon glyphicon-remove\" ng-if=\"!options.hideWidgetClose\"></span>\n" +
-    "                        <span ng-click=\"openWidgetDialog(widget);\" class=\"glyphicon glyphicon-cog\" ng-if=\"!options.hideWidgetSettings\"></span>\n" +
+    "                        <span ng-click=\"openWidgetSettings(widget);\" class=\"glyphicon glyphicon-cog\" ng-if=\"!options.hideWidgetSettings\"></span>\n" +
     "                    </h3>\n" +
     "                </div>\n" +
     "                <div class=\"panel-body widget-content\"></div>\n" +
@@ -1395,7 +1392,7 @@ angular.module("ui.dashboard").run(["$templateCache", function($templateCache) {
     "                        </form>\n" +
     "                        <span class=\"label label-primary\" ng-if=\"!options.hideWidgetName\">{{widget.name}}</span>\n" +
     "                        <span ng-click=\"removeWidget(widget);\" class=\"glyphicon glyphicon-remove\" ng-if=\"!options.hideWidgetClose\"></span>\n" +
-    "                        <span ng-click=\"openWidgetDialog(widget);\" class=\"glyphicon glyphicon-cog\" ng-if=\"!options.hideWidgetSettings\"></span>\n" +
+    "                        <span ng-click=\"openWidgetSettings(widget);\" class=\"glyphicon glyphicon-cog\" ng-if=\"!options.hideWidgetSettings\"></span>\n" +
     "                    </h3>\n" +
     "                </div>\n" +
     "                <div class=\"panel-body widget-content\"></div>\n" +
