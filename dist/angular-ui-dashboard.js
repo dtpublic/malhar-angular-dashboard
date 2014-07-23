@@ -33,7 +33,7 @@ angular.module('ui.dashboard')
           hideWidgetSettings: false,
           hideWidgetClose: false,
           settingsModalOptions: {
-            templateUrl: 'template/widget-template.html',
+            templateUrl: 'template/widget-settings-template.html',
             controller: 'WidgetSettingsCtrl'
           },
           onSettingsClose: function(result, widget) { // NOTE: dashboard scope is also passed as 3rd argument
@@ -1448,7 +1448,7 @@ angular.module("ui.dashboard").run(["$templateCache", function($templateCache) {
     ""
   );
 
-  $templateCache.put("template/widget-template.html",
+  $templateCache.put("template/widget-settings-template.html",
     "<div class=\"modal-header\">\n" +
     "    <button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-hidden=\"true\" ng-click=\"cancel()\">&times;</button>\n" +
     "  <h3>Widget Options <small>{{widget.title}}</small></h3>\n" +

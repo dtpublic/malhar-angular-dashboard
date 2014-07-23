@@ -476,7 +476,7 @@ describe('Directive: dashboard', function () {
       expect(modalOptions.resolve.widget() === widget).toEqual(true);
     });
 
-    it('should set the templateUrl in modal options to the default ("template/widget-template.html")', function() {
+    it('should set the templateUrl in modal options to the default ("template/widget-settings-template.html")', function() {
       var widget = {};
       var dfr = $q.defer();
       spyOn(mockModal, 'open').and.callFake(function(options) {
@@ -486,7 +486,7 @@ describe('Directive: dashboard', function () {
         };
       });
       childScope.openWidgetSettings(widget);
-      expect(modalOptions.templateUrl).toEqual('template/widget-template.html');
+      expect(modalOptions.templateUrl).toEqual('template/widget-settings-template.html');
     });
 
     it('should set the templateUrl in modal options to scope.options.settingsModalOptions.templateUrl', function() {

@@ -33,7 +33,7 @@ angular.module('ui.dashboard')
           hideWidgetSettings: false,
           hideWidgetClose: false,
           settingsModalOptions: {
-            templateUrl: 'template/widget-template.html',
+            templateUrl: 'template/widget-settings-template.html',
             controller: 'WidgetSettingsCtrl'
           },
           onSettingsClose: function(result, widget) { // NOTE: dashboard scope is also passed as 3rd argument
