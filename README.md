@@ -142,17 +142,22 @@ It is possible to use your own template for the dashboard and widget markup (rep
 `dashboardOptions` in the above html is required and should be an object available on the current scope. The options on said object are as follows:
 
 
-key | type | default value | required | description
---- | ---- | ------------- | -------- | -----------
- widgetDefinitions | Array | n/a | yes | List of Widget Definition Objects. See below for available options on those.
- defaultWidgets    | Array | n/a | yes | List of objects where an object is `{ name: [NAME_OF_WIDGET_DEFINITION] }`. TODO: Allow just list of names.
- widgetButtons     | Boolean | true | no | Display buttons for adding and removing widgets.
- storage   | Object | null | no | If defined, this object should implement three methods: `setItem`, `getItem`, and `removeItem`. See the **Persistence** section below.
- storageId | String | null | no (yes if `storage` is defined) | This is used as the first parameter passed to the three `storage` methods above. See the **Persistence** section below.
- storageHash | String | '' | no | This is used to validate/invalidate loaded state. See the **Persistence** section below.
- stringifyStorage | Boolean | true | no | If set to true, the dashboard state will be converted to a JSON string before being passed to `storage.setItem`. Likewise, it will be passed through JSON.parse after being retrieved from `storage.getItem`. See the **Persistence** section below.
- explicitSave | Boolean | false | no | The dashboard will not automatically save to storage for every change. Saves must instead be called explicitly using the `saveDashboard` method that is attached to the option event upon initialization.
- sortableOptions | Object | n/a | no | Allows to specify the various [sortable options](http://api.jqueryui.com/sortable/#options) of the underlying jQuery UI Sortable.
+| key | type | default value | required | description
+| --- | ---- | ------------- | -------- | -----------
+|  widgetDefinitions | Array | n/a | yes | List of Widget Definition Objects. See below for available options on those.
+|  defaultWidgets    | Array | n/a | yes | List of objects where an object is `{ name: [NAME_OF_WIDGET_DEFINITION] }`. TODO: Allow just list of names.
+|  widgetButtons     | Boolean | true | no | Display buttons for adding and removing widgets.
+|  storage   | Object | null | no | If defined, this object should implement three methods: `setItem`, `getItem`, and `removeItem`. See the **Persistence** section below.
+|  storageId | String | null | no (yes if `storage` is defined) | This is used as the first parameter passed to the three `storage` methods above. See the **Persistence** | section below.
+|  storageHash | String | '' | no | This is used to validate/invalidate loaded state. See the **Persistence** section below.
+|  stringifyStorage | Boolean | true | no | If set to true, the dashboard state will be converted to a JSON string before being passed to `storage.setItem`. Likewise, it will be | passed through JSON.parse after being retrieved from `storage.getItem`. See the **Persistence** section below.
+|  explicitSave | Boolean | false | no | The dashboard will not automatically save to storage for every change. Saves must instead be called explicitly using the `saveDashboard` | method that is attached to the option event upon initialization.
+|  sortableOptions | Object | n/a | no | Allows to specify the various [sortable options](http://api.jqueryui.com/sortable/#options) of the underlying jQuery UI Sortable.
+| hideWidgetSettings | Boolean | false | no | If true, the cog button in the top right corner of each widget will not be present. |
+| hideWidgetClose    | Boolean | false | no | If true, the "x" button in the top right corner of each widget will not be present. |
+| settingsModalOptions | Object | see below | no | The options object to be passed to the `$modal` service for widget settings. See the **Custom Widget Settings** section below. |
+| onSettingsClose      | Function | see below | no | The success callback for when a widget settings dialog is closed by the user. See the **Custom Widget Settings** section below. |
+| onSettingsDismiss    | Function | see below | no | The error callback for when a widget settings dialog is dismissed by the user. See the **Custom Widget Settings** section below. |
 
 Upon instantiation, this options object is endowed with a few API methods for use by outside code: `addWidget`, `loadWidgets`, `saveDashboard` and `loadDashboard`.
 
@@ -161,18 +166,21 @@ Upon instantiation, this options object is endowed with a few API methods for us
 You can think of Widget Definition Objects as a __class__ and the widgets on the page as __instances__ of those classes. The options for a Widget Definition Object are:
 
 
-key               | type     | default value | required | description
------------------ | ------   | ------------- | -------- | -----------
-name              | Object   | n/a           | true     | Name of Widget Definition Object. If no `templateUrl`, `template`, or `directive` are on the Widget Definition Object, this is assumed to be a directive name. In other words, the `directive` attribute is set to this value.
-title             | String   | n/a           | false    | Default title of widget instances
-attrs             | Object   | n/a           | false    | Map of attributes to add to the markup of the widget. Changes to these will be stored when using the `storage` option (see **Persistence** section below).
-templateUrl       | String   | n/a           | false    | URL of template to use for widget content
-template          | String   | n/a           | false    | String template (ignored if templateUrl is present)
-directive         | String   | n/a           | false    | HTML-injectable directive name (eg. `"ng-show"`)
-dataModelType     | Function | n/a           | false    | Constructor for the dataModel object, which provides data to the widget (see below for more information).
-dataModelOptions  | Object   | n/a           | false    | Arbitrary values to supply to the dataModel. Available on dataModel instance as this.dataModelOptions. Serializable values in this object will also be saved if `storage` is being used (see the **Persistence** section below).
-dataAttrName      | String   | n/a           | false    | Name of attribute to bind `widgetData` model
-storageHash       | String   | n/a           | false    | This is analogous to the `storageHash` option on the dashboard, except at a widget-level instead of a dashboard-wide level. This can be helpful if you would only like to invalidate stored state of one widget at a time instead of all widgets.
+| key               | type     | default value | required | description
+| ----------------- | ------   | ------------- | -------- | -----------
+| name              | Object   | n/a           | true     | Name of Widget Definition Object. If no `templateUrl`, `template`, or `directive` are on the Widget Definition | Object, this is assumed to be a directive name. In other words, the `directive` attribute is set to this value.
+| title             | String   | n/a           | false    | Default title of widget instances
+| attrs             | Object   | n/a           | false    | Map of attributes to add to the markup of the widget. Changes to these will be stored when using the `storage` option | (see **Persistence** section below).
+| templateUrl       | String   | n/a           | false    | URL of template to use for widget content
+| template          | String   | n/a           | false    | String template (ignored if templateUrl is present)
+| directive         | String   | n/a           | false    | HTML-injectable directive name (eg. `"ng-show"`)
+| dataModelType     | Function | n/a           | false    | Constructor for the dataModel object, which provides data to the widget (see below for more information).
+| dataModelOptions  | Object   | n/a           | false    | Arbitrary values to supply to the dataModel. Available on dataModel instance as this.dataModelOptions. Serializable | values in this object will also be saved if `storage` is being used (see the **Persistence** section below).
+| dataAttrName      | String   | n/a           | false    | Name of attribute to bind `widgetData` model
+| storageHash       | String   | n/a           | false    | This is analogous to the `storageHash` option on the dashboard, except at a widget-level instead of a dashboard-wide | level. This can be helpful if you would only like to invalidate stored state of one widget at a time instead of all widgets.
+| settingsModalOptions | Object | see below | no | Overrides same-named option in dashboard options for this widget. See the **Custom Widget Settings** section below. |
+| onSettingsClose      | Function | see below | no | Overrides same-named option in dashboard options for this widget. See the **Custom Widget Settings** section below. |
+| onSettingsDismiss    | Function | see below | no | Overrides same-named option in dashboard options for this widget. See the **Custom Widget Settings** section below. |
 
 
 ### dataModelType
@@ -254,6 +262,83 @@ This string will be stored along with the dashboard state. Then later, when stat
 ### `stringifyStorage` (Boolean)
 By default (`stringifyStorage=true`), the dashboard will convert its state (a JavaScript Object) to a string using `JSON.stringify` before passing it to `storage.setItem`. Additionally, the dashboard will assume that `storage.getItem` will return a JSON string and try to parse it with `JSON.parse`. This works with `window.localStorage` nicely, since objects cannot be used as `value` in `localStorage.setItem(key, value)`. However, if you are implementing your own `storage` and would not like this stringification business, set `stringifyStorage` to `false`.
 
+
+Custom Widget Settings
+----------------------
+Unless the `hideWidgetSettings` option is set to true on the dashboard options, each widget by default has a "cog" button in the top right corner that, when clicked, opens up a "modal" (dialog box) with information about the widget and controls to change the title. As of this writing, the default functionality is very minimal; only the widget's title can be changed from this modal. In many cases, you will want to replace and extend the default functionality. In rarer cases, you may even want to override the functionality for a specific widget class. Both of these use-cases are possible using this module.
+
+### Principles
+To understand how these overrides work, it is beneficial to understand what's happening behind the scenes (if you are looking in the code, the relevant snippet is located in `src/directives/dashboard.js`, in the method `openWidgetSettings`). The widget settings modal uses a service called `$modal` from the [angular-bootstrap](http://angular-ui.github.io/bootstrap) project. Specifically, the dashboard calls `$modal.open(options)` where `options` is an object containing (ehem) options for the $modal service to use. The relevant options for understanding widget settings are:
+ 
+ - `templateUrl`: Should point to the template to be used to build the modal markup. The default in this dashboard is `template/widget-settings-template.html`.
+ - `controller`: A string that points to a registered angular controller. This controller handles the behaviors in the modal. The default in this dashboard is `WidgetSettingsCtrl`, located at `src/controllers/widgetSettingsCtrl.js`.
+ - `resolve`: An object where key is an injectable name and value is a function that returns the injected value in the controller. In the case of this dashboard, this property is always set to resolve the widget model so it can be injected into the `$modal` controller.
+
+For a full list of options, visit the [angular-bootstrap](http://angular-ui.github.io/bootstrap) website and scroll to the `$modal` service section.
+
+When the user is done viewing the modal, it is either **dismissed** (the user presses "cancel", meaning he wants to discard any changes made) or it is **closed** (the user presses "ok", meaning he wants to save his changes). These two outcomes are handled by a `$modalInstance` promise that is either resolved or rejected (for information on promises, see the [angular documentation](https://docs.angularjs.org/api/ng/service/$q)).
+
+### Overriding Widget Settings for Every Widget
+To override the `options` object that gets passed to `$modal.open(options)` for all widgets (i.e. you want to provide a different default templateUrl and/or controller for all widget settings), you may assign an options object to the `settingsModalOptions` key in your dashboard options:
+
+    // ... in your controller 
+    $scope.myDashboardOptions = {
+      widgetDefinitions: myWidgetDefinitions,
+      defaultWidgets: myDefaultWidgets,
+      settingsModalOptions: {
+        templateUrl: 'my/custom/widgetSettingsTemplate.html',
+        controller: 'MyCustomWidgetSettingsCtrl' // defined elsewhere,
+        // other $modal.open options can go here, eg:
+        // backdrop: false,
+        // keyboard: false
+      }
+    };
+
+**NOTE:** The `resolve` object gets provided to the `$modal` options by the dashboard, and contains only the widget instance as `widget`. If you put `resolve` in `settingsModalOptions` it will be ignored.
+
+To override the callbacks that get passed to the `$modalInstance` promise, assign functions to the `onSettingsClose` and `onSettingsDismiss` keys on your dashboard options:
+
+    // ... in your controller 
+    $scope.myDashboardOptions = {
+      widgetDefinitions: myWidgetDefinitions,
+      defaultWidgets: myDefaultWidgets,
+      settingsModalOptions: {
+        templateUrl: 'my/custom/widgetSettingsTemplate.html',
+        controller: 'MyCustomWidgetSettingsCtrl'
+      },
+      onSettingsClose: function(resultFromModal, widgetModel, dashboardScope) {
+        // do something to update widgetModel, like the default implementation:
+        jQuery.extend(true, widget, result);
+      },
+      onSettingsDismiss: function(reasonForDismissal, dashboardScope) {
+        // probably do nothing here, since the user pressed cancel
+      }
+    };
+
+### Overriding Widget Settings for a Specific Widget Definition
+Overriding widget settings for a specific widget is almost exactly like overriding the default for the entire dashboard, except that you place `settingsModalOptions`, `onSettingsClose`, and `onSettingsDismiss` onto the Widget Definition Object itself:
+
+    // ... in your controller 
+    $scope.myDashboardOptions = {
+      widgetDefinitions: [
+        {
+          name: 'myAwesomeWidget',
+          template: '<div>hello {{widget.title}}</div>',
+          settingsModalOptions: {
+            templateUrl: 'my/custom/widgetSettingsTemplate.html',
+            controller: 'MyCustomWidgetSettingsCtrl'
+          },
+          onSettingsClose: function(resultFromModal, widgetModel, dashboardScope) {
+            // do something to update widgetModel, like the default implementation:
+            jQuery.extend(true, widget, result);
+          },
+          onSettingsDismiss: function(reasonForDismissal, dashboardScope) {
+            // probably do nothing here, since the user pressed cancel
+          }
+        }
+      ],
+      defaultWidgets: myDefaultWidgets
+    };
 
 Dashboard Layouts
 -----------------

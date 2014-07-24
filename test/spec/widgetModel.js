@@ -25,7 +25,10 @@ describe('Factory: WidgetModel', function () {
         dataAttrName: 'attr-name',
         dataModelType: function TestType() {},
         dataModelOptions: {},
-        style: { width: '10em' }
+        style: { width: '10em' },
+        settingsModalOptions: {},
+        onSettingsClose: function() {},
+        onSettingsDismiss: function() {}
       };
 
       Class2 = {
@@ -97,6 +100,13 @@ describe('Factory: WidgetModel', function () {
         var m2 = new WidgetModel(Class);
       }
       expect(fn).not.toThrow();
+    });
+
+    it('should copy references to settingsModalOptions, onSettingsClose, onSettingsDismiss', function() {
+      var m = new WidgetModel(Class);
+      expect(m.settingsModalOptions).toEqual(Class.settingsModalOptions);
+      expect(m.onSettingsClose).toEqual(Class.onSettingsClose);
+      expect(m.onSettingsDismiss).toEqual(Class.onSettingsDismiss);
     });
 
   });

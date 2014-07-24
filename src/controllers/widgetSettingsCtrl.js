@@ -17,17 +17,12 @@
 'use strict';
 
 angular.module('ui.dashboard')
-  .controller('WidgetDialogCtrl', ['$scope', '$modalInstance', 'widget', 'optionsTemplateUrl', function ($scope, $modalInstance, widget, optionsTemplateUrl) {
+  .controller('WidgetSettingsCtrl', ['$scope', '$modalInstance', 'widget', function ($scope, $modalInstance, widget) {
     // add widget to scope
     $scope.widget = widget;
 
     // set up result object
-    $scope.result = {
-      title: widget.title
-    };
-
-    // look for optionsTemplateUrl on widget
-    $scope.optionsTemplateUrl = optionsTemplateUrl || 'template/widget-default-content.html';
+    $scope.result = jQuery.extend(true, {}, widget);
 
     $scope.ok = function () {
       $modalInstance.close($scope.result);

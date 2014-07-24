@@ -15,6 +15,7 @@
     "angular-mocks": "~1.2.20",
     "bootstrap": "~3.0.3",
     "angular-bootstrap": "0.9.0",
-    "angular-route": "~1.2.20"
+    "angular-route": "~1.2.20",
+    "angular-markdown-directive": "~0.3.0"
   }
 }

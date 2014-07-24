@@ -45,8 +45,15 @@ describe('Factory: LayoutStorage', function () {
           {title: 'something'}
         ],
         widgetButtons: false,
-        explicitSave: false
-      }
+        explicitSave: false,
+        settingsModalOptions: {},
+        onSettingsClose: function() {
+
+        },
+        onSettingsDismiss: function() {
+
+        }
+      };
       storage = new LayoutStorage(options);
     });
 
@@ -70,7 +77,10 @@ describe('Factory: LayoutStorage', function () {
         widgetDefinitions: 'widgetDefinitions',
         defaultLayouts: 'defaultLayouts',
         widgetButtons: 'widgetButtons',
-        explicitSave: 'explicitSave'
+        explicitSave: 'explicitSave',
+        settingsModalOptions: 'settingsModalOptions',
+        onSettingsClose: 'onSettingsClose',
+        onSettingsDismiss: 'onSettingsDismiss'
       };
 
       angular.forEach(properties, function(val, key) {

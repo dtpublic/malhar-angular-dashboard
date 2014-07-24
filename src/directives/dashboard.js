@@ -18,7 +18,7 @@
 angular.module('ui.dashboard', ['ui.bootstrap', 'ui.sortable']);
 
 angular.module('ui.dashboard')
-  .directive('dashboard', ['WidgetModel', 'WidgetDefCollection', '$modal', 'DashboardState', function (WidgetModel, WidgetDefCollection, $modal, DashboardState) {
+  .directive('dashboard', ['WidgetModel', 'WidgetDefCollection', '$modal', 'DashboardState', '$log', function (WidgetModel, WidgetDefCollection, $modal, DashboardState, $log) {
     return {
       restrict: 'A',
       templateUrl: function(element, attr) {
@@ -29,14 +29,50 @@ angular.module('ui.dashboard')
       controller: ['$scope', '$attrs', function (scope, attrs) {
         // default options
         var defaults = {
-          stringifyStorage: true
+          stringifyStorage: true,
+          hideWidgetSettings: false,
+          hideWidgetClose: false,
+          settingsModalOptions: {
+            templateUrl: 'template/widget-settings-template.html',
+            controller: 'WidgetSettingsCtrl'
+          },
+          onSettingsClose: function(result, widget) { // NOTE: dashboard scope is also passed as 3rd argument
+            jQuery.extend(true, widget, result);
+          },
+          onSettingsDismiss: function(reason) { // NOTE: dashboard scope is also passed as 2nd argument
+            $log.info('widget settings were dismissed. Reason: ', reason);
+          }
         };
 
-        scope.options = scope.$eval(attrs.dashboard);
+        // from dashboard="options"
+        // scope.options = scope.$eval(attrs.dashboard);
+
+        // extend default settingsModalOptions
+        // scope.options.settingsModalOptions = scope.options.settingsModalOptions || {};
+
+        // extend options with defaults
+        // angular.extend(defaults.settingsModalOptions, scope.options.settingsModalOptions);
+        // angular.extend(scope.options.settingsModalOptions, defaults.settingsModalOptions);
+        // angular.extend(defaults, scope.options);
+        // angular.extend(scope.options, defaults);
 
         // from dashboard="options"
-        angular.extend(defaults, scope.options);
-        angular.extend(scope.options, defaults);
+        scope.options = scope.$eval(attrs.dashboard);
+
+        // Deep options
+        scope.options.settingsModalOptions = scope.options.settingsModalOptions || {};
+        _.each(['settingsModalOptions'], function(key) {
+          // Ensure it exists on scope.options
+          scope.options[key] = scope.options[key] || {};
+          // Set defaults
+          _.defaults(scope.options[key], defaults[key]);
+        });
+
+        // Shallow options
+        _.defaults(scope.options, defaults);
+
+        // jQuery.extend(true, defaults, scope.options);
+        // jQuery.extend(scope.options, defaults);
 
         var sortableDefaults = {
           stop: function () {
@@ -112,37 +148,37 @@ angular.module('ui.dashboard')
          * Opens a dialog for setting and changing widget properties
          * @param  {Object} widget The widget instance object
          */
-        scope.openWidgetDialog = function (widget) {
-          var options = widget.editModalOptions;
+        scope.openWidgetSettings = function (widget) {
 
-          // use default options when none are supplied by widget
-          if (!options) {
-            options = {
-              templateUrl: 'template/widget-template.html',
-              resolve: {
-                widget: function () {
-                  return widget;
-                },
-                optionsTemplateUrl: function () {
-                  return scope.options.optionsTemplateUrl;
-                }
-              },
-              controller: 'WidgetDialogCtrl'
-            };
-          }
+          // Set up $modal options 
+          var options = _.defaults({}, widget.settingsModalOptions, scope.options.settingsModalOptions);
+
+          // Ensure widget is resolved
+          options.resolve = {
+            widget: function () {
+              return widget;
+            }
+          };
+          
+          // Create the modal
           var modalInstance = $modal.open(options);
+          var onClose = widget.onSettingsClose || scope.options.onSettingsClose;
+          var onDismiss = widget.onSettingsDismiss || scope.options.onSettingsDismiss;
 
           // Set resolve and reject callbacks for the result promise
           modalInstance.result.then(
             function (result) {
-              console.log('widget dialog closed');
-              console.log('result: ', result);
-              widget.title = result.title;
+              
+              // Call the close callback
+              onClose(result, widget, scope);
+
               //AW Persist title change from options editor
               scope.$emit('widgetChanged', widget);
             },
             function (reason) {
-              console.log('widget dialog dismissed: ', reason);
+              
+              // Call the dismiss callback
+              onDismiss(reason, scope);
 
             }
           );
