@@ -10,9 +10,11 @@
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width">
 
+    <!-- build:css(.) styles/stylesheet.min.css -->
     <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css">
     <link rel="stylesheet" href="dist/angular-ui-dashboard.css">
-    <link rel="stylesheet" href="demo.css">
+    <link rel="stylesheet" href="demo/demo.css">
+    <!-- endbuild -->
 </head>
 <body ng-app="app">
 <!--[if lt IE 9]>
@@ -47,10 +49,11 @@
 
 <div ng-view=""></div>
 
+<!-- build:js(.) scripts/script.min.js -->
 <script src="bower_components/underscore/underscore.js"></script>
 <script src="bower_components/jquery/jquery.js"></script>
 <script src="bower_components/showdown/src/showdown.js"></script>
-<script src="bower_components/jquery-ui/ui/jquery-ui.js"></script>
+<script src="bower_components/jquery-ui/jquery-ui.js"></script>
 <script src="bower_components/angular/angular.js"></script>
 <script src="bower_components/angular-route/angular-route.js"></script>
 <script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
@@ -58,7 +61,8 @@
 <script src="bower_components/angular-sanitize/angular-sanitize.js"></script>
 <script src="bower_components/angular-markdown-directive/markdown.js"></script>
 <script src="dist/angular-ui-dashboard.js"></script>
-<script src="demo.js"></script>
+<script src="demo/demo.js"></script>
+<!-- endbuild -->
 
 </body>
 </html>
