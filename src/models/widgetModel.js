@@ -26,6 +26,7 @@ angular.module('ui.dashboard')
           attrs: Class.attrs,
           dataAttrName: Class.dataAttrName,
           dataModelType: Class.dataModelType,
+          dataModelArgs: Class.dataModelArgs, // used in data model constructor, not serialized
           //AW Need deep copy of options to support widget options editing
           dataModelOptions: Class.dataModelOptions,
           settingsModalOptions: Class.settingsModalOptions,
