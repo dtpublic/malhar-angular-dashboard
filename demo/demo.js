@@ -350,19 +350,22 @@ angular.module('app', [
     }
 
     RandomDataModel.prototype = Object.create(WidgetDataModel.prototype);
+    RandomDataModel.prototype.constructor = WidgetDataModel;
 
-    RandomDataModel.prototype.init = function () {
-      this.updateScope('-');
-      this.intervalPromise = $interval(function () {
-        var value = Math.floor(Math.random() * 100);
-        this.updateScope(value);
-      }.bind(this), 500);
-    };
+    angular.extend(RandomDataModel.prototype, {
+      init: function () {
+        this.updateScope('-');
+        this.intervalPromise = $interval(function () {
+          var value = Math.floor(Math.random() * 100);
+          this.updateScope(value);
+        }.bind(this), 500);
+      },
 
-    RandomDataModel.prototype.destroy = function () {
-      WidgetDataModel.prototype.destroy.call(this);
-      $interval.cancel(this.intervalPromise);
-    };
+      destroy: function () {
+        WidgetDataModel.prototype.destroy.call(this);
+        $interval.cancel(this.intervalPromise);
+      }
+    });
 
     return RandomDataModel;
   });
