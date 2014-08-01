@@ -1382,7 +1382,7 @@ angular.module("ui.dashboard").run(["$templateCache", function($templateCache) {
     "        </a>\n" +
     "    </li>\n" +
     "</ul>\n" +
-    "<div ng-repeat=\"layout in layouts | filter:isActive\" dashboard=\"layout.dashboard\" templateUrl=\"template/dashboard.html\"></div>"
+    "<div ng-repeat=\"layout in layouts | filter:isActive\" dashboard=\"layout.dashboard\" template-url=\"template/dashboard.html\"></div>\n"
   );
 
   $templateCache.put("template/dashboard.html",
