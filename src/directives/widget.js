@@ -30,12 +30,15 @@ angular.module('ui.dashboard')
         if (widget.dataModelType) {
           var DataModelConstructor; // data model constructor function
 
-          if (typeof widget.dataModelType === 'function') {
+          var type = typeof widget.dataModelType;
+          if (type === 'function') {
             DataModelConstructor = widget.dataModelType;
-          } else { // assume it is string
+          } else if (type === 'string') {
             $injector.invoke([widget.dataModelType, function (DataModelType) {
               DataModelConstructor = DataModelType;
             }]);
+          } else {
+            throw new Error('widget dataModelType should be function or string');
           }
 
           var ds;
