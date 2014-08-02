@@ -17,7 +17,7 @@
 'use strict';
 
 angular.module('ui.dashboard')
-  .directive('widget', function () {
+  .directive('widget', function ($injector) {
 
     return {
 
@@ -28,11 +28,21 @@ angular.module('ui.dashboard')
         var widget = scope.widget;
         // set up data source
         if (widget.dataModelType) {
+          var DataModelConstructor; // data model constructor function
+
+          if (typeof widget.dataModelType === 'function') {
+            DataModelConstructor = widget.dataModelType;
+          } else { // assume it is string
+            $injector.invoke([widget.dataModelType, function (DataModelType) {
+              DataModelConstructor = DataModelType;
+            }]);
+          }
+
           var ds;
           if (widget.dataModelArgs) {
-            ds = new widget.dataModelType(widget.dataModelArgs);
+            ds = new DataModelConstructor(widget.dataModelArgs);
           } else {
-            ds = new widget.dataModelType();
+            ds = new DataModelConstructor();
           }
           widget.dataModel = ds;
           ds.setup(widget, scope);
