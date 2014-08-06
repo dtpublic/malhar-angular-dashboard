@@ -458,15 +458,15 @@ angular.module('ui.dashboard')
       link: function (scope) {
 
         var widget = scope.widget;
+        var dataModelType = widget.dataModelType;
         // set up data source
-        if (widget.dataModelType) {
+        if (dataModelType) {
           var DataModelConstructor; // data model constructor function
 
-          var type = typeof widget.dataModelType;
-          if (type === 'function') {
-            DataModelConstructor = widget.dataModelType;
-          } else if (type === 'string') {
-            $injector.invoke([widget.dataModelType, function (DataModelType) {
+          if (angular.isFunction(dataModelType)) {
+            DataModelConstructor = dataModelType;
+          } else if (angular.isString(dataModelType)) {
+            $injector.invoke([dataModelType, function (DataModelType) {
               DataModelConstructor = DataModelType;
             }]);
           } else {
