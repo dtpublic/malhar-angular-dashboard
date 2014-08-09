@@ -459,6 +459,7 @@ angular.module('ui.dashboard')
 
         var widget = scope.widget;
         var dataModelType = widget.dataModelType;
+
         // set up data source
         if (dataModelType) {
           var DataModelConstructor; // data model constructor function
