@@ -186,20 +186,10 @@ You can think of Widget Definition Objects as a __class__ and the widgets on the
 
 ### dataModelType
 
-The best way to provide data to a widget is to specify a `dataModelType` in the Widget Definition Object (above). This function is used as a constructor whenever a new widget is instantiated on the page. Here is the relevant code snippet (located in the [widget directive file](https://github.com/DataTorrent/malhar-angular-dashboard/blob/master/src/directives/widget.js):
-
-```JavaScript
-// set up data source
-if (widget.dataModelType) {
-  var ds = new widget.dataModelType();
-  widget.dataModel = ds;
-  ds.setup(widget, scope);
-  ds.init();
-  scope.$on('$destroy', ds.destroy.bind(ds));
-}
-```
-
-As shown, the `dataModelType` is a constructor function whose instances are assumed to implement the following methods: `setup`, `init`, and `destroy`.
+The best way to provide data to a widget is to specify a `dataModelType` in the Widget Definition Object (above). This function is used as a constructor whenever a new widget is instantiated on the page.
+If `dataModelType` is a string it will be looked up with $injector (it should be valid AngularJS-way provider/factory/service).
+In most cases data model should implement the following methods: `init`, and `destroy`.
+Please see [widget directive file](https://github.com/DataTorrent/malhar-angular-dashboard/blob/master/src/directives/widget.js) for implementation details.
 
 #### `setup`
 This function is called once when a widget is instantiated. It takes two arguments: (1) the instance of the [`WidgetModel`](https://github.com/DataTorrent/malhar-angular-dashboard/blob/master/src/models/widgetModel.js) constructor that corresponds to the widget instance, and (2) the scope of the widget.
