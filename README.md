@@ -174,7 +174,7 @@ You can think of Widget Definition Objects as a __class__ and the widgets on the
 | templateUrl       | String   | n/a           | false    | URL of template to use for widget content
 | template          | String   | n/a           | false    | String template (ignored if templateUrl is present)
 | directive         | String   | n/a           | false    | HTML-injectable directive name (eg. `"ng-show"`)
-| dataModelType     | Function | n/a           | false    | Constructor for the dataModel object, which provides data to the widget (see below for more information).
+| dataModelType     | Function or String | n/a           | false    | Constructor for the dataModel object, which provides data to the widget (see below for more information).
 | dataModelOptions  | Object   | n/a           | false    | Arbitrary values to supply to the dataModel. Available on dataModel instance as this.dataModelOptions. Serializable | values in this object will also be saved if `storage` is being used (see the **Persistence** section below).
 | dataModelArgs     | Object   | n/a           | false    | Object to be passed to data model constructor function. This object is not serialized by default and if defined should be present in widget definitions.
 | dataAttrName      | String   | n/a           | false    | Name of attribute to bind `widgetData` model
