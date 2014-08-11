@@ -174,7 +174,7 @@ You can think of Widget Definition Objects as a __class__ and the widgets on the
 | templateUrl       | String   | n/a           | false    | URL of template to use for widget content
 | template          | String   | n/a           | false    | String template (ignored if templateUrl is present)
 | directive         | String   | n/a           | false    | HTML-injectable directive name (eg. `"ng-show"`)
-| dataModelType     | Function or String | n/a           | false    | Constructor for the dataModel object, which provides data to the widget (see below for more information).
+| dataModelType     | Function or String | n/a | false    | Constructor for the dataModel object, which provides data to the widget (see below for more information).
 | dataModelOptions  | Object   | n/a           | false    | Arbitrary values to supply to the dataModel. Available on dataModel instance as this.dataModelOptions. Serializable | values in this object will also be saved if `storage` is being used (see the **Persistence** section below).
 | dataModelArgs     | Object   | n/a           | false    | Object to be passed to data model constructor function. This object is not serialized by default and if defined should be present in widget definitions.
 | dataAttrName      | String   | n/a           | false    | Name of attribute to bind `widgetData` model
@@ -187,7 +187,7 @@ You can think of Widget Definition Objects as a __class__ and the widgets on the
 ### dataModelType
 
 The best way to provide data to a widget is to specify a `dataModelType` in the Widget Definition Object (above). This function is used as a constructor whenever a new widget is instantiated on the page.
-If `dataModelType` is a string it will be looked up with $injector (it should be valid AngularJS-way provider/factory/service).
+If `dataModelType` is a string it will be looked up with $injector (it should be valid AngularJS provider/factory/service).
 In most cases data model should implement the following methods: `init`, and `destroy`.
 Please see [widget directive file](https://github.com/DataTorrent/malhar-angular-dashboard/blob/master/src/directives/widget.js) for implementation details.
 
