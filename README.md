@@ -176,6 +176,7 @@ You can think of Widget Definition Objects as a __class__ and the widgets on the
 | directive         | String   | n/a           | false    | HTML-injectable directive name (eg. `"ng-show"`)
 | dataModelType     | Function | n/a           | false    | Constructor for the dataModel object, which provides data to the widget (see below for more information).
 | dataModelOptions  | Object   | n/a           | false    | Arbitrary values to supply to the dataModel. Available on dataModel instance as this.dataModelOptions. Serializable | values in this object will also be saved if `storage` is being used (see the **Persistence** section below).
+| dataModelArgs     | Object   | n/a           | false    | Object to be passed to data model constructor function. This object is not serialized by default.
 | dataAttrName      | String   | n/a           | false    | Name of attribute to bind `widgetData` model
 | storageHash       | String   | n/a           | false    | This is analogous to the `storageHash` option on the dashboard, except at a widget-level instead of a dashboard-wide | level. This can be helpful if you would only like to invalidate stored state of one widget at a time instead of all widgets.
 | settingsModalOptions | Object | see below | no | Overrides same-named option in dashboard options for this widget. See the **Custom Widget Settings** section below. |
