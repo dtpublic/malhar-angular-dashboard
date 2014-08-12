@@ -562,7 +562,7 @@ angular.module('ui.dashboard')
     LayoutStorage.prototype = {
 
       add: function(layouts) {
-        if ( !(layouts instanceof Array) ) {
+        if (!angular.isArray(layouts)) {
           layouts = [layouts];
         }
         var self = this;
