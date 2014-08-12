@@ -274,7 +274,7 @@ angular.module('ui.dashboard')
         if (savedWidgetDefs instanceof Array) {
           handleStateLoad(savedWidgetDefs);
         }
-        else if (savedWidgetDefs && typeof savedWidgetDefs === 'object' && typeof savedWidgetDefs.then === 'function') {
+        else if (savedWidgetDefs && angular.isObject(savedWidgetDefs) && angular.isFunction(savedWidgetDefs.then)) {
           savedWidgetDefs.then(handleStateLoad, handleStateLoad);
         }
         else {
