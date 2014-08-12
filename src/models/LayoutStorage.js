@@ -125,16 +125,13 @@ angular.module('ui.dashboard')
         this.clear();
 
         if (serialized) {
-          
           // check for promise
           if (angular.isObject(serialized) && angular.isFunction(serialized.then)) {
             this._handleAsyncLoad(serialized);
           } else {
             this._handleSyncLoad(serialized);
           }
-        }
-
-        else {
+        } else {
           this._addDefaultLayouts();
         }
       },
