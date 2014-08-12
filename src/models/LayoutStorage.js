@@ -129,11 +129,9 @@ angular.module('ui.dashboard')
           // check for promise
           if (angular.isObject(serialized) && angular.isFunction(serialized.then)) {
             this._handleAsyncLoad(serialized);
-          }
-           else {
+          } else {
             this._handleSyncLoad(serialized);
           }
-
         }
 
         else {
