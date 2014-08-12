@@ -213,7 +213,7 @@ angular.module('ui.dashboard')
           if (!scope.options.explicitSave) {
             scope.dashboardState.save(scope.widgets);
           } else {
-            if (typeof scope.options.unsavedChangeCount !== 'number') {
+            if (!angular.isNumber(scope.options.unsavedChangeCount)) {
               scope.options.unsavedChangeCount = 0;
             }
             if (force) {
