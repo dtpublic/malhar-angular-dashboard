@@ -71,8 +71,7 @@ angular.module('ui.dashboard')
       return templateString;
     };
 
-    $scope.grabResizer = function (e) {
-
+    $scope.grabResizer = function (e, direction, suppressEmit) {
       var widget = $scope.widget;
       var widgetElm = $element.find('.widget');
 
@@ -81,54 +80,108 @@ angular.module('ui.dashboard')
         return;
       }
 
+      // Initialize direction-specific variables
+      var styleAttr, unitsAttr, eventAttr, dimSetter, onDoubleClick, clickFlag;
+
+      if (direction === 'ns') {
+        styleAttr = 'height';
+        unitsAttr = 'heightUnits';
+        eventAttr = 'clientY';
+        dimSetter = 'setHeight';
+        clickFlag = 'userClickedNSResizer';
+        onDoubleClick = function() {
+          widget.setHeight();
+          $scope.$emit('widgetChanged', widget);
+        };
+      }
+
+      else {
+        styleAttr = 'width';
+        unitsAttr = 'widthUnits';
+        eventAttr = 'clientX';
+        dimSetter = 'setWidth';
+        clickFlag = 'userClickedEWResizer';
+        onDoubleClick = function() {
+          widget.setWidth(100, '%');
+        };
+      }
+
       e.stopPropagation();
       e.originalEvent.preventDefault();
 
-      // get the starting horizontal position
-      var initX = e.clientX;
-      // console.log('initX', initX);
+      // Check for double click (not using ng-dblclick because result is spotty)
+      if ($scope[clickFlag]) {
+        $scope[clickFlag] = false;
+        return onDoubleClick();
+      }
 
-      // Get the current width of the widget and dashboard
-      var pixelWidth = widgetElm.width();
-      var pixelHeight = widgetElm.height();
-      var widgetStyleWidth = widget.style.width;
-      var widthUnits = widget.widthUnits;
-      var unitWidth = parseFloat(widgetStyleWidth);
+      $scope[clickFlag] = true;
+
+      $timeout(function() {
+        $scope[clickFlag] = false;
+      }, 300);
+
+      // get the starting horizontal position
+      var initPosition = e[eventAttr];
+
+      // Get the current dimension of the widget and dashboard
+      var pxDimensions = {
+        width: widgetElm.width(),
+        height: widgetElm.height()
+      };
+      var widgetStyleAmount = widget.style[styleAttr];
+      var unitType = widget[unitsAttr];
+      var unitAmount = parseFloat(widgetStyleAmount);
+      if (isNaN(unitAmount)) {
+        unitAmount = pxDimensions[styleAttr];
+        unitType = 'px';
+      }
 
       // create marquee element for resize action
-      var $marquee = angular.element('<div class="widget-resizer-marquee" style="height: ' + pixelHeight + 'px; width: ' + pixelWidth + 'px;"></div>');
-      widgetElm.append($marquee);
+      var $marquee = widgetElm.find('.widget-resizer-marquee');
+      if (!$marquee.length) {
+        $marquee = angular.element('<div class="widget-resizer-marquee" style="height: ' + pxDimensions.height + 'px; width: ' + pxDimensions.width + 'px;"></div>');
+        widgetElm.append($marquee);
+      }
 
       // determine the unit/pixel ratio
-      var transformMultiplier = unitWidth / pixelWidth;
+      var transformMultiplier = unitAmount / pxDimensions[styleAttr];
 
       // updates marquee with preview of new width
       var mousemove = function (e) {
-        var curX = e.clientX;
-        var pixelChange = curX - initX;
-        var newWidth = pixelWidth + pixelChange;
-        $marquee.css('width', newWidth + 'px');
+        var curPosition = e[eventAttr];
+        var pixelChange = curPosition - initPosition;
+        var newAmount = pxDimensions[styleAttr] + pixelChange;
+        $marquee.css(styleAttr, newAmount + 'px');
       };
 
       // sets new widget width on mouseup
       var mouseup = function (e) {
+        // debugger;
         // remove listener and marquee
         jQuery($window).off('mousemove', mousemove);
         $marquee.remove();
 
         // calculate change in units
-        var curX = e.clientX;
-        var pixelChange = curX - initX;
+        var curPosition = e[eventAttr];
+        var pixelChange = curPosition - initPosition;
         var unitChange = Math.round(pixelChange * transformMultiplier * 100) / 100;
 
         // add to initial unit width
-        var newWidth = unitWidth * 1 + unitChange;
-        widget.setWidth(newWidth + widthUnits);
-        $scope.$emit('widgetChanged', widget);
-        $scope.$apply();
+        var newAmount = unitAmount * 1 + unitChange;
+        widget[dimSetter](newAmount + unitType);
+        if (!suppressEmit) {
+          $scope.$emit('widgetChanged', widget);
+          $scope.$apply();
+        }
       };
-
       jQuery($window).on('mousemove', mousemove).one('mouseup', mouseup);
+    };
+
+    $scope.grabBothResizers = function($event) {
+      console.log('both');
+      $scope.grabResizer($event, 'ew', true);
+      $scope.grabResizer($event, 'ns');
     };
 
     // replaces widget title with input

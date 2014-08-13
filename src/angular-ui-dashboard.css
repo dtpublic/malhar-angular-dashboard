@@ -58,6 +58,25 @@
     cursor: ew-resize;
 }
 
+.widget-ns-resizer {
+    position: absolute;
+    height: 5px;
+    bottom: -2px;
+    width:100%;
+    left:0;
+    cursor: ns-resize;
+}
+
+.widget-corner-resizer {
+    position: absolute;
+    height: 8px;
+    width: 8px;
+    bottom: 0;
+    right: 0;
+    cursor: se-resize;
+    z-index: 1;
+}
+
 .widget .widget-resizer-marquee {
     box-shadow: inset 0 0 0 1px rgba(0,0,0,0.5);
     position: absolute;

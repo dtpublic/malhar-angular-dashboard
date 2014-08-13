@@ -40,6 +40,8 @@
                 </div>
                 <div class="panel-body widget-content"></div>
                 <div class="widget-ew-resizer" ng-mousedown="grabResizer($event)"></div>
+                <div class="widget-ns-resizer" ng-mousedown="grabResizer($event, 'ns')"></div>
+                <div class="widget-corner-resizer" ng-mousedown="grabBothResizers($event)"></div>
             </div>
         </div>
     </div>
