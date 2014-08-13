@@ -74,6 +74,7 @@ angular.module('ui.dashboard')
     $scope.grabResizer = function (e, direction, suppressEmit) {
       var widget = $scope.widget;
       var widgetElm = $element.find('.widget');
+      var innerWidgetElm = $element.find(widget.verticalResizeTarget || '.widget-content');
 
       // ignore middle- and right-click
       if (e.which !== 1) {
@@ -81,14 +82,16 @@ angular.module('ui.dashboard')
       }
 
       // Initialize direction-specific variables
-      var styleAttr, unitsAttr, eventAttr, dimSetter, onDoubleClick, clickFlag;
+      var styleAttr, styleObject, unitsAttr, eventAttr, dimSetter, onDoubleClick, clickFlag, pxDimAttr;
 
       if (direction === 'ns') {
         styleAttr = 'height';
+        styleObject = 'innerStyle';
         unitsAttr = 'heightUnits';
         eventAttr = 'clientY';
         dimSetter = 'setHeight';
         clickFlag = 'userClickedNSResizer';
+        pxDimAttr = 'innerHeight';
         onDoubleClick = function() {
           widget.setHeight();
           $scope.$emit('widgetChanged', widget);
@@ -97,10 +100,12 @@ angular.module('ui.dashboard')
 
       else {
         styleAttr = 'width';
+        styleObject = 'style';
         unitsAttr = 'widthUnits';
         eventAttr = 'clientX';
         dimSetter = 'setWidth';
         clickFlag = 'userClickedEWResizer';
+        pxDimAttr = 'width';
         onDoubleClick = function() {
           widget.setWidth(100, '%');
         };
@@ -127,13 +132,14 @@ angular.module('ui.dashboard')
       // Get the current dimension of the widget and dashboard
       var pxDimensions = {
         width: widgetElm.width(),
-        height: widgetElm.height()
+        height: widgetElm.height(),
+        innerHeight: innerWidgetElm.outerHeight()
       };
-      var widgetStyleAmount = widget.style[styleAttr];
+      var widgetStyleAmount = widget[styleObject][styleAttr];
       var unitType = widget[unitsAttr];
       var unitAmount = parseFloat(widgetStyleAmount);
       if (isNaN(unitAmount)) {
-        unitAmount = pxDimensions[styleAttr];
+        unitAmount = pxDimensions[pxDimAttr];
         unitType = 'px';
       }
 
@@ -145,7 +151,7 @@ angular.module('ui.dashboard')
       }
 
       // determine the unit/pixel ratio
-      var transformMultiplier = unitAmount / pxDimensions[styleAttr];
+      var transformMultiplier = unitAmount / pxDimensions[pxDimAttr];
 
       // updates marquee with preview of new width
       var mousemove = function (e) {
@@ -179,7 +185,6 @@ angular.module('ui.dashboard')
     };
 
     $scope.grabBothResizers = function($event) {
-      console.log('both');
       $scope.grabResizer($event, 'ew', true);
       $scope.grabResizer($event, 'ns');
     };

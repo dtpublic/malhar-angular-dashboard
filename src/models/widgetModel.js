@@ -32,13 +32,15 @@ angular.module('ui.dashboard')
           settingsModalOptions: Class.settingsModalOptions,
           onSettingsClose: Class.onSettingsClose,
           onSettingsDismiss: Class.onSettingsDismiss,
-          style: Class.style
+          style: Class.style,
+          innerStyle: Class.innerStyle
         };
       overrides = overrides || {};
       angular.extend(this, angular.copy(defaults), overrides);
       this.style = this.style || { width: '33%' };
+      this.innerStyle = this.innerStyle || { height: 'auto' };
       this.setWidth(this.style.width);
-      this.setHeight(this.style.height);
+      this.setHeight(this.innerStyle.height);
 
       if (Class.templateUrl) {
         this.templateUrl = Class.templateUrl;
@@ -72,7 +74,7 @@ angular.module('ui.dashboard')
 
       setHeight: function(height, units) {
         if (typeof height === 'undefined') {
-          this.style.height = 'auto';
+          this.innerStyle.height = 'auto';
           delete this.heightUnits;
           return true;
         }
@@ -89,7 +91,7 @@ angular.module('ui.dashboard')
           height = Math.min(100, height);
           height = Math.max(0, height);
         }
-        this.style.height = height + '' + units;
+        this.innerStyle.height = height + '' + units;
         return true;
       }
     };
