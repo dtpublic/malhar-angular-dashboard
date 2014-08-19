@@ -126,6 +126,9 @@ angular.module('ui.dashboard')
         widget.setWidth(newWidth + widthUnits);
         $scope.$emit('widgetChanged', widget);
         $scope.$apply();
+        $scope.$broadcast('widgetResized', {
+          width: newWidth
+        });
       };
 
       jQuery($window).on('mousemove', mousemove).one('mouseup', mouseup);
