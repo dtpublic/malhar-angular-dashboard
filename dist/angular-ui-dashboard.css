@@ -7,10 +7,11 @@
     float:left;
     display: inline-block;
     width: 33%;
+    padding-bottom: 1em;
 }
 
 .widget {
-    margin: 0 1em 1em 0;
+    margin: 0 1em 0 0;
     background-color: white;
     border: 2px solid #444;
     border-radius: 5px;
@@ -45,8 +46,21 @@
     display: inline-block;
 }
 
+.widget-container .panel-default {
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: column;
+    flex-direction: column;
+}
+
+.widget-container .panel-default .panel-body {
+    -webkit-flex: 1;
+    flex: 1;
+}
+
 .widget-content {
     overflow: hidden;
+    height: 100%;
 }
 
 .widget .widget-ew-resizer {
@@ -56,6 +70,14 @@
     height:100%;
     top:0;
     cursor: ew-resize;
+}
+
+.widget .widget-s-resizer {
+    cursor: ns-resize;
+    height: 5px;
+    width: 100%;
+    bottom: -7px;
+    left: 0;
 }
 
 .widget .widget-resizer-marquee {
