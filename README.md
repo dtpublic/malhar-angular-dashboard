@@ -372,4 +372,6 @@ Links
 
 [Bower](http://bower.io/) Package manager for the web
 
-[Grunt](http://gruntjs.com/) JavaScript Task Runner
+[Grunt](http://gruntjs.com/) JavaScript task runner
+
+[Gulp](http://gulpjs.com/) Streaming build system
