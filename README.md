@@ -3,7 +3,7 @@ angular-dashboard
 
 [![Build Status](https://travis-ci.org/DataTorrent/malhar-angular-dashboard.svg?branch=master)](https://travis-ci.org/DataTorrent/malhar-angular-dashboard)
 
-Generic AngularJS directive providing Dashboard/Widgets functionality.
+Generic AngularJS component/directive providing dashboard/widgets functionality.
 
 
 Features:
