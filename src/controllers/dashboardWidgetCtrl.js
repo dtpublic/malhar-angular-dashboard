@@ -176,13 +176,17 @@ angular.module('ui.dashboard')
         var curY = e.clientY;
         var pixelChange = curY - initY;
 
-        var widgetContainer = widgetElm.parent(); // widget container responsible for holding widget width and height
+        //var widgetContainer = widgetElm.parent(); // widget container responsible for holding widget width and height
+        var widgetContainer = widgetElm.find('.widget-content');
 
         var diff = pixelChange;
         var height = parseInt(widgetContainer.css('height'), 10);
         var newHeight = (height + diff);
 
-        $scope.widget.style.height = newHeight + 'px';
+        //$scope.widget.style.height = newHeight + 'px';
+
+        $scope.widget.contentStyle.height = newHeight + 'px';
+
         $scope.$emit('widgetChanged', $scope.widget);
         $scope.$apply(); // make AngularJS to apply style changes
 

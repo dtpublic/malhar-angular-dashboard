@@ -789,6 +789,7 @@ angular.module('ui.dashboard')
             title: widget.title,
             name: widget.name,
             style: widget.style,
+            contentStyle: widget.contentStyle,
             dataModelOptions: widget.dataModelOptions,
             storageHash: widget.storageHash,
             attrs: widget.attrs
@@ -1049,7 +1050,8 @@ angular.module('ui.dashboard')
           settingsModalOptions: Class.settingsModalOptions,
           onSettingsClose: Class.onSettingsClose,
           onSettingsDismiss: Class.onSettingsDismiss,
-          style: Class.style
+          style: Class.style,
+          contentStyle: Class.contentStyle || {}
         };
       overrides = overrides || {};
       angular.extend(this, angular.copy(defaults), overrides);
@@ -1259,8 +1261,6 @@ angular.module('ui.dashboard')
 
     //TODO refactor
     $scope.grabSouthResizer = function (e) {
-
-      var widget = $scope.widget;
       var widgetElm = $element.find('.widget');
 
       // ignore middle- and right-click
@@ -1301,13 +1301,17 @@ angular.module('ui.dashboard')
         var curY = e.clientY;
         var pixelChange = curY - initY;
 
-        var widgetContainer = widgetElm.parent(); // widget container responsible for holding widget width and height
+        //var widgetContainer = widgetElm.parent(); // widget container responsible for holding widget width and height
+        var widgetContainer = widgetElm.find('.widget-content');
 
         var diff = pixelChange;
-        var height = parseInt(widgetContainer.css('height'));
+        var height = parseInt(widgetContainer.css('height'), 10);
         var newHeight = (height + diff);
 
-        $scope.widget.style.height = newHeight + 'px';
+        //$scope.widget.style.height = newHeight + 'px';
+
+        $scope.widget.contentStyle.height = newHeight + 'px';
+
         $scope.$emit('widgetChanged', $scope.widget);
         $scope.$apply(); // make AngularJS to apply style changes
 
@@ -1498,7 +1502,7 @@ angular.module("ui.dashboard").run(["$templateCache", function($templateCache) {
     "                        <span ng-click=\"openWidgetSettings(widget);\" class=\"glyphicon glyphicon-cog\" ng-if=\"!options.hideWidgetSettings\"></span>\n" +
     "                    </h3>\n" +
     "                </div>\n" +
-    "                <div class=\"panel-body widget-content\"></div>\n" +
+    "                <div class=\"panel-body widget-content\" ng-style=\"widget.contentStyle\"></div>\n" +
     "                <div class=\"widget-ew-resizer\" ng-mousedown=\"grabResizer($event)\"></div>\n" +
     "                <div class=\"widget-s-resizer\" ng-mousedown=\"grabSouthResizer($event)\"></div>\n" +
     "            </div>\n" +
