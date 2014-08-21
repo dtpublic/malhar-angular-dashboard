@@ -136,8 +136,6 @@ angular.module('ui.dashboard')
 
     //TODO refactor
     $scope.grabSouthResizer = function (e) {
-
-      var widget = $scope.widget;
       var widgetElm = $element.find('.widget');
 
       // ignore middle- and right-click
@@ -181,7 +179,7 @@ angular.module('ui.dashboard')
         var widgetContainer = widgetElm.parent(); // widget container responsible for holding widget width and height
 
         var diff = pixelChange;
-        var height = parseInt(widgetContainer.css('height'));
+        var height = parseInt(widgetContainer.css('height'), 10);
         var newHeight = (height + diff);
 
         $scope.widget.style.height = newHeight + 'px';
