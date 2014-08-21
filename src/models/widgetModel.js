@@ -32,7 +32,8 @@ angular.module('ui.dashboard')
           settingsModalOptions: Class.settingsModalOptions,
           onSettingsClose: Class.onSettingsClose,
           onSettingsDismiss: Class.onSettingsDismiss,
-          style: Class.style
+          style: Class.style,
+          contentStyle: Class.contentStyle || {}
         };
       overrides = overrides || {};
       angular.extend(this, angular.copy(defaults), overrides);

@@ -46,21 +46,8 @@
     display: inline-block;
 }
 
-.widget-container .panel-default {
-    display: -webkit-flex;
-    display: flex;
-    -webkit-flex-direction: column;
-    flex-direction: column;
-}
-
-.widget-container .panel-default .panel-body {
-    -webkit-flex: 1;
-    flex: 1;
-}
-
 .widget-content {
     overflow: hidden;
-    height: 100%;
 }
 
 .widget .widget-ew-resizer {

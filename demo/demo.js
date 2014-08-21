@@ -29,6 +29,12 @@ angular.module('app', [
         title: 'simple',
         description: 'This is the simplest demo.'
       })
+      .when('/resize', {
+        templateUrl: 'view.html',
+        controller: 'ResizeDemoCtrl',
+        title: 'resize',
+        description: 'This demo showcases widget resizing.'
+      })
       .when('/custom-settings', {
         templateUrl: 'view.html',
         controller: 'CustomSettingsDemoCtrl',
@@ -85,6 +91,20 @@ angular.module('app', [
         directive: 'wt-scope-watch',
         dataAttrName: 'value',
         dataModelType: RandomDataModel
+      },
+      {
+        name: 'resizable',
+        templateUrl: 'template/resizable.html',
+        attrs: {
+          class: 'demo-widget-resizable'
+        }
+      },
+      {
+        name: 'fluid',
+        directive: 'wt-fluid',
+        contentStyle: {
+          height: '250px'
+        }
       }
     ];
   })
@@ -113,13 +133,39 @@ angular.module('app', [
       widgetDefinitions: widgetDefinitions,
       defaultWidgets: defaultWidgets,
       storage: $window.localStorage,
-      storageId: 'demo'
+      storageId: 'demo_resize'
     };
     $scope.randomValue = Math.random();
     $interval(function () {
       $scope.randomValue = Math.random();
     }, 500);
 
+  })
+  .controller('ResizeDemoCtrl', function ($scope, $interval, $window, widgetDefinitions, defaultWidgets) {
+    defaultWidgets = [
+      { name: 'fluid' },
+      { name: 'resizable' },
+      { name: 'random', style: { width: '50%' } },
+      { name: 'time', style: { width: '50%' } }
+    ];
+
+    $scope.dashboardOptions = {
+      widgetButtons: true,
+      widgetDefinitions: widgetDefinitions,
+      defaultWidgets: defaultWidgets,
+      storage: $window.localStorage,
+      storageId: 'demo_resize'
+    };
+    $scope.randomValue = Math.random();
+    $interval(function () {
+      $scope.randomValue = Math.random();
+    }, 500);
+  })
+  .controller('ResizableCtrl', function ($scope) {
+    $scope.$on('widgetResized', function (event, size) {
+      $scope.width = size.width || $scope.width;
+      $scope.height = size.height || $scope.height;
+    });
   })
   .controller('CustomSettingsDemoCtrl', function($scope, $interval, $window, widgetDefinitions, defaultWidgets, $templateCache) {
 
@@ -199,7 +245,7 @@ angular.module('app', [
       // This can also be set on individual
       // widget definition objects (see above).
       settingsModalOptions: {
-        templateUrl: 'example/custom/template.html',
+        templateUrl: 'example/custom/template.html'
         // We could pass a custom controller name here to be used
         // with the widget settings dialog, but for this demo we
         // will just keep the default.
@@ -342,6 +388,20 @@ angular.module('app', [
       template: '<div>Value<div class="alert alert-info">{{value}}</div></div>',
       scope: {
         value: '=value'
+      }
+    };
+  })
+  .directive('wtFluid', function () {
+    return {
+      restrict: 'A',
+      replace: true,
+      templateUrl: 'template/fluid.html',
+      scope: true,
+      controller: function ($scope) {
+        $scope.$on('widgetResized', function (event, size) {
+          $scope.width = size.width || $scope.width;
+          $scope.height = size.height || $scope.height;
+        });
       }
     };
   })
