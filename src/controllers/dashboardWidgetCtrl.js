@@ -91,7 +91,7 @@ angular.module('ui.dashboard')
       // Get the current width of the widget and dashboard
       var pixelWidth = widgetElm.width();
       var pixelHeight = widgetElm.height();
-      var widgetStyleWidth = widget.style.width;
+      var widgetStyleWidth = widget.containerStyle.width;
       var widthUnits = widget.widthUnits;
       var unitWidth = parseFloat(widgetStyleWidth);
 
@@ -128,6 +128,70 @@ angular.module('ui.dashboard')
         $scope.$apply();
         $scope.$broadcast('widgetResized', {
           width: newWidth
+        });
+      };
+
+      jQuery($window).on('mousemove', mousemove).one('mouseup', mouseup);
+    };
+
+    //TODO refactor
+    $scope.grabSouthResizer = function (e) {
+      var widgetElm = $element.find('.widget');
+
+      // ignore middle- and right-click
+      if (e.which !== 1) {
+        return;
+      }
+
+      e.stopPropagation();
+      e.originalEvent.preventDefault();
+
+      // get the starting horizontal position
+      var initY = e.clientY;
+      // console.log('initX', initX);
+
+      // Get the current width of the widget and dashboard
+      var pixelWidth = widgetElm.width();
+      var pixelHeight = widgetElm.height();
+
+      // create marquee element for resize action
+      var $marquee = angular.element('<div class="widget-resizer-marquee" style="height: ' + pixelHeight + 'px; width: ' + pixelWidth + 'px;"></div>');
+      widgetElm.append($marquee);
+
+      // updates marquee with preview of new height
+      var mousemove = function (e) {
+        var curY = e.clientY;
+        var pixelChange = curY - initY;
+        var newHeight = pixelHeight + pixelChange;
+        $marquee.css('height', newHeight + 'px');
+      };
+
+      // sets new widget width on mouseup
+      var mouseup = function (e) {
+        // remove listener and marquee
+        jQuery($window).off('mousemove', mousemove);
+        $marquee.remove();
+
+        // calculate height change
+        var curY = e.clientY;
+        var pixelChange = curY - initY;
+
+        //var widgetContainer = widgetElm.parent(); // widget container responsible for holding widget width and height
+        var widgetContainer = widgetElm.find('.widget-content');
+
+        var diff = pixelChange;
+        var height = parseInt(widgetContainer.css('height'), 10);
+        var newHeight = (height + diff);
+
+        //$scope.widget.style.height = newHeight + 'px';
+
+        $scope.widget.setHeight(newHeight + 'px');
+
+        $scope.$emit('widgetChanged', $scope.widget);
+        $scope.$apply(); // make AngularJS to apply style changes
+
+        $scope.$broadcast('widgetResized', {
+          height: newHeight
         });
       };
 

@@ -32,12 +32,14 @@ angular.module('ui.dashboard')
           settingsModalOptions: Class.settingsModalOptions,
           onSettingsClose: Class.onSettingsClose,
           onSettingsDismiss: Class.onSettingsDismiss,
-          style: Class.style
+          style: Class.style,
+          size: Class.size || {},
+          containerStyle: { width: '33%' }, // default width
+          contentStyle: {}
         };
+
       overrides = overrides || {};
       angular.extend(this, angular.copy(defaults), overrides);
-      this.style = this.style || { width: '33%' };
-      this.setWidth(this.style.width);
 
       if (Class.templateUrl) {
         this.templateUrl = Class.templateUrl;
@@ -46,6 +48,18 @@ angular.module('ui.dashboard')
       } else {
         var directive = Class.directive || Class.name;
         this.directive = directive;
+      }
+
+      if (this.size && _.has(this.size, 'height')) {
+        this.setHeight(this.size.height);
+      }
+
+      if (this.style && _.has(this.style, 'width')) { //TODO deprecate style attribute
+        this.setWidth(this.style.width);
+      }
+
+      if (this.size && _.has(this.size, 'width')) {
+        this.setWidth(this.size.width);
       }
     }
 
@@ -65,8 +79,21 @@ angular.module('ui.dashboard')
           width = Math.min(100, width);
           width = Math.max(0, width);
         }
-        this.style.width = width + '' + units;
+
+        this.containerStyle.width = width + '' + units;
+
+        this.updateSize(this.containerStyle);
+
         return true;
+      },
+
+      setHeight: function (height) {
+        this.contentStyle.height = height;
+        this.updateSize(this.contentStyle);
+      },
+
+      updateSize: function (size) {
+        angular.extend(this.size, size);
       }
     };
 

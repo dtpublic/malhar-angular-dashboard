@@ -788,7 +788,7 @@ angular.module('ui.dashboard')
           var widgetObject = {
             title: widget.title,
             name: widget.name,
-            style: widget.style,
+            size: widget.size,
             dataModelOptions: widget.dataModelOptions,
             storageHash: widget.storageHash,
             attrs: widget.attrs
@@ -1049,12 +1049,14 @@ angular.module('ui.dashboard')
           settingsModalOptions: Class.settingsModalOptions,
           onSettingsClose: Class.onSettingsClose,
           onSettingsDismiss: Class.onSettingsDismiss,
-          style: Class.style
+          style: Class.style,
+          size: Class.size || {},
+          containerStyle: { width: '33%' }, // default width
+          contentStyle: {}
         };
+
       overrides = overrides || {};
       angular.extend(this, angular.copy(defaults), overrides);
-      this.style = this.style || { width: '33%' };
-      this.setWidth(this.style.width);
 
       if (Class.templateUrl) {
         this.templateUrl = Class.templateUrl;
@@ -1063,6 +1065,18 @@ angular.module('ui.dashboard')
       } else {
         var directive = Class.directive || Class.name;
         this.directive = directive;
+      }
+
+      if (this.size && _.has(this.size, 'height')) {
+        this.setHeight(this.size.height);
+      }
+
+      if (this.style && _.has(this.style, 'width')) { //TODO deprecate style attribute
+        this.setWidth(this.style.width);
+      }
+
+      if (this.size && _.has(this.size, 'width')) {
+        this.setWidth(this.size.width);
       }
     }
 
@@ -1082,8 +1096,21 @@ angular.module('ui.dashboard')
           width = Math.min(100, width);
           width = Math.max(0, width);
         }
-        this.style.width = width + '' + units;
+
+        this.containerStyle.width = width + '' + units;
+
+        this.updateSize(this.containerStyle);
+
         return true;
+      },
+
+      setHeight: function (height) {
+        this.contentStyle.height = height;
+        this.updateSize(this.contentStyle);
+      },
+
+      updateSize: function (size) {
+        angular.extend(this.size, size);
       }
     };
 
@@ -1214,7 +1241,7 @@ angular.module('ui.dashboard')
       // Get the current width of the widget and dashboard
       var pixelWidth = widgetElm.width();
       var pixelHeight = widgetElm.height();
-      var widgetStyleWidth = widget.style.width;
+      var widgetStyleWidth = widget.containerStyle.width;
       var widthUnits = widget.widthUnits;
       var unitWidth = parseFloat(widgetStyleWidth);
 
@@ -1251,6 +1278,70 @@ angular.module('ui.dashboard')
         $scope.$apply();
         $scope.$broadcast('widgetResized', {
           width: newWidth
+        });
+      };
+
+      jQuery($window).on('mousemove', mousemove).one('mouseup', mouseup);
+    };
+
+    //TODO refactor
+    $scope.grabSouthResizer = function (e) {
+      var widgetElm = $element.find('.widget');
+
+      // ignore middle- and right-click
+      if (e.which !== 1) {
+        return;
+      }
+
+      e.stopPropagation();
+      e.originalEvent.preventDefault();
+
+      // get the starting horizontal position
+      var initY = e.clientY;
+      // console.log('initX', initX);
+
+      // Get the current width of the widget and dashboard
+      var pixelWidth = widgetElm.width();
+      var pixelHeight = widgetElm.height();
+
+      // create marquee element for resize action
+      var $marquee = angular.element('<div class="widget-resizer-marquee" style="height: ' + pixelHeight + 'px; width: ' + pixelWidth + 'px;"></div>');
+      widgetElm.append($marquee);
+
+      // updates marquee with preview of new height
+      var mousemove = function (e) {
+        var curY = e.clientY;
+        var pixelChange = curY - initY;
+        var newHeight = pixelHeight + pixelChange;
+        $marquee.css('height', newHeight + 'px');
+      };
+
+      // sets new widget width on mouseup
+      var mouseup = function (e) {
+        // remove listener and marquee
+        jQuery($window).off('mousemove', mousemove);
+        $marquee.remove();
+
+        // calculate height change
+        var curY = e.clientY;
+        var pixelChange = curY - initY;
+
+        //var widgetContainer = widgetElm.parent(); // widget container responsible for holding widget width and height
+        var widgetContainer = widgetElm.find('.widget-content');
+
+        var diff = pixelChange;
+        var height = parseInt(widgetContainer.css('height'), 10);
+        var newHeight = (height + diff);
+
+        //$scope.widget.style.height = newHeight + 'px';
+
+        $scope.widget.setHeight(newHeight + 'px');
+
+        $scope.$emit('widgetChanged', $scope.widget);
+        $scope.$apply(); // make AngularJS to apply style changes
+
+        $scope.$broadcast('widgetResized', {
+          height: newHeight
         });
       };
 
@@ -1423,7 +1514,7 @@ angular.module("ui.dashboard").run(["$templateCache", function($templateCache) {
     "    </div>\n" +
     "\n" +
     "    <div ui-sortable=\"sortableOptions\" ng-model=\"widgets\" class=\"dashboard-widget-area\">\n" +
-    "        <div ng-repeat=\"widget in widgets\" ng-style=\"widget.style\" class=\"widget-container\" widget>\n" +
+    "        <div ng-repeat=\"widget in widgets\" ng-style=\"widget.containerStyle\" class=\"widget-container\" widget>\n" +
     "            <div class=\"widget panel panel-default\">\n" +
     "                <div class=\"widget-header panel-heading\">\n" +
     "                    <h3 class=\"panel-title\">\n" +
@@ -1436,8 +1527,9 @@ angular.module("ui.dashboard").run(["$templateCache", function($templateCache) {
     "                        <span ng-click=\"openWidgetSettings(widget);\" class=\"glyphicon glyphicon-cog\" ng-if=\"!options.hideWidgetSettings\"></span>\n" +
     "                    </h3>\n" +
     "                </div>\n" +
-    "                <div class=\"panel-body widget-content\"></div>\n" +
+    "                <div class=\"panel-body widget-content\" ng-style=\"widget.contentStyle\"></div>\n" +
     "                <div class=\"widget-ew-resizer\" ng-mousedown=\"grabResizer($event)\"></div>\n" +
+    "                <div class=\"widget-s-resizer\" ng-mousedown=\"grabSouthResizer($event)\"></div>\n" +
     "            </div>\n" +
     "        </div>\n" +
     "    </div>\n" +
