@@ -189,7 +189,7 @@ You can think of Widget Definition Objects as a __class__ and the widgets on the
 
 ### Widget Resize
 
-Widgets width and height is controlled with `size` attribute (serialized by default). Width can be specified in percentage.
+Widgets width and height is controlled with `size` attribute (serialized by default). Width can be both unit and percentage based.
 
 Example
 ```JavaScript
