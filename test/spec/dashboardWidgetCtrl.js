@@ -95,7 +95,11 @@ describe('Controller: DashboardWidgetCtrl', function() {
 
   describe('the grabResizer method', function() {
 
-    var evt, widget;
+    var evt, widget, WidgetModel;
+
+    beforeEach(inject(function (_WidgetModel_) {
+      WidgetModel = _WidgetModel_;
+    }));
 
     beforeEach(function() {
       evt = {
@@ -106,11 +110,11 @@ describe('Controller: DashboardWidgetCtrl', function() {
         clientX: 100,
         which: 1
       };
-      $scope.widget = widget = {
+      $scope.widget = widget = new WidgetModel({
         style: {
           width: '30%'
         }
-      }
+      });
     });
 
     it('should do nothing if event.which is not 1 (left click)', function() {

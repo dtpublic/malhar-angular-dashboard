@@ -85,9 +85,9 @@ describe('Factory: DashboardState', function () {
     it('should serialize and store widgets passed to it', function() {
       spyOn(storage, 'setItem');
       var widgets = [
-        { title: 'widget1', name: 'Widget1', style: { width: '50%' }, dataModelOptions: { foo: 'bar' }, storageHash: '123', attrs: { bar: 'baz' } },
-        { title: 'widget2', name: 'Widget2', style: { width: '50%' }, dataModelOptions: { foo: 'bar' }, storageHash: '123'},
-        { title: 'widget3', name: 'Widget3', style: { width: '100%' }, attrs: { bar: 'baz' } },
+        { title: 'widget1', name: 'Widget1', size: { width: '50%' }, dataModelOptions: { foo: 'bar' }, storageHash: '123', attrs: { bar: 'baz' } },
+        { title: 'widget2', name: 'Widget2', size: { width: '50%' }, dataModelOptions: { foo: 'bar' }, storageHash: '123'},
+        { title: 'widget3', name: 'Widget3', size: { width: '100%' }, attrs: { bar: 'baz' } },
         { title: 'widget4', name: 'Widget3', dataModelOptions: { foo: 'baz' }, storageHash: '123', arbitrary: 'value' }
       ];
       state.save(widgets);
@@ -98,9 +98,9 @@ describe('Factory: DashboardState', function () {
     it('should not use JSON.stringify if options.stringifyStorage is false', function() {
       spyOn(storage, 'setItem');
       var widgets = [
-        { title: 'widget1', name: 'Widget1', style: { width: '50%' }, dataModelOptions: { foo: 'bar' }, storageHash: '123', attrs: { bar: 'baz' } },
-        { title: 'widget2', name: 'Widget2', style: { width: '50%' }, dataModelOptions: { foo: 'bar' }, storageHash: '123'},
-        { title: 'widget3', name: 'Widget3', style: { width: '100%' }, attrs: { bar: 'baz' } },
+        { title: 'widget1', name: 'Widget1', size: { width: '50%' }, dataModelOptions: { foo: 'bar' }, storageHash: '123', attrs: { bar: 'baz' } },
+        { title: 'widget2', name: 'Widget2', size: { width: '50%' }, dataModelOptions: { foo: 'bar' }, storageHash: '123'},
+        { title: 'widget3', name: 'Widget3', size: { width: '100%' }, attrs: { bar: 'baz' } },
         { title: 'widget4', name: 'Widget3', dataModelOptions: { foo: 'baz' }, storageHash: '123' }
       ];
       state_no_stringify.save(widgets);
