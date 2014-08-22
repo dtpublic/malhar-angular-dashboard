@@ -102,7 +102,7 @@ angular.module('app', [
       {
         name: 'fluid',
         directive: 'wt-fluid',
-        contentStyle: {
+        size: {
           height: '250px'
         }
       }

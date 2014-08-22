@@ -116,34 +116,34 @@ describe('Factory: WidgetModel', function () {
     var context, setWidth;
 
     beforeEach(function() {
-      context = { style: {} };
+      context = new WidgetModel({});
       setWidth = WidgetModel.prototype.setWidth;
     });
     
     it('should take one argument as a string with units', function() {
       setWidth.call(context, '100px');
-      expect(context.style.width).toEqual('100px');
+      expect(context.containerStyle.width).toEqual('100px');
     });
 
     it('should take two args as a number and string as units', function() {
       setWidth.call(context, 100, 'px');
-      expect(context.style.width).toEqual('100px');
+      expect(context.containerStyle.width).toEqual('100px');
     });
 
     it('should return false and not set anything if width is less than 0', function() {
       var result = setWidth.call(context, -100, 'em');
       expect(result).toEqual(false);
-      expect(context.style.width).not.toEqual('-100em');
+      expect(context.containerStyle.width).not.toEqual('-100em');
     });
 
     it('should assume % if no unit is given', function() {
       setWidth.call(context, 50);
-      expect(context.style.width).toEqual('50%');
+      expect(context.containerStyle.width).toEqual('50%');
     });
 
     it('should force greater than 0% and less than or equal 100%', function() {
       setWidth.call(context, '110%');
-      expect(context.style.width).toEqual('100%');
+      expect(context.containerStyle.width).toEqual('100%');
     });
 
   });

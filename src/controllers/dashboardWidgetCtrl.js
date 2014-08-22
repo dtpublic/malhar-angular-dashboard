@@ -91,7 +91,7 @@ angular.module('ui.dashboard')
       // Get the current width of the widget and dashboard
       var pixelWidth = widgetElm.width();
       var pixelHeight = widgetElm.height();
-      var widgetStyleWidth = widget.style.width;
+      var widgetStyleWidth = widget.containerStyle.width;
       var widthUnits = widget.widthUnits;
       var unitWidth = parseFloat(widgetStyleWidth);
 
@@ -185,7 +185,7 @@ angular.module('ui.dashboard')
 
         //$scope.widget.style.height = newHeight + 'px';
 
-        $scope.widget.contentStyle.height = newHeight + 'px';
+        $scope.widget.setHeight(newHeight + 'px');
 
         $scope.$emit('widgetChanged', $scope.widget);
         $scope.$apply(); // make AngularJS to apply style changes

@@ -44,8 +44,7 @@ angular.module('ui.dashboard')
           var widgetObject = {
             title: widget.title,
             name: widget.name,
-            style: widget.style,
-            contentStyle: widget.contentStyle,
+            size: widget.size,
             dataModelOptions: widget.dataModelOptions,
             storageHash: widget.storageHash,
             attrs: widget.attrs

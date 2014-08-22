@@ -788,8 +788,7 @@ angular.module('ui.dashboard')
           var widgetObject = {
             title: widget.title,
             name: widget.name,
-            style: widget.style,
-            contentStyle: widget.contentStyle,
+            size: widget.size,
             dataModelOptions: widget.dataModelOptions,
             storageHash: widget.storageHash,
             attrs: widget.attrs
@@ -1051,12 +1050,13 @@ angular.module('ui.dashboard')
           onSettingsClose: Class.onSettingsClose,
           onSettingsDismiss: Class.onSettingsDismiss,
           style: Class.style,
-          contentStyle: Class.contentStyle || {}
+          size: Class.size || {},
+          containerStyle: { width: '33%' }, // default width
+          contentStyle: {}
         };
+
       overrides = overrides || {};
       angular.extend(this, angular.copy(defaults), overrides);
-      this.style = this.style || { width: '33%' };
-      this.setWidth(this.style.width);
 
       if (Class.templateUrl) {
         this.templateUrl = Class.templateUrl;
@@ -1065,6 +1065,18 @@ angular.module('ui.dashboard')
       } else {
         var directive = Class.directive || Class.name;
         this.directive = directive;
+      }
+
+      if (this.size && _.has(this.size, 'height')) {
+        this.setHeight(this.size.height);
+      }
+
+      if (this.style && _.has(this.style, 'width')) { //TODO deprecate style attribute
+        this.setWidth(this.style.width);
+      }
+
+      if (this.size && _.has(this.size, 'width')) {
+        this.setWidth(this.size.width);
       }
     }
 
@@ -1084,8 +1096,21 @@ angular.module('ui.dashboard')
           width = Math.min(100, width);
           width = Math.max(0, width);
         }
-        this.style.width = width + '' + units;
+
+        this.containerStyle.width = width + '' + units;
+
+        this.updateSize(this.containerStyle);
+
         return true;
+      },
+
+      setHeight: function (height) {
+        this.contentStyle.height = height;
+        this.updateSize(this.contentStyle);
+      },
+
+      updateSize: function (size) {
+        angular.extend(this.size, size);
       }
     };
 
@@ -1216,7 +1241,7 @@ angular.module('ui.dashboard')
       // Get the current width of the widget and dashboard
       var pixelWidth = widgetElm.width();
       var pixelHeight = widgetElm.height();
-      var widgetStyleWidth = widget.style.width;
+      var widgetStyleWidth = widget.containerStyle.width;
       var widthUnits = widget.widthUnits;
       var unitWidth = parseFloat(widgetStyleWidth);
 
@@ -1310,7 +1335,7 @@ angular.module('ui.dashboard')
 
         //$scope.widget.style.height = newHeight + 'px';
 
-        $scope.widget.contentStyle.height = newHeight + 'px';
+        $scope.widget.setHeight(newHeight + 'px');
 
         $scope.$emit('widgetChanged', $scope.widget);
         $scope.$apply(); // make AngularJS to apply style changes
@@ -1489,7 +1514,7 @@ angular.module("ui.dashboard").run(["$templateCache", function($templateCache) {
     "    </div>\n" +
     "\n" +
     "    <div ui-sortable=\"sortableOptions\" ng-model=\"widgets\" class=\"dashboard-widget-area\">\n" +
-    "        <div ng-repeat=\"widget in widgets\" ng-style=\"widget.style\" class=\"widget-container\" widget>\n" +
+    "        <div ng-repeat=\"widget in widgets\" ng-style=\"widget.containerStyle\" class=\"widget-container\" widget>\n" +
     "            <div class=\"widget panel panel-default\">\n" +
     "                <div class=\"widget-header panel-heading\">\n" +
     "                    <h3 class=\"panel-title\">\n" +
