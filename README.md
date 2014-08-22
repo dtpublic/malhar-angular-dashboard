@@ -187,6 +187,24 @@ You can think of Widget Definition Objects as a __class__ and the widgets on the
 | onSettingsDismiss    | Function | see below | no | Overrides same-named option in dashboard options for this widget. See the **Custom Widget Settings** section below. |
 
 
+### Widget Resize
+
+Widgets width and height is controlled with `size` attribute (serialized by default). Width can be specified in percentage.
+
+Example
+```JavaScript
+      {
+        name: 'fluid',
+        directive: 'wt-fluid',
+        size: {
+          width: '50%',
+          height: '250px'
+        }
+      }
+```
+
+Widgets can be resized both horizontally and vertically and size is serialized.
+
 ### dataModelType
 
 The best way to provide data to a widget is to specify a `dataModelType` in the Widget Definition Object (above). This function is used as a constructor whenever a new widget is instantiated on the page.
