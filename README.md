@@ -227,7 +227,7 @@ Persistence
 This dashboard component offers a means to save the state of the user's dashboard. Specifically, the dashboard can automatically save:
 
 - instantiated widgets
-- width of widgets
+- size of widgets (width and height)
 - order that widgets are displayed
 - widget titles
 - any serializable data stored in `dataModelOptions` if the widget instance has a `ds` (instantiated `dataModelType`)
