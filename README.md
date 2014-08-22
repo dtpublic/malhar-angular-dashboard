@@ -205,6 +205,8 @@ Example
 
 Widgets can be resized both horizontally and vertically and size is serialized.
 
+When widget is resized 'widgetResized' event is broadcasted to the widget scope.
+
 ### dataModelType
 
 The best way to provide data to a widget is to specify a `dataModelType` in the Widget Definition Object (above). This function is used as a constructor whenever a new widget is instantiated on the page.
