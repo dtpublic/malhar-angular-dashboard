@@ -19,7 +19,7 @@ Features:
 
  - Fluid layout (widgets can have percentage-based width, or have width set in any other unit)
 
- - Any directive can be a widget (e.g. AngularUI directives)
+ - Any directive or template can be a widget
 
  - Connecting widgets to real-time data (WebSocket, REST, etc.)
 
