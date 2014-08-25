@@ -151,7 +151,10 @@ angular.module('ui.dashboard')
         scope.openWidgetSettings = function (widget) {
 
           // Set up $modal options 
-          var options = _.defaults({}, widget.settingsModalOptions, scope.options.settingsModalOptions);
+          var options = _.defaults(
+            { scope: scope },
+            widget.settingsModalOptions,
+            scope.options.settingsModalOptions);
 
           // Ensure widget is resolved
           options.resolve = {
@@ -168,7 +171,7 @@ angular.module('ui.dashboard')
           // Set resolve and reject callbacks for the result promise
           modalInstance.result.then(
             function (result) {
-              
+
               // Call the close callback
               onClose(result, widget, scope);
 
