@@ -78,6 +78,14 @@ angular.module('ui.dashboard')
           stop: function () {
             scope.saveDashboard();
           },
+          // Prevent visual bug when scrolling to the bottom of the page and
+          // then drag a widget. Widget content appeared at the upper left of
+          // the mouse cursor.
+          sort: function(event, ui) {
+            if (navigator.userAgent.match(/firefox/i)) {
+              ui.helper.css({"top": ui.position.top + angular.element(window).scrollTop() + "px"});
+            }
+          },          
           handle: '.widget-header'
         };
         scope.sortableOptions = angular.extend({}, sortableDefaults, scope.options.sortableOptions || {});
