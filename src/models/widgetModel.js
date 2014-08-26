@@ -32,14 +32,15 @@ angular.module('ui.dashboard')
           settingsModalOptions: Class.settingsModalOptions,
           onSettingsClose: Class.onSettingsClose,
           onSettingsDismiss: Class.onSettingsDismiss,
-          style: Class.style,
-          size: Class.size || {},
-          containerStyle: { width: '33%' }, // default width
-          contentStyle: {}
+          style: Class.style || {},
+          size: Class.size || {}
         };
 
       overrides = overrides || {};
       angular.extend(this, angular.copy(defaults), overrides);
+      this.containerStyle = { width: '33%' }; // default width
+      this.contentStyle = {};
+      this.updateContainerStyle(this.style);
 
       if (Class.templateUrl) {
         this.templateUrl = Class.templateUrl;
@@ -92,8 +93,17 @@ angular.module('ui.dashboard')
         this.updateSize(this.contentStyle);
       },
 
+      setStyle: function (style) {
+        this.style = style;
+        this.updateContainerStyle(style);
+      },
+
       updateSize: function (size) {
         angular.extend(this.size, size);
+      },
+
+      updateContainerStyle: function (style) {
+        angular.extend(this.containerStyle, style);
       }
     };
 
