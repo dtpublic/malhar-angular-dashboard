@@ -17,7 +17,7 @@
 'use strict';
 
 angular.module('ui.dashboard')
-  .directive('widget', function ($injector) {
+  .directive('widget', ['$injector', function ($injector) {
 
     return {
 
@@ -61,4 +61,4 @@ angular.module('ui.dashboard')
       }
 
     };
-  });
+  }]);
