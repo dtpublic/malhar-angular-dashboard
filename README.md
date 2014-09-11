@@ -376,6 +376,8 @@ key | type | default value | required | description
  storageHash | String | '' | no | Same as in `dashboardOptions`
  stringifyStorage | Boolean | true | no | Same as in `dashboardOptions`
  explicitSave | Boolean | false | no | Same as in `dashboardOptions`
+ sortableOptions | Object | n/a | no | Same as in 'dashboardOptions'
+
 
 As with `dashboardOptions`, `layoutOptions` gets endowed with the methods `addWidget`, `loadWidgets`, `saveDashboard` and `loadDashboard`. These will be applied to the currently active dashboard layout. Additionally, a method called `saveLayouts` is attached to the `layoutOptions` object. This method will save the state of the layouts explicitly.
 
