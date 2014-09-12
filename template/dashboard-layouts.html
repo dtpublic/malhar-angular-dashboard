@@ -1,4 +1,4 @@
-<ul class="nav nav-tabs layout-tabs">
+<ul ui-sortable="sortableOptions" ng-model="layouts" class="nav nav-tabs layout-tabs">
     <li ng-repeat="layout in layouts" ng-class="{ active: layout.active }">
         <a ng-click="makeLayoutActive(layout)">
             <span ng-dblclick="editTitle(layout)" ng-show="!layout.editingTitle">{{layout.title}}</span>
