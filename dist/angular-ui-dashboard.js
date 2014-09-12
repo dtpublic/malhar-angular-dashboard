@@ -317,120 +317,130 @@ angular.module('ui.dashboard')
 'use strict';
 
 angular.module('ui.dashboard')
-  .directive('dashboardLayouts', ['LayoutStorage', '$timeout', '$modal', function(LayoutStorage, $timeout, $modal) {
-    return {
-      scope: true,
-      templateUrl: function(element, attr) {
-        return attr.templateUrl ? attr.templateUrl : 'template/dashboard-layouts.html';
-      },
-      link: function(scope, element, attrs) {
+  .directive('dashboardLayouts', ['LayoutStorage', '$timeout', '$modal',
+    function(LayoutStorage, $timeout, $modal) {
+      return {
+        scope: true,
+        templateUrl: function(element, attr) {
+          return attr.templateUrl ? attr.templateUrl : 'template/dashboard-layouts.html';
+        },
+        link: function(scope, element, attrs) {
 
-        scope.options = scope.$eval(attrs.dashboardLayouts);
+          scope.options = scope.$eval(attrs.dashboardLayouts);
 
-        var layoutStorage = new LayoutStorage(scope.options);
+          var layoutStorage = new LayoutStorage(scope.options);
 
-        scope.layouts = layoutStorage.layouts;
+          scope.layouts = layoutStorage.layouts;
 
-        scope.createNewLayout = function() {
-          var newLayout = { title: 'Custom', defaultWidgets: scope.options.defaultWidgets || [] };
-          layoutStorage.add(newLayout);
-          scope.makeLayoutActive(newLayout);
-          layoutStorage.save();
-          return newLayout;
-        };
+          scope.createNewLayout = function() {
+            var newLayout = {
+              title: 'Custom',
+              defaultWidgets: scope.options.defaultWidgets || []
+            };
+            layoutStorage.add(newLayout);
+            scope.makeLayoutActive(newLayout);
+            layoutStorage.save();
+            return newLayout;
+          };
 
-        scope.removeLayout = function(layout) {
-          layoutStorage.remove(layout);
-          layoutStorage.save();
-        };
+          scope.removeLayout = function(layout) {
+            layoutStorage.remove(layout);
+            layoutStorage.save();
+          };
 
-        scope.makeLayoutActive = function(layout) {
+          scope.makeLayoutActive = function(layout) {
 
-          var current = layoutStorage.getActiveLayout();
+            var current = layoutStorage.getActiveLayout();
 
-          if (current && current.dashboard.unsavedChangeCount) {
-            var modalInstance = $modal.open({
-              templateUrl: 'template/save-changes-modal.html',
-              resolve: {
-                layout: function () {
-                  return layout;
+            if (current && current.dashboard.unsavedChangeCount) {
+              var modalInstance = $modal.open({
+                templateUrl: 'template/save-changes-modal.html',
+                resolve: {
+                  layout: function() {
+                    return layout;
+                  }
+                },
+                controller: 'SaveChangesModalCtrl'
+              });
+
+              // Set resolve and reject callbacks for the result promise
+              modalInstance.result.then(
+                function() {
+                  current.dashboard.saveDashboard();
+                  scope._makeLayoutActive(layout);
+                },
+                function() {
+                  scope._makeLayoutActive(layout);
                 }
-              },
-              controller: 'SaveChangesModalCtrl'
-            });
-
-            // Set resolve and reject callbacks for the result promise
-            modalInstance.result.then(
-              function () {
-                current.dashboard.saveDashboard();
-                scope._makeLayoutActive(layout);
-              },
-              function () {
-                scope._makeLayoutActive(layout);
-              }
-            );
-          }
-
-          else {
-            scope._makeLayoutActive(layout);
-          }
-          
-        };
-
-        scope._makeLayoutActive = function(layout) {
-          angular.forEach(scope.layouts, function(l) {
-            if (l !== layout) {
-              l.active = false;
+              );
             } else {
-              l.active = true;
+              scope._makeLayoutActive(layout);
             }
-          });
-          layoutStorage.save();
-        };
 
-        scope.isActive = function(layout) {
-          return !! layout.active;
-        };
+          };
 
-        scope.editTitle = function (layout) {
-          var input = element.find('input[data-layout="' + layout.id + '"]');
-          layout.editingTitle = true;
+          scope._makeLayoutActive = function(layout) {
+            angular.forEach(scope.layouts, function(l) {
+              if (l !== layout) {
+                l.active = false;
+              } else {
+                l.active = true;
+              }
+            });
+            layoutStorage.save();
+          };
 
-          $timeout(function() {
-            input.focus()[0].setSelectionRange(0, 9999);
-          });
-        };
+          scope.isActive = function(layout) {
+            return !!layout.active;
+          };
 
-        // saves whatever is in the title input as the new title
-        scope.saveTitleEdit = function (layout) {
-          layout.editingTitle = false;
-          layoutStorage.save();
-        };
+          scope.editTitle = function(layout) {
+            var input = element.find('input[data-layout="' + layout.id + '"]');
+            layout.editingTitle = true;
 
-        scope.options.saveLayouts = function() {
-          layoutStorage.save(true);
-        };
-        scope.options.addWidget = function() {
-          var layout = layoutStorage.getActiveLayout();
-          if (layout) {
-            layout.dashboard.addWidget.apply(layout.dashboard, arguments);
-          }
-        };
-        scope.options.loadWidgets = function() {
-          var layout = layoutStorage.getActiveLayout();
-          if (layout) {
-            layout.dashboard.loadWidgets.apply(layout.dashboard, arguments);
-          }
-        };
-        scope.options.saveDashboard = function() {
-          var layout = layoutStorage.getActiveLayout();
-          if (layout) {
-            layout.dashboard.saveDashboard.apply(layout.dashboard, arguments);
-          }
-        };
-      }
-    };
-  }]);
+            $timeout(function() {
+              input.focus()[0].setSelectionRange(0, 9999);
+            });
+          };
+
+          // saves whatever is in the title input as the new title
+          scope.saveTitleEdit = function(layout) {
+            layout.editingTitle = false;
+            layoutStorage.save();
+          };
+
+          scope.options.saveLayouts = function() {
+            layoutStorage.save(true);
+          };
+          scope.options.addWidget = function() {
+            var layout = layoutStorage.getActiveLayout();
+            if (layout) {
+              layout.dashboard.addWidget.apply(layout.dashboard, arguments);
+            }
+          };
+          scope.options.loadWidgets = function() {
+            var layout = layoutStorage.getActiveLayout();
+            if (layout) {
+              layout.dashboard.loadWidgets.apply(layout.dashboard, arguments);
+            }
+          };
+          scope.options.saveDashboard = function() {
+            var layout = layoutStorage.getActiveLayout();
+            if (layout) {
+              layout.dashboard.saveDashboard.apply(layout.dashboard, arguments);
+            }
+          };
+
+          var sortableDefaults = {
+            stop: function() {
+              scope.options.saveLayouts();
+            },
+          };
+          scope.sortableOptions = angular.extend({}, sortableDefaults, scope.options.sortableOptions || {});
+        }
+      };
+    }
+  ]);
 /*
  * Copyright (c) 2014 DataTorrent, Inc. ALL Rights Reserved.
  *
@@ -1182,218 +1192,224 @@ angular.module('ui.dashboard')
 'use strict';
 
 angular.module('ui.dashboard')
-  .controller('DashboardWidgetCtrl', ['$scope', '$element', '$compile', '$window', '$timeout', function($scope, $element, $compile, $window, $timeout) {
+  .controller('DashboardWidgetCtrl', ['$scope', '$element', '$compile', '$window', '$timeout',
+    function($scope, $element, $compile, $window, $timeout) {
 
-    // Fills "container" with compiled view
-    $scope.makeTemplateString = function() {
+      $scope.status = {
+        isopen: false
+      };
 
-      var widget = $scope.widget;
+      // Fills "container" with compiled view
+      $scope.makeTemplateString = function() {
 
-      // First, build template string
-      var templateString = '';
+        var widget = $scope.widget;
 
-      if (widget.templateUrl) {
-        
-        // Use ng-include for templateUrl
-        templateString = '<div ng-include="\'' + widget.templateUrl + '\'"></div>';
+        // First, build template string
+        var templateString = '';
 
-      } else if (widget.template) {
+        if (widget.templateUrl) {
 
-        // Direct string template
-        templateString = widget.template;
+          // Use ng-include for templateUrl
+          templateString = '<div ng-include="\'' + widget.templateUrl + '\'"></div>';
 
-      } else {
+        } else if (widget.template) {
 
-        // Assume attribute directive
-        templateString = '<div ' + widget.directive;
+          // Direct string template
+          templateString = widget.template;
 
-        // Check if data attribute was specified
-        if (widget.dataAttrName) {
-          widget.attrs = widget.attrs || {};
-          widget.attrs[widget.dataAttrName] = 'widgetData';
-        }
+        } else {
 
-        // Check for specified attributes
-        if (widget.attrs) {
+          // Assume attribute directive
+          templateString = '<div ' + widget.directive;
 
-          // First check directive name attr
-          if (widget.attrs[widget.directive]) {
-            templateString += '="' + widget.attrs[widget.directive] + '"';
+          // Check if data attribute was specified
+          if (widget.dataAttrName) {
+            widget.attrs = widget.attrs || {};
+            widget.attrs[widget.dataAttrName] = 'widgetData';
           }
 
-          // Add attributes
-          _.each(widget.attrs, function (value, attr) {
+          // Check for specified attributes
+          if (widget.attrs) {
 
-            // make sure we aren't reusing directive attr
-            if (attr !== widget.directive) {
-              templateString += ' ' + attr + '="' + value + '"';
+            // First check directive name attr
+            if (widget.attrs[widget.directive]) {
+              templateString += '="' + widget.attrs[widget.directive] + '"';
             }
-            
-          });
+
+            // Add attributes
+            _.each(widget.attrs, function(value, attr) {
+
+              // make sure we aren't reusing directive attr
+              if (attr !== widget.directive) {
+                templateString += ' ' + attr + '="' + value + '"';
+              }
+
+            });
+          }
+          templateString += '></div>';
         }
-        templateString += '></div>';
-      }
-      return templateString;
-    };
-
-    $scope.grabResizer = function (e) {
-
-      var widget = $scope.widget;
-      var widgetElm = $element.find('.widget');
-
-      // ignore middle- and right-click
-      if (e.which !== 1) {
-        return;
-      }
-
-      e.stopPropagation();
-      e.originalEvent.preventDefault();
-
-      // get the starting horizontal position
-      var initX = e.clientX;
-      // console.log('initX', initX);
-
-      // Get the current width of the widget and dashboard
-      var pixelWidth = widgetElm.width();
-      var pixelHeight = widgetElm.height();
-      var widgetStyleWidth = widget.containerStyle.width;
-      var widthUnits = widget.widthUnits;
-      var unitWidth = parseFloat(widgetStyleWidth);
-
-      // create marquee element for resize action
-      var $marquee = angular.element('<div class="widget-resizer-marquee" style="height: ' + pixelHeight + 'px; width: ' + pixelWidth + 'px;"></div>');
-      widgetElm.append($marquee);
-
-      // determine the unit/pixel ratio
-      var transformMultiplier = unitWidth / pixelWidth;
-
-      // updates marquee with preview of new width
-      var mousemove = function (e) {
-        var curX = e.clientX;
-        var pixelChange = curX - initX;
-        var newWidth = pixelWidth + pixelChange;
-        $marquee.css('width', newWidth + 'px');
+        return templateString;
       };
 
-      // sets new widget width on mouseup
-      var mouseup = function (e) {
-        // remove listener and marquee
-        jQuery($window).off('mousemove', mousemove);
-        $marquee.remove();
+      $scope.grabResizer = function(e) {
 
-        // calculate change in units
-        var curX = e.clientX;
-        var pixelChange = curX - initX;
-        var unitChange = Math.round(pixelChange * transformMultiplier * 100) / 100;
+        var widget = $scope.widget;
+        var widgetElm = $element.find('.widget');
 
-        // add to initial unit width
-        var newWidth = unitWidth * 1 + unitChange;
-        widget.setWidth(newWidth + widthUnits);
+        // ignore middle- and right-click
+        if (e.which !== 1) {
+          return;
+        }
+
+        e.stopPropagation();
+        e.originalEvent.preventDefault();
+
+        // get the starting horizontal position
+        var initX = e.clientX;
+        // console.log('initX', initX);
+
+        // Get the current width of the widget and dashboard
+        var pixelWidth = widgetElm.width();
+        var pixelHeight = widgetElm.height();
+        var widgetStyleWidth = widget.containerStyle.width;
+        var widthUnits = widget.widthUnits;
+        var unitWidth = parseFloat(widgetStyleWidth);
+
+        // create marquee element for resize action
+        var $marquee = angular.element('<div class="widget-resizer-marquee" style="height: ' + pixelHeight + 'px; width: ' + pixelWidth + 'px;"></div>');
+        widgetElm.append($marquee);
+
+        // determine the unit/pixel ratio
+        var transformMultiplier = unitWidth / pixelWidth;
+
+        // updates marquee with preview of new width
+        var mousemove = function(e) {
+          var curX = e.clientX;
+          var pixelChange = curX - initX;
+          var newWidth = pixelWidth + pixelChange;
+          $marquee.css('width', newWidth + 'px');
+        };
+
+        // sets new widget width on mouseup
+        var mouseup = function(e) {
+          // remove listener and marquee
+          jQuery($window).off('mousemove', mousemove);
+          $marquee.remove();
+
+          // calculate change in units
+          var curX = e.clientX;
+          var pixelChange = curX - initX;
+          var unitChange = Math.round(pixelChange * transformMultiplier * 100) / 100;
+
+          // add to initial unit width
+          var newWidth = unitWidth * 1 + unitChange;
+          widget.setWidth(newWidth + widthUnits);
+          $scope.$emit('widgetChanged', widget);
+          $scope.$apply();
+          $scope.$broadcast('widgetResized', {
+            width: newWidth
+          });
+        };
+
+        jQuery($window).on('mousemove', mousemove).one('mouseup', mouseup);
+      };
+
+      //TODO refactor
+      $scope.grabSouthResizer = function(e) {
+        var widgetElm = $element.find('.widget');
+
+        // ignore middle- and right-click
+        if (e.which !== 1) {
+          return;
+        }
+
+        e.stopPropagation();
+        e.originalEvent.preventDefault();
+
+        // get the starting horizontal position
+        var initY = e.clientY;
+        // console.log('initX', initX);
+
+        // Get the current width of the widget and dashboard
+        var pixelWidth = widgetElm.width();
+        var pixelHeight = widgetElm.height();
+
+        // create marquee element for resize action
+        var $marquee = angular.element('<div class="widget-resizer-marquee" style="height: ' + pixelHeight + 'px; width: ' + pixelWidth + 'px;"></div>');
+        widgetElm.append($marquee);
+
+        // updates marquee with preview of new height
+        var mousemove = function(e) {
+          var curY = e.clientY;
+          var pixelChange = curY - initY;
+          var newHeight = pixelHeight + pixelChange;
+          $marquee.css('height', newHeight + 'px');
+        };
+
+        // sets new widget width on mouseup
+        var mouseup = function(e) {
+          // remove listener and marquee
+          jQuery($window).off('mousemove', mousemove);
+          $marquee.remove();
+
+          // calculate height change
+          var curY = e.clientY;
+          var pixelChange = curY - initY;
+
+          //var widgetContainer = widgetElm.parent(); // widget container responsible for holding widget width and height
+          var widgetContainer = widgetElm.find('.widget-content');
+
+          var diff = pixelChange;
+          var height = parseInt(widgetContainer.css('height'), 10);
+          var newHeight = (height + diff);
+
+          //$scope.widget.style.height = newHeight + 'px';
+
+          $scope.widget.setHeight(newHeight + 'px');
+
+          $scope.$emit('widgetChanged', $scope.widget);
+          $scope.$apply(); // make AngularJS to apply style changes
+
+          $scope.$broadcast('widgetResized', {
+            height: newHeight
+          });
+        };
+
+        jQuery($window).on('mousemove', mousemove).one('mouseup', mouseup);
+      };
+
+      // replaces widget title with input
+      $scope.editTitle = function(widget) {
+        var widgetElm = $element.find('.widget');
+        widget.editingTitle = true;
+        // HACK: get the input to focus after being displayed.
+        $timeout(function() {
+          widgetElm.find('form.widget-title input:eq(0)').focus()[0].setSelectionRange(0, 9999);
+        });
+      };
+
+      // saves whatever is in the title input as the new title
+      $scope.saveTitleEdit = function(widget) {
+        widget.editingTitle = false;
         $scope.$emit('widgetChanged', widget);
-        $scope.$apply();
-        $scope.$broadcast('widgetResized', {
-          width: newWidth
-        });
       };
 
-      jQuery($window).on('mousemove', mousemove).one('mouseup', mouseup);
-    };
+      $scope.compileTemplate = function() {
+        var container = $scope.findWidgetContainer($element);
+        var templateString = $scope.makeTemplateString();
+        var widgetElement = angular.element(templateString);
 
-    //TODO refactor
-    $scope.grabSouthResizer = function (e) {
-      var widgetElm = $element.find('.widget');
-
-      // ignore middle- and right-click
-      if (e.which !== 1) {
-        return;
-      }
-
-      e.stopPropagation();
-      e.originalEvent.preventDefault();
-
-      // get the starting horizontal position
-      var initY = e.clientY;
-      // console.log('initX', initX);
-
-      // Get the current width of the widget and dashboard
-      var pixelWidth = widgetElm.width();
-      var pixelHeight = widgetElm.height();
-
-      // create marquee element for resize action
-      var $marquee = angular.element('<div class="widget-resizer-marquee" style="height: ' + pixelHeight + 'px; width: ' + pixelWidth + 'px;"></div>');
-      widgetElm.append($marquee);
-
-      // updates marquee with preview of new height
-      var mousemove = function (e) {
-        var curY = e.clientY;
-        var pixelChange = curY - initY;
-        var newHeight = pixelHeight + pixelChange;
-        $marquee.css('height', newHeight + 'px');
+        container.empty();
+        container.append(widgetElement);
+        $compile(widgetElement)($scope);
       };
 
-      // sets new widget width on mouseup
-      var mouseup = function (e) {
-        // remove listener and marquee
-        jQuery($window).off('mousemove', mousemove);
-        $marquee.remove();
-
-        // calculate height change
-        var curY = e.clientY;
-        var pixelChange = curY - initY;
-
-        //var widgetContainer = widgetElm.parent(); // widget container responsible for holding widget width and height
-        var widgetContainer = widgetElm.find('.widget-content');
-
-        var diff = pixelChange;
-        var height = parseInt(widgetContainer.css('height'), 10);
-        var newHeight = (height + diff);
-
-        //$scope.widget.style.height = newHeight + 'px';
-
-        $scope.widget.setHeight(newHeight + 'px');
-
-        $scope.$emit('widgetChanged', $scope.widget);
-        $scope.$apply(); // make AngularJS to apply style changes
-
-        $scope.$broadcast('widgetResized', {
-          height: newHeight
-        });
+      $scope.findWidgetContainer = function(element) {
+        // widget placeholder is the first (and only) child of .widget-content
+        return element.find('.widget-content');
       };
-
-      jQuery($window).on('mousemove', mousemove).one('mouseup', mouseup);
-    };
-
-    // replaces widget title with input
-    $scope.editTitle = function (widget) {
-      var widgetElm = $element.find('.widget');
-      widget.editingTitle = true;
-      // HACK: get the input to focus after being displayed.
-      $timeout(function () {
-        widgetElm.find('form.widget-title input:eq(0)').focus()[0].setSelectionRange(0, 9999);
-      });
-    };
-
-    // saves whatever is in the title input as the new title
-    $scope.saveTitleEdit = function (widget) {
-      widget.editingTitle = false;
-      $scope.$emit('widgetChanged', widget);
-    };
-
-    $scope.compileTemplate = function() {
-      var container = $scope.findWidgetContainer($element);
-      var templateString = $scope.makeTemplateString();
-      var widgetElement = angular.element(templateString);
-
-      container.empty();
-      container.append(widgetElement);
-      $compile(widgetElement)($scope);
-    };
-
-    $scope.findWidgetContainer = function(element) {
-      // widget placeholder is the first (and only) child of .widget-content
-      return element.find('.widget-content');
-    };
-  }]);
+    }
+  ]);
 /*
  * Copyright (c) 2014 DataTorrent, Inc. ALL Rights Reserved.
  *
@@ -1434,13 +1450,16 @@ angular.module("ui.dashboard").run(["$templateCache", function($templateCache) {
     "<div>\n" +
     "    <div class=\"btn-toolbar\" ng-if=\"!options.hideToolbar\">\n" +
     "        <div class=\"btn-group\" ng-if=\"!options.widgetButtons\">\n" +
-    "            <button type=\"button\" class=\"dropdown-toggle btn btn-primary\" data-toggle=\"dropdown\">Add Widget <span\n" +
-    "                    class=\"caret\"></span></button>\n" +
-    "            <ul class=\"dropdown-menu\" role=\"menu\">\n" +
+    "            <span class=\"dropdown\" on-toggle=\"toggled(open)\">\n" +
+    "              <button type=\"button\" class=\"btn btn-primary dropdown-toggle\" ng-disabled=\"disabled\">\n" +
+    "                Button dropdown <span class=\"caret\"></span>\n" +
+    "              </button>\n" +
+    "              <ul class=\"dropdown-menu\" role=\"menu\">\n" +
     "                <li ng-repeat=\"widget in widgetDefs\">\n" +
-    "                    <a href=\"#\" ng-click=\"addWidgetInternal($event, widget);\"><span class=\"label label-primary\">{{widget.name}}</span></a>\n" +
+    "                  <a href=\"#\" ng-click=\"addWidgetInternal($event, widget);\" class=\"dropdown-toggle\">{{widget.name}}</a>\n" +
     "                </li>\n" +
-    "            </ul>\n" +
+    "              </ul>\n" +
+    "            </span>\n" +
     "        </div>\n" +
     "\n" +
     "        <div class=\"btn-group\" ng-if=\"options.widgetButtons\">\n" +
@@ -1480,7 +1499,7 @@ angular.module("ui.dashboard").run(["$templateCache", function($templateCache) {
   );
 
   $templateCache.put("template/dashboard-layouts.html",
-    "<ul class=\"nav nav-tabs layout-tabs\">\n" +
+    "<ul ui-sortable=\"sortableOptions\" ng-model=\"layouts\" class=\"nav nav-tabs layout-tabs\">\n" +
     "    <li ng-repeat=\"layout in layouts\" ng-class=\"{ active: layout.active }\">\n" +
     "        <a ng-click=\"makeLayoutActive(layout)\">\n" +
     "            <span ng-dblclick=\"editTitle(layout)\" ng-show=\"!layout.editingTitle\">{{layout.title}}</span>\n" +
@@ -1498,22 +1517,24 @@ angular.module("ui.dashboard").run(["$templateCache", function($templateCache) {
     "        </a>\n" +
     "    </li>\n" +
     "</ul>\n" +
-    "<div ng-repeat=\"layout in layouts | filter:isActive\" dashboard=\"layout.dashboard\" template-url=\"template/dashboard.html\"></div>\n"
+    "<div ng-repeat=\"layout in layouts | filter:isActive\" dashboard=\"layout.dashboard\" template-url=\"template/dashboard.html\"></div>"
   );
 
   $templateCache.put("template/dashboard.html",
     "<div>\n" +
     "    <div class=\"btn-toolbar\" ng-if=\"!options.hideToolbar\">\n" +
     "        <div class=\"btn-group\" ng-if=\"!options.widgetButtons\">\n" +
-    "            <button type=\"button\" class=\"dropdown-toggle btn btn-primary\" data-toggle=\"dropdown\">Add Widget <span\n" +
-    "                    class=\"caret\"></span></button>\n" +
-    "            <ul class=\"dropdown-menu\" role=\"menu\">\n" +
+    "            <span class=\"dropdown\" on-toggle=\"toggled(open)\">\n" +
+    "              <button type=\"button\" class=\"btn btn-primary dropdown-toggle\" ng-disabled=\"disabled\">\n" +
+    "                Button dropdown <span class=\"caret\"></span>\n" +
+    "              </button>\n" +
+    "              <ul class=\"dropdown-menu\" role=\"menu\">\n" +
     "                <li ng-repeat=\"widget in widgetDefs\">\n" +
-    "                    <a href=\"#\" ng-click=\"addWidgetInternal($event, widget);\"><span class=\"label label-primary\">{{widget.name}}</span></a>\n" +
+    "                  <a href=\"#\" ng-click=\"addWidgetInternal($event, widget);\" class=\"dropdown-toggle\">{{widget.name}}</a>\n" +
     "                </li>\n" +
-    "            </ul>\n" +
-    "        </div>\n" +
-    "\n" +
+    "              </ul>\n" +
+    "            </span>\n" +
+    "    </div>\n" +
     "        <div class=\"btn-group\" ng-if=\"options.widgetButtons\">\n" +
     "            <button ng-repeat=\"widget in widgetDefs\"\n" +
     "                    ng-click=\"addWidgetInternal($event, widget);\" type=\"button\" class=\"btn btn-primary\">\n" +
