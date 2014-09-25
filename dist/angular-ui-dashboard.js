@@ -1606,7 +1606,8 @@ angular.module("ui.dashboard").run(["$templateCache", function($templateCache) {
     "                <input type=\"text\" class=\"form-control\" name=\"widgetTitle\" ng-model=\"result.title\">\n" +
     "            </div>\n" +
     "        </div>\n" +
-    "        <div ng-include=\"optionsTemplateUrl\"></div>\n" +
+    "        <div ng-if=\"widget.settingsModalOptions.partialTemplateUrl\"\n" +
+    "             ng-include=\"widget.settingsModalOptions.partialTemplateUrl\"></div>\n" +
     "    </form>\n" +
     "</div>\n" +
     "\n" +
