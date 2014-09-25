@@ -41,8 +41,8 @@ angular.module('app', [
         title: 'custom widget settings',
         description: 'This demo showcases overriding the widget settings dialog/modal ' +
           'for the entire dashboard and for a specific widget. Click on the cog of each ' +
-          'widget to see the custom modal. \nBe sure to click the cog on the "special widget", ' +
-          'which has its own custom settings modal.'
+          'widget to see the custom modal. \n"configurable widget" has "limit" option in the modal ' +
+          'that controls RandomDataModel.'
       })
       .when('/explicit-saving', {
         templateUrl: 'view.html',
@@ -168,144 +168,6 @@ angular.module('app', [
       $scope.height = size.height || $scope.height;
     });
   })
-  .controller('CustomSettingsDemoCtrl', function($scope, $interval, $window, widgetDefinitions, defaultWidgets, $templateCache) {
-
-    // Setting templates to be used in this demo
-    $templateCache.put('example/custom/template.html', 
-     '<div class="modal-header">' + 
-        '<button type="button" class="close" data-dismiss="modal" aria-hidden="true" ng-click="cancel()">&times;</button>' + 
-        '<h3>Custom Settings Dialog for <small>{{widget.title}}</small></h3>' + 
-      '</div>' + 
-      '<div class="modal-body">' + 
-        '<form name="form" novalidate class="form-horizontal">' + 
-          '<div class="form-group">' + 
-            '<label for="widgetTitle" class="col-sm-2 control-label">Title</label>' + 
-            '<div class="col-sm-10">' + 
-                '<input type="text" class="form-control" name="widgetTitle" ng-model="result.title">' + 
-            '</div>' + 
-          '</div>' + 
-          '<div ng-if="widget.partialSettingTemplateUrl" ng-include="widget.partialSettingTemplateUrl"></div>' + 
-        '</form>' + 
-      '</div>' + 
-      '<div class="modal-footer">' + 
-          '<button type="button" class="btn btn-default" ng-click="cancel()">Cancel</button>' + 
-          '<button type="button" class="btn btn-primary" ng-click="ok()">OK</button>' + 
-      '</div>' );
-  
-    $templateCache.put('widget/specific/template.html', 
-     '<div class="modal-header">' + 
-        '<button type="button" class="close" data-dismiss="modal" aria-hidden="true" ng-click="cancel()">&times;</button>' + 
-        '<h3>Custom Settings for a special widget</h3>' + 
-      '</div>' + 
-      '<div class="modal-body">' + 
-        '<form name="form" novalidate class="form-horizontal">' + 
-          '<p>I am a settings dialog for a "special widget" widget.</p>' +
-          '<div class="form-group">' + 
-            '<label for="widgetTitle" class="col-sm-2 control-label">Title</label>' + 
-            '<div class="col-sm-10">' + 
-                '<input type="text" class="form-control" name="widgetTitle" ng-model="result.title">' + 
-            '</div>' + 
-          '</div>' + 
-        '</form>' + 
-      '</div>' + 
-      '<div class="modal-footer">' + 
-          '<button type="button" class="btn btn-default" ng-click="cancel()">fuhget about it</button>' + 
-          '<button type="button" class="btn btn-primary" ng-click="ok()">hell yea</button>' + 
-      '</div>' );
-
-    // Add an additional widget with setting overrides
-    var definitions = widgetDefinitions.concat({
-      name: 'special widget',
-      directive: 'wt-scope-watch',
-      attrs: {
-        value: 'randomValue'
-      },
-      settingsModalOptions: {
-        templateUrl: 'widget/specific/template.html',
-        controller: 'WidgetSpecificSettingsCtrl',
-        backdrop: false
-      },
-      onSettingsClose: function(result, widget) {
-        console.log('Widget-specific settings resolved!');
-        jQuery.extend(true, widget, result);
-      },
-      onSettingsDismiss: function(reason, scope) {
-        console.log('Settings have been dismissed: ', reason);
-        console.log('Dashboard scope: ', scope);
-      }
-    });
-
-    $scope.dashboardOptions = {
-      widgetButtons: true,
-      widgetDefinitions: definitions,
-      defaultWidgets: defaultWidgets.concat({ name: 'special widget' }),
-      storage: $window.localStorage,
-      storageId: 'custom-settings',
-
-      // Overrides default $modal options.
-      // This can also be set on individual
-      // widget definition objects (see above).
-      settingsModalOptions: {
-        templateUrl: 'example/custom/template.html'
-        // We could pass a custom controller name here to be used
-        // with the widget settings dialog, but for this demo we
-        // will just keep the default.
-        // 
-        // controller: 'CustomSettingsModalCtrl'
-        // 
-        // Other options passed to $modal.open can be put here,
-        // eg:
-        // 
-        // backdrop: false,
-        // keyboard: false
-        // 
-        // @see http://angular-ui.github.io/bootstrap/#/modal  <-- heads up: routing on their site was broken as of this writing
-      },
-
-      // Called when a widget settings dialog is closed
-      // by the "ok" method (i.e., the promise is resolved
-      // and not rejected). This can also be set on individual
-      // widgets (see above).
-      onSettingsClose: function(result, widget, scope) {
-        console.log('Settings result: ', result);
-        console.log('Widget: ', widget);
-        console.log('Dashboard scope: ', scope);
-        jQuery.extend(true, widget, result);
-      },
-
-      // Called when a widget settings dialog is closed
-      // by the "cancel" method (i.e., the promise is rejected
-      // and not resolved). This can also be set on individual
-      // widgets (see above).
-      onSettingsDismiss: function(reason, scope) {
-        console.log('Settings have been dismissed: ', reason);
-        console.log('Dashboard scope: ', scope);
-      }
-    };
-    $scope.randomValue = Math.random();
-    $interval(function () {
-      $scope.randomValue = Math.random();
-    }, 500);
-  })
-
-  .controller('WidgetSpecificSettingsCtrl', function ($scope, $modalInstance, widget) {
-    // add widget to scope
-    $scope.widget = widget;
-
-    // set up result object
-    $scope.result = jQuery.extend(true, {}, widget);
-
-    $scope.ok = function () {
-      console.log('calling ok from widget-specific settings controller!');
-      $modalInstance.close($scope.result);
-    };
-
-    $scope.cancel = function () {
-      console.log('calling cancel from widget-specific settings controller!');
-      $modalInstance.dismiss('cancel');
-    };
-  })
-
   .controller('ExplicitSaveDemoCtrl', function ($scope, $interval, $window, widgetDefinitions, defaultWidgets) {
 
     $scope.dashboardOptions = {
@@ -415,11 +277,26 @@ angular.module('app', [
 
     angular.extend(RandomDataModel.prototype, {
       init: function () {
+        var dataModelOptions = this.dataModelOptions;
+        this.limit = (dataModelOptions && dataModelOptions.limit) ? dataModelOptions.limit : 100;
+
         this.updateScope('-');
+        this.startInterval();
+      },
+
+      startInterval: function () {
+        $interval.cancel(this.intervalPromise);
+
         this.intervalPromise = $interval(function () {
-          var value = Math.floor(Math.random() * 100);
+          var value = Math.floor(Math.random() * this.limit);
           this.updateScope(value);
         }.bind(this), 500);
+      },
+
+      updateLimit: function (limit) {
+        this.dataModelOptions = this.dataModelOptions ? this.dataModelOptions : {};
+        this.dataModelOptions.limit = limit;
+        this.limit = limit;
       },
 
       destroy: function () {
