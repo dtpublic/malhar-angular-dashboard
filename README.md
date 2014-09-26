@@ -184,7 +184,7 @@ You can think of Widget Definition Objects as a __class__ and the widgets on the
 | settingsModalOptions | Object | see below | no | Overrides same-named option in dashboard options for this widget. See the **Custom Widget Settings** section below. |
 | size              | Object   | n/a           | false    | Widget size, e.g { width: '50%', height: '250px' } |
 | style             | Object   | n/a           | false    | Widget style, e.g { float: 'right' } |
-| enableVerticalResize | Boolean  | true       | false    | Option to enable/disable vertical resize. Should be provided in widget definition since it is not serialized by default. |
+| enableVerticalResize | Boolean  | true       | false    | Option to enable/disable vertical resize. Should be provided in "widgetDefinitions" since it is not serialized by default. |
 | onSettingsClose      | Function | see below | no | Overrides same-named option in dashboard options for this widget. See the **Custom Widget Settings** section below. |
 | onSettingsDismiss    | Function | see below | no | Overrides same-named option in dashboard options for this widget. See the **Custom Widget Settings** section below. |
 
