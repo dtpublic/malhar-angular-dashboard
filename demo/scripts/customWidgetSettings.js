@@ -17,50 +17,8 @@
 'use strict';
 
 angular.module('app')
-  .controller('CustomSettingsDemoCtrl', function($scope, $interval, $window, widgetDefinitions, defaultWidgets, $templateCache, RandomDataModel) {
+  .controller('CustomSettingsDemoCtrl', function($scope, $interval, $window, widgetDefinitions, defaultWidgets, RandomDataModel) {
 
-    // Setting templates to be used in this demo
-    $templateCache.put('example/custom/template.html',
-        '<div class="modal-header">' +
-        '<button type="button" class="close" data-dismiss="modal" aria-hidden="true" ng-click="cancel()">&times;</button>' +
-        '<h3>Custom Settings Dialog for <small>{{widget.title}}</small></h3>' +
-        '</div>' +
-        '<div class="modal-body">' +
-        '<form name="form" novalidate class="form-horizontal">' +
-        '<div class="form-group">' +
-        '<label for="widgetTitle" class="col-sm-2 control-label">Title</label>' +
-        '<div class="col-sm-10">' +
-        '<input type="text" class="form-control" name="widgetTitle" ng-model="result.title">' +
-        '</div>' +
-        '</div>' +
-        '<div ng-if="widget.partialSettingTemplateUrl" ng-include="widget.partialSettingTemplateUrl"></div>' +
-        '</form>' +
-        '</div>' +
-        '<div class="modal-footer">' +
-        '<button type="button" class="btn btn-default" ng-click="cancel()">Cancel</button>' +
-        '<button type="button" class="btn btn-primary" ng-click="ok()">OK</button>' +
-        '</div>' );
-
-    $templateCache.put('widget/specific/template.html',
-        '<div class="modal-header">' +
-        '<button type="button" class="close" data-dismiss="modal" aria-hidden="true" ng-click="cancel()">&times;</button>' +
-        '<h3>Custom Settings for a special widget</h3>' +
-        '</div>' +
-        '<div class="modal-body">' +
-        '<form name="form" novalidate class="form-horizontal">' +
-        '<p>I am a settings dialog for a "special widget" widget.</p>' +
-        '<div class="form-group">' +
-        '<label for="widgetTitle" class="col-sm-2 control-label">Title</label>' +
-        '<div class="col-sm-10">' +
-        '<input type="text" class="form-control" name="widgetTitle" ng-model="result.title">' +
-        '</div>' +
-        '</div>' +
-        '</form>' +
-        '</div>' +
-        '<div class="modal-footer">' +
-        '<button type="button" class="btn btn-default" ng-click="cancel()">fuhget about it</button>' +
-        '<button type="button" class="btn btn-primary" ng-click="ok()">hell yea</button>' +
-        '</div>' );
 
     // Add an additional widget with setting overrides
     var definitions = [{
@@ -85,7 +43,7 @@ angular.module('app')
       dataAttrName: 'value',
       dataModelType: RandomDataModel,
       settingsModalOptions: {
-        templateUrl: 'widget/specific/template.html',
+        templateUrl: 'template/WidgetSpecificSettings.html',
         controller: 'WidgetSpecificSettingsCtrl',
         backdrop: false
       },
@@ -116,7 +74,9 @@ angular.module('app')
       // This can also be set on individual
       // widget definition objects (see above).
       settingsModalOptions: {
-        templateUrl: 'example/custom/template.html'
+        // This will completely override the modal template for all widgets.
+        // You also have the option to add to the default modal template with settingsModalOptions.partialTemplateUrl (see "configurable widget" above)
+        templateUrl: 'template/customSettingsTemplate.html'
         // We could pass a custom controller name here to be used
         // with the widget settings dialog, but for this demo we
         // will just keep the default.
