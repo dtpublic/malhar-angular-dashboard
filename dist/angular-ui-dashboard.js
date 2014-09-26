@@ -1065,7 +1065,8 @@ angular.module('ui.dashboard')
           onSettingsClose: Class.onSettingsClose,
           onSettingsDismiss: Class.onSettingsDismiss,
           style: Class.style || {},
-          size: Class.size || {}
+          size: Class.size || {},
+          enableVerticalResize: (Class.enableVerticalResize === false) ? false : true
         };
 
       overrides = overrides || {};
@@ -1565,7 +1566,7 @@ angular.module("ui.dashboard").run(["$templateCache", function($templateCache) {
     "                </div>\n" +
     "                <div class=\"panel-body widget-content\" ng-style=\"widget.contentStyle\"></div>\n" +
     "                <div class=\"widget-ew-resizer\" ng-mousedown=\"grabResizer($event)\"></div>\n" +
-    "                <div class=\"widget-s-resizer\" ng-mousedown=\"grabSouthResizer($event)\"></div>\n" +
+    "                <div ng-if=\"widget.enableVerticalResize\" class=\"widget-s-resizer\" ng-mousedown=\"grabSouthResizer($event)\"></div>\n" +
     "            </div>\n" +
     "        </div>\n" +
     "    </div>\n" +

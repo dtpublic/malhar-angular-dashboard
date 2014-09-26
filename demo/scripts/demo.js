@@ -134,7 +134,7 @@ angular.module('app', [
       widgetDefinitions: widgetDefinitions,
       defaultWidgets: defaultWidgets,
       storage: $window.localStorage,
-      storageId: 'demo_resize'
+      storageId: 'demo_simple'
     };
     $scope.randomValue = Math.random();
     $interval(function () {

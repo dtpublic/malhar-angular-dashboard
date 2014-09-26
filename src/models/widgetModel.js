@@ -33,7 +33,8 @@ angular.module('ui.dashboard')
           onSettingsClose: Class.onSettingsClose,
           onSettingsDismiss: Class.onSettingsDismiss,
           style: Class.style || {},
-          size: Class.size || {}
+          size: Class.size || {},
+          enableVerticalResize: (Class.enableVerticalResize === false) ? false : true
         };
 
       overrides = overrides || {};

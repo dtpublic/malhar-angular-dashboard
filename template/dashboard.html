@@ -42,7 +42,7 @@
                 </div>
                 <div class="panel-body widget-content" ng-style="widget.contentStyle"></div>
                 <div class="widget-ew-resizer" ng-mousedown="grabResizer($event)"></div>
-                <div class="widget-s-resizer" ng-mousedown="grabSouthResizer($event)"></div>
+                <div ng-if="widget.enableVerticalResize" class="widget-s-resizer" ng-mousedown="grabSouthResizer($event)"></div>
             </div>
         </div>
     </div>
