@@ -1,5 +1,6 @@
 angular-dashboard
 ====================
+[![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/DataTorrent/malhar-angular-dashboard?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 [![Build Status](https://travis-ci.org/DataTorrent/malhar-angular-dashboard.svg?branch=master)](https://travis-ci.org/DataTorrent/malhar-angular-dashboard)
 
