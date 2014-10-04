@@ -7,7 +7,7 @@
               </button>
               <ul class="dropdown-menu" role="menu">
                 <li ng-repeat="widget in widgetDefs">
-                  <a href="#" ng-click="addWidgetInternal($event, widget);" class="dropdown-toggle">{{widget.name}}</a>
+                  <a href="#" ng-click="addWidgetInternal($event, widget);" class="dropdown-toggle"><span class="label label-primary">{{widget.name}}</span></a>
                 </li>
               </ul>
             </span>
