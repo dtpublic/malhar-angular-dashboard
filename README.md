@@ -47,9 +47,9 @@ Examples
 
 [Advanced demo](http://datatorrent.github.io/malhar-dashboard-webapp/#/) (charts, visualization, data sources, etc.) [[source code](https://github.com/DataTorrent/malhar-dashboard-webapp)]
 
-UI Console (very complex application; REST, WebSocket and Socket.IO data sources; dashboard customization; etc.) [source code](https://github.com/DataTorrent/malhar-ui-console)
+UI Console (very complex application; REST, WebSocket and Socket.IO data sources; dashboard customization; etc.) [[source code](https://github.com/DataTorrent/malhar-ui-console)]
 
-Widget Library using the dashboard [source code](https://github.com/DataTorrent/malhar-angular-widgets)
+Widget Library using the dashboard [[source code](https://github.com/DataTorrent/malhar-angular-widgets)]
 
 ![AngularJS Dashboard](docs/AngularJSDashboard.png "AngularJS Dashboard")
 
