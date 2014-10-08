@@ -142,32 +142,6 @@ angular.module('app', [
     }, 500);
 
   })
-  .controller('ResizeDemoCtrl', function ($scope, $interval, $window, widgetDefinitions, defaultWidgets) {
-    defaultWidgets = [
-      { name: 'fluid' },
-      { name: 'resizable' },
-      { name: 'random', style: { width: '50%' } },
-      { name: 'time', style: { width: '50%' } }
-    ];
-
-    $scope.dashboardOptions = {
-      widgetButtons: true,
-      widgetDefinitions: widgetDefinitions,
-      defaultWidgets: defaultWidgets,
-      storage: $window.localStorage,
-      storageId: 'demo_resize'
-    };
-    $scope.randomValue = Math.random();
-    $interval(function () {
-      $scope.randomValue = Math.random();
-    }, 500);
-  })
-  .controller('ResizableCtrl', function ($scope) {
-    $scope.$on('widgetResized', function (event, size) {
-      $scope.width = size.width || $scope.width;
-      $scope.height = size.height || $scope.height;
-    });
-  })
   .controller('ExplicitSaveDemoCtrl', function ($scope, $interval, $window, widgetDefinitions, defaultWidgets) {
 
     $scope.dashboardOptions = {
