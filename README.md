@@ -375,7 +375,7 @@ The `layoutOptions` object passed to dashboard-layouts tries to mirror `dashboar
 key | type | default value | required | description
 --- | ---- | ------------- | -------- | -----------
  widgetDefinitions | Array | n/a | yes | Same as in `dashboardOptions`
- lockDefaultLayouts | Boolean| false | no | `true` to lock default layouts (prevent from removing and renaming), layout lock can also be controlled with `locked' layout property
+ lockDefaultLayouts | Boolean| false | no | `true` to lock default layouts (prevent from removing and renaming), layout lock can also be controlled with `locked` layout property
  defaultLayouts    | Array | n/a | yes | List of objects where an object is `{ title: [STRING_LAYOUT_TITLE], active: [BOOLEAN_ACTIVE_STATE], locked: [BOOLEAN], defaultWidgets: [ARRAY_DEFAULT_WIDGETS] }`. Note that `defaultWidgets` is the same as in `dashboardOptions`.
  widgetButtons     | Boolean | true | no | Same as in `dashboardOptions`
  storage   | Object | null | no | Same as in `dashboardOptions`, only the saved objects look like: `{ layouts: [...], states: {...}, storageHash: '' }`
