@@ -50,6 +50,7 @@ angular.module('ui.dashboard')
       this.stringifyStorage = options.stringifyStorage;
       this.widgetDefinitions = options.widgetDefinitions;
       this.defaultLayouts = options.defaultLayouts;
+      this.lockDefaultLayouts = options.lockDefaultLayouts;
       this.widgetButtons = options.widgetButtons;
       this.explicitSave = options.explicitSave;
       this.defaultWidgets = options.defaultWidgets;
@@ -168,8 +169,9 @@ angular.module('ui.dashboard')
 
       _addDefaultLayouts: function() {
         var self = this;
+        var defaults = this.lockDefaultLayouts ? { locked: true } : {};
         angular.forEach(this.defaultLayouts, function(layout) {
-          self.add(angular.extend({}, layout));
+          self.add(angular.extend(_.clone(defaults), layout));
         });
       },
 
@@ -180,6 +182,7 @@ angular.module('ui.dashboard')
             title: l.title,
             id: l.id,
             active: l.active,
+            locked: l.locked,
             defaultWidgets: l.dashboard.defaultWidgets
           });
         });

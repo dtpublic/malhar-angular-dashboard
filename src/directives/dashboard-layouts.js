@@ -95,6 +95,10 @@ angular.module('ui.dashboard')
           };
 
           scope.editTitle = function(layout) {
+            if (layout.locked) {
+              return;
+            }
+
             var input = element.find('input[data-layout="' + layout.id + '"]');
             layout.editingTitle = true;
 

@@ -190,10 +190,11 @@ angular.module('app', [
       storageHash: 'fs4df4d51',
       widgetDefinitions: widgetDefinitions,
       defaultWidgets: defaultWidgets,
+      lockDefaultLayouts: true,
       defaultLayouts: [
         { title: 'Layout 1', active: true , defaultWidgets: defaultWidgets },
         { title: 'Layout 2', active: false, defaultWidgets: defaultWidgets },
-        { title: 'Layout 3', active: false, defaultWidgets: defaultWidgets }
+        { title: 'Layout 3', active: false, defaultWidgets: defaultWidgets, locked: false }
       ]
     };
     $scope.randomValue = Math.random();
