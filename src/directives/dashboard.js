@@ -133,6 +133,8 @@ angular.module('ui.dashboard')
           if (!doNotSave) {
             scope.saveDashboard();
           }
+
+          return widget;
         };
 
         /**
@@ -287,7 +289,8 @@ angular.module('ui.dashboard')
         scope.options.addWidget = scope.addWidget;
         scope.options.loadWidgets = scope.loadWidgets;
         scope.options.saveDashboard = scope.externalSaveDashboard;
-
+        scope.options.removeWidget = scope.removeWidget;
+        scope.options.openWidgetSettings = scope.openWidgetSettings;
 
         // save state
         scope.$on('widgetChanged', function (event) {
