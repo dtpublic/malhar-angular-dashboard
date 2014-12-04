@@ -71,6 +71,7 @@ Requirements
 - jQuery
 - jQuery UI
 - Angular UI Sortable
+- Angular Bootstrap
 
 Example of including dependencies from CDN [here](demo/index.html)
 
@@ -106,8 +107,8 @@ Download the zip of this repo and use the files in the `dist` folder.
 Load `dist/angular-ui-dashboard.js` and `dist/angular-ui-dashboard.css` in your html:
 
 ```HTML
-<link rel="stylesheet" href="bower_components/angular-ui-dashboard/dist/angular-ui-dashboard.css">
-<script src="bower_components/angular-ui-dashboard/dist/angular-ui-dashboard.js"></script>
+<link rel="stylesheet" href="bower_components/malhar-angular-dashboard/dist/angular-ui-dashboard.css">
+<script src="bower_components/malhar-angular-dashboard/dist/angular-ui-dashboard.js"></script>
 ```
 
 Also be sure to add it to your apps dependency list:
