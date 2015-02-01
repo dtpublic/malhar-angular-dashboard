@@ -17,7 +17,7 @@
 'use strict';
 
 angular.module('ui.dashboard')
-  .factory('WidgetModel', function () {
+  .factory('WidgetModel', function ($log) {
     // constructor for widget model instances
     function WidgetModel(Class, overrides) {
       var defaults = {
@@ -70,10 +70,12 @@ angular.module('ui.dashboard')
       setWidth: function (width, units) {
         width = width.toString();
         units = units || width.replace(/^[-\.\d]+/, '') || '%';
+
         this.widthUnits = units;
         width = parseFloat(width);
 
-        if (width < 0) {
+        if (width < 0 || isNaN(width)) {
+          $log.warn('malhar-angular-dashboard: setWidth was called when width was ' + width);
           return false;
         }
 
