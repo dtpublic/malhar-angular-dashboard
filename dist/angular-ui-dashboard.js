@@ -1538,7 +1538,7 @@ angular.module("ui.dashboard").run(["$templateCache", function($templateCache) {
     "    <div class=\"btn-toolbar\" ng-if=\"!options.hideToolbar\">\n" +
     "        <div class=\"btn-group\" ng-if=\"!options.widgetButtons\">\n" +
     "            <span class=\"dropdown\" on-toggle=\"toggled(open)\">\n" +
-    "              <button type=\"button\" class=\"btn btn-primary dropdown-toggle\" ng-disabled=\"disabled\">\n" +
+    "              <button type=\"button\" class=\"btn btn-primary dropdown-toggle\" data-toggle=\"dropdown\">\n" +
     "                Button dropdown <span class=\"caret\"></span>\n" +
     "              </button>\n" +
     "              <ul class=\"dropdown-menu\" role=\"menu\">\n" +

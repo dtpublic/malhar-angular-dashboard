@@ -335,7 +335,8 @@ describe('Directive: dashboard-layouts', function () {
       it('should call dashboard.addWidget method of the active layout', function() {
         options.addWidget(1,2,3);
         expect(mockDash.dashboard.addWidget).toHaveBeenCalled();
-        expect(mockDash.dashboard.addWidget.calls.first()).toEqual({object: mockDash.dashboard, args: [1,2,3]});
+        expect(mockDash.dashboard.addWidget.calls.first().object).toEqual(mockDash.dashboard);
+        expect(mockDash.dashboard.addWidget.calls.first().args).toEqual([1,2,3]);
       });
 
       it('should do nothing if there is no active layout', function() {
@@ -352,7 +353,8 @@ describe('Directive: dashboard-layouts', function () {
       it('should call dashboard.loadWidgets of the current layout', function() {
         options.loadWidgets(1,2,3);
         expect(mockDash.dashboard.loadWidgets).toHaveBeenCalled();
-        expect(mockDash.dashboard.loadWidgets.calls.first()).toEqual({object: mockDash.dashboard, args: [1,2,3]});
+        expect(mockDash.dashboard.loadWidgets.calls.first().object).toEqual(mockDash.dashboard);
+        expect(mockDash.dashboard.loadWidgets.calls.first().args).toEqual([1,2,3]);
       });
 
       it('should do nothing if there is no active layout', function() {
@@ -369,7 +371,8 @@ describe('Directive: dashboard-layouts', function () {
       it('should call dashboard.saveDashboard of the current layout', function() {
         options.saveDashboard(1,2,3);
         expect(mockDash.dashboard.saveDashboard).toHaveBeenCalled();
-        expect(mockDash.dashboard.saveDashboard.calls.first()).toEqual({object: mockDash.dashboard, args: [1,2,3]});
+        expect(mockDash.dashboard.saveDashboard.calls.first().object).toEqual(mockDash.dashboard);
+        expect(mockDash.dashboard.saveDashboard.calls.first().args).toEqual([1,2,3]);
       });
 
       it('should do nothing if there is no active layout', function() {
