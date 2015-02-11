@@ -50,5 +50,8 @@
   "main": [
     "dist/malhar-angular-dashboard.css",
     "dist/malhar-angular-dashboard.js"
-  ]
+  ],
+  "scripts": {
+    "test": "gulp test"
+  }
 }
