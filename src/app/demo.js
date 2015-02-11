@@ -24,19 +24,19 @@ angular.module('app', [
   .config(function ($routeProvider) {
     $routeProvider
       .when('/', {
-        templateUrl: 'view.html',
+        templateUrl: 'app/template/view.html',
         controller: 'DemoCtrl',
         title: 'simple',
         description: 'This is the simplest demo.'
       })
       .when('/resize', {
-        templateUrl: 'view.html',
+        templateUrl: 'app/template/view.html',
         controller: 'ResizeDemoCtrl',
         title: 'resize',
         description: 'This demo showcases widget resizing.'
       })
       .when('/custom-settings', {
-        templateUrl: 'view.html',
+        templateUrl: 'app/template/view.html',
         controller: 'CustomSettingsDemoCtrl',
         title: 'custom widget settings',
         description: 'This demo showcases overriding the widget settings dialog/modal ' +
@@ -45,7 +45,7 @@ angular.module('app', [
           'that controls RandomDataModel.'
       })
       .when('/explicit-saving', {
-        templateUrl: 'view.html',
+        templateUrl: 'app/template/view.html',
         controller: 'ExplicitSaveDemoCtrl',
         title: 'explicit saving',
         description: 'This demo showcases an option to only save the dashboard state '+
@@ -53,7 +53,7 @@ angular.module('app', [
           'updates as you make saveable changes.'
       })
       .when('/layouts', {
-        templateUrl: 'layouts.html',
+        templateUrl: 'app/template/layouts.html',
         controller: 'LayoutsDemoCtrl',
         title: 'dashboard layouts',
         description: 'This demo showcases the ability to have "dashboard layouts", ' +
@@ -61,7 +61,7 @@ angular.module('app', [
           'information, take a look at [issue #31](https://github.com/DataTorrent/malhar-angular-dashboard/issues/31)'
       })
       .when('/layouts/explicit-saving', {
-        templateUrl: 'layouts.html',
+        templateUrl: 'app/template/layouts.html',
         controller: 'LayoutsDemoExplicitSaveCtrl',
         title: 'layouts explicit saving',
         description: 'This demo showcases dashboard layouts with explicit saving enabled.'
@@ -94,7 +94,7 @@ angular.module('app', [
       },
       {
         name: 'resizable',
-        templateUrl: 'template/resizable.html',
+        templateUrl: 'app/template/resizable.html',
         attrs: {
           class: 'demo-widget-resizable'
         }

@@ -176,14 +176,14 @@ You can think of Widget Definition Objects as a __class__ and the widgets on the
 
 | key               | type     | default value | required | description
 | ----------------- | ------   | ------------- | -------- | -----------
-| name              | Object   | n/a           | true     | Name of Widget Definition Object. If no `templateUrl`, `template`, or `directive` are on the Widget Definition | Object, this is assumed to be a directive name. In other words, the `directive` attribute is set to this value.
+| name              | String   | n/a           | true     | Name of Widget Definition Object. If no `templateUrl`, `template`, or `directive` are on the Widget Definition Object, this is assumed to be a directive name. In other words, the `directive` attribute is set to this value.
 | title             | String   | n/a           | false    | Default title of widget instances
 | attrs             | Object   | n/a           | false    | Map of attributes to add to the markup of the widget. Changes to these will be stored when using the `storage` option | (see **Persistence** section below).
 | templateUrl       | String   | n/a           | false    | URL of template to use for widget content
 | template          | String   | n/a           | false    | String template (ignored if templateUrl is present)
 | directive         | String   | n/a           | false    | HTML-injectable directive name (eg. `"ng-show"`)
 | dataModelType     | Function or String | n/a | false    | Constructor for the dataModel object, which provides data to the widget (see below for more information).
-| dataModelOptions  | Object   | n/a           | false    | Arbitrary values to supply to the dataModel. Available on dataModel instance as this.dataModelOptions. Serializable | values in this object will also be saved if `storage` is being used (see the **Persistence** section below).
+| dataModelOptions  | Object   | n/a           | false    | Arbitrary values to supply to the dataModel. Available on dataModel instance as this.dataModelOptions. Serializable values in this object will also be saved if `storage` is being used (see the **Persistence** section below).
 | dataModelArgs     | Object   | n/a           | false    | Object to be passed to data model constructor function. This object is not serialized by default and if defined should be present in widget definitions.
 | dataAttrName      | String   | n/a           | false    | Name of attribute to bind `widgetData` model
 | storageHash       | String   | n/a           | false    | This is analogous to the `storageHash` option on the dashboard, except at a widget-level instead of a dashboard-wide | level. This can be helpful if you would only like to invalidate stored state of one widget at a time instead of all widgets.

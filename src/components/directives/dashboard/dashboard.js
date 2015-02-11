@@ -22,7 +22,7 @@ angular.module('ui.dashboard')
     return {
       restrict: 'A',
       templateUrl: function(element, attr) {
-        return attr.templateUrl ? attr.templateUrl : 'template/dashboard.html';
+        return attr.templateUrl ? attr.templateUrl : 'components/directives/dashboard/dashboard.html';
       },
       scope: true,
 
@@ -33,7 +33,7 @@ angular.module('ui.dashboard')
           hideWidgetSettings: false,
           hideWidgetClose: false,
           settingsModalOptions: {
-            templateUrl: 'template/widget-settings-template.html',
+            templateUrl: 'components/directives/dashboard/widget-settings-template.html',
             controller: 'WidgetSettingsCtrl'
           },
           onSettingsClose: function(result, widget) { // NOTE: dashboard scope is also passed as 3rd argument

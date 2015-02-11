@@ -22,7 +22,7 @@ angular.module('ui.dashboard')
       return {
         scope: true,
         templateUrl: function(element, attr) {
-          return attr.templateUrl ? attr.templateUrl : 'template/dashboard-layouts.html';
+          return attr.templateUrl ? attr.templateUrl : 'components/directives/dashboardLayouts/dashboardLayouts.html';
         },
         link: function(scope, element, attrs) {
 
@@ -54,7 +54,7 @@ angular.module('ui.dashboard')
 
             if (current && current.dashboard.unsavedChangeCount) {
               var modalInstance = $modal.open({
-                templateUrl: 'template/save-changes-modal.html',
+                templateUrl: 'template/SaveChangesModal.html',
                 resolve: {
                   layout: function() {
                     return layout;
@@ -139,6 +139,7 @@ angular.module('ui.dashboard')
             stop: function() {
               scope.options.saveLayouts();
             },
+            distance: 5
           };
           scope.sortableOptions = angular.extend({}, sortableDefaults, scope.options.sortableOptions || {});
         }
