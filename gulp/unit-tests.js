@@ -22,7 +22,7 @@ function runTests (singleRun, done) {
     paths.tmp + '/partials/templateCacheHtml.js'
   ]).pipe($.angularFilesort());
 
-  merge(testFiles, srcFiles)
+  return merge(testFiles, srcFiles)
     .pipe($.karma({
       configFile: 'karma.conf.js',
       action: (singleRun)? 'run': 'watch'
@@ -33,5 +33,5 @@ function runTests (singleRun, done) {
     });
 }
 
-gulp.task('test', ['partials'], function (done) { runTests(true /* singleRun */, done) });
-gulp.task('test:auto', ['partials'], function (done) { runTests(false /* singleRun */, done) });
+gulp.task('test', ['partials'], function () { return runTests(true /* singleRun */) });
+gulp.task('test:auto', ['partials'], function () { return runTests(false /* singleRun */) });
