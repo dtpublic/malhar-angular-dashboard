@@ -214,6 +214,13 @@ describe('Directive: dashboard', function () {
         expect(childScope.saveDashboard).toHaveBeenCalled();
     });
 
+    it('should support passing just the widget name as a string', function() {
+      spyOn(childScope.widgetDefs, 'getByName').and.returnValue({ title: 'defaultTitle', name: 'A' });
+      childScope.addWidget('A');
+      expect(childScope.widgetDefs.getByName).toHaveBeenCalledWith('A');
+      expect(widgetCreated.title).toEqual('defaultTitle');
+    });
+
     describe('@awashbrook Test Case', function() {
       beforeEach(function() {
         spyOn(childScope.widgetDefs, 'getByName').and.returnValue(widgetDefault = {
