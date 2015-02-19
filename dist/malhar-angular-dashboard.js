@@ -106,6 +106,13 @@ angular.module('ui.dashboard')
          * @param {Object} widgetToInstantiate The definition object of the widget to be instantiated
          */
         scope.addWidget = function (widgetToInstantiate, doNotSave) {
+
+          if (typeof widgetToInstantiate === 'string') {
+            widgetToInstantiate = {
+              name: widgetToInstantiate
+            };
+          }
+
           var defaultWidgetDefinition = scope.widgetDefs.getByName(widgetToInstantiate.name);
           if (!defaultWidgetDefinition) {
             throw 'Widget ' + widgetToInstantiate.name + ' is not found.';
