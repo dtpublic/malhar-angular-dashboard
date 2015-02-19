@@ -41,17 +41,7 @@ angular.module('ui.dashboard')
         }
 
         var serialized = _.map(widgets, function (widget) {
-          var widgetObject = {
-            title: widget.title,
-            name: widget.name,
-            style: widget.style,
-            size: widget.size,
-            dataModelOptions: widget.dataModelOptions,
-            storageHash: widget.storageHash,
-            attrs: widget.attrs
-          };
-
-          return widgetObject;
+          return widget.serialize();
         });
 
         var item = { widgets: serialized, hash: this.hash };
