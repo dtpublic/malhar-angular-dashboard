@@ -28,7 +28,11 @@ describe('Factory: WidgetModel', function () {
         style: { width: '10em' },
         settingsModalOptions: {},
         onSettingsClose: function() {},
-        onSettingsDismiss: function() {}
+        onSettingsDismiss: function() {},
+        funkyChicken: {
+          cool: false,
+          fun: true
+        }
       };
 
       Class2 = {
@@ -64,14 +68,15 @@ describe('Factory: WidgetModel', function () {
       expect(m.style.width).toEqual('15em');
     });
 
+    it('should copy arbitrary data from the widget definition', function() {
+      expect(m.funkyChicken.cool).toEqual(false);
+      expect(m.funkyChicken.fun).toEqual(true);
+      expect(m.funkyChicken===Class.funkyChicken).toEqual(false);
+    });
+
     it('should set templateUrl if and only if it is present on Class', function() {
       var m2 = new WidgetModel(Class2, overrides);
       expect(m2.templateUrl).toEqual('my/url.html');
-    });
-
-    it('should NOT set template if templateUrl was specified', function() {
-      var m2 = new WidgetModel(Class2, overrides);
-      expect(m2.template).toBeUndefined();
     });
 
     it('should set template if and only if it is present on Class', function() {
