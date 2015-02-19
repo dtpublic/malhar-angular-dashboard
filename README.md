@@ -186,14 +186,16 @@ You can think of Widget Definition Objects as a __class__ and the widgets on the
 | dataModelOptions  | Object   | n/a           | false    | Arbitrary values to supply to the dataModel. Available on dataModel instance as this.dataModelOptions. Serializable values in this object will also be saved if `storage` is being used (see the **Persistence** section below).
 | dataModelArgs     | Object   | n/a           | false    | Object to be passed to data model constructor function. This object is not serialized by default and if defined should be present in widget definitions.
 | dataAttrName      | String   | n/a           | false    | Name of attribute to bind `widgetData` model
-| storageHash       | String   | n/a           | false    | This is analogous to the `storageHash` option on the dashboard, except at a widget-level instead of a dashboard-wide | level. This can be helpful if you would only like to invalidate stored state of one widget at a time instead of all widgets.
+| storageHash       | String   | n/a           | false    | This is analogous to the `storageHash` option on the dashboard, except at a widget-level instead of a dashboard-wide level. This can be helpful if you would only like to invalidate stored state of one widget at a time instead of all widgets.
 | settingsModalOptions | Object | see below | no | Overrides same-named option in dashboard options for this widget. See the **Custom Widget Settings** section below. |
 | size              | Object   | n/a           | false    | Widget size, e.g { width: '50%', height: '250px' } |
 | style             | Object   | n/a           | false    | Widget style, e.g { float: 'right' } |
 | enableVerticalResize | Boolean  | true       | false    | Option to enable/disable vertical resize. Should be provided in "widgetDefinitions" since it is not serialized by default. |
 | onSettingsClose      | Function | see below | no | Overrides same-named option in dashboard options for this widget. See the **Custom Widget Settings** section below. |
 | onSettingsDismiss    | Function | see below | no | Overrides same-named option in dashboard options for this widget. See the **Custom Widget Settings** section below. |
+| serialize         | Function | see below | no | Define this to override how this widget gets saved to storage. See **persistence** section below. |
 
+As of v1.0.0, you can also add arbitrary data to your WDOs and this data will be copied to your widget. Keep in mind though, that if you want to SAVE some of this arbitrary info with storage, you will need to implement your own serialize method that includes this (see the **persistence** section below).
 
 ### Widget Resize
 
@@ -263,7 +265,7 @@ This dashboard component offers a means to save the state of the user's dashboar
 - widget titles
 - any serializable data stored in `dataModelOptions` if the widget instance has a `ds` (instantiated `dataModelType`)
 
-There are three options you can specify in the `dashboardOptions` object relating to persistence:
+There are four options you can specify in the `dashboardOptions` object relating to persistence:
 
 ### `storage` (Object)
 This object will be used by the dashboard to save its state. It should implement the following three methods:
@@ -284,6 +286,19 @@ This string will be stored along with the dashboard state. Then later, when stat
 ### `stringifyStorage` (Boolean)
 By default (`stringifyStorage=true`), the dashboard will convert its state (a JavaScript Object) to a string using `JSON.stringify` before passing it to `storage.setItem`. Additionally, the dashboard will assume that `storage.getItem` will return a JSON string and try to parse it with `JSON.parse`. This works with `window.localStorage` nicely, since objects cannot be used as `value` in `localStorage.setItem(key, value)`. However, if you are implementing your own `storage` and would not like this stringification business, set `stringifyStorage` to `false`.
 
+There are also two options you can specify on WDOs that relate to persistence:
+
+### `storageHash` (String)
+Analogous to the `storageHash` option on the dashboard, except at a widget-level instead of a dashboard-wide level. This can be helpful if you would only like to invalidate stored state of one widget at a time instead of all widgets.
+
+### `serialize` (Function)
+This function will determine how the state of the widget gets saved. It takes no arguments and should return a `JSON.stringify`able object. The default implementation is as follows:
+```js
+serialize: function() {
+  return _.pick(this, ['title', 'name', 'style', 'size', 'dataModelOptions', 'attrs', 'storageHash']);
+}
+```
+See [_.pick](https://lodash.com/docs#pick) for more details. The most common use-case for this would be to add another key to this list, or remove a key.
 
 Custom Widget Settings
 ----------------------

@@ -33,8 +33,8 @@ angular.module('ui.dashboard')
     // constructor for widget model instances
     function WidgetModel(widgetDefinition, overrides) {
   
-      // Extend this with the widget definition object and any overrides.
-      angular.extend(this, defaults(), angular.copy(widgetDefinition), overrides);
+      // Extend this with the widget definition object with overrides merged in (deep extended).
+      angular.extend(this, defaults(), _.merge(angular.copy(widgetDefinition), overrides));
 
       this.updateContainerStyle(this.style);
 
@@ -97,6 +97,9 @@ angular.module('ui.dashboard')
 
       updateContainerStyle: function (style) {
         angular.extend(this.containerStyle, style);
+      },
+      serialize: function() {
+        return _.pick(this, ['title', 'name', 'style', 'size', 'dataModelOptions', 'attrs', 'storageHash']);
       }
     };
 

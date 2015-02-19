@@ -113,22 +113,14 @@ angular.module('ui.dashboard')
 
           // Determine the title for the new widget
           var title;
-          if (widgetToInstantiate.title) {
-            title = widgetToInstantiate.title;
-          } else if (defaultWidgetDefinition.title) {
-            title = defaultWidgetDefinition.title;
-          } else {
-            title = 'Widget ' + count++;
+          if (!widgetToInstantiate.title && !defaultWidgetDefinition.title) {
+            widgetToInstantiate.title = 'Widget ' + count++;
           }
 
-          // Deep extend a new object for instantiation
-          widgetToInstantiate = jQuery.extend(true, {}, defaultWidgetDefinition, widgetToInstantiate);
-
           // Instantiation
-          var widget = new WidgetModel(widgetToInstantiate, {
-            title: title
-          });
+          var widget = new WidgetModel(defaultWidgetDefinition, widgetToInstantiate);
 
+          // Add to the widgets array
           scope.widgets.push(widget);
           if (!doNotSave) {
             scope.saveDashboard();
