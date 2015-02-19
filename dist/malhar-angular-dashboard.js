@@ -113,22 +113,14 @@ angular.module('ui.dashboard')
 
           // Determine the title for the new widget
           var title;
-          if (widgetToInstantiate.title) {
-            title = widgetToInstantiate.title;
-          } else if (defaultWidgetDefinition.title) {
-            title = defaultWidgetDefinition.title;
-          } else {
-            title = 'Widget ' + count++;
+          if (!widgetToInstantiate.title && !defaultWidgetDefinition.title) {
+            widgetToInstantiate.title = 'Widget ' + count++;
           }
 
-          // Deep extend a new object for instantiation
-          widgetToInstantiate = jQuery.extend(true, {}, defaultWidgetDefinition, widgetToInstantiate);
-
           // Instantiation
-          var widget = new WidgetModel(widgetToInstantiate, {
-            title: title
-          });
+          var widget = new WidgetModel(defaultWidgetDefinition, widgetToInstantiate);
 
+          // Add to the widgets array
           scope.widgets.push(widget);
           if (!doNotSave) {
             scope.saveDashboard();
@@ -842,38 +834,28 @@ angular.module('ui.dashboard')
 
 angular.module('ui.dashboard')
   .factory('WidgetModel', ["$log", function ($log) {
-    // constructor for widget model instances
-    function WidgetModel(Class, overrides) {
-      var defaults = {
-          title: 'Widget',
-          name: Class.name,
-          attrs: Class.attrs,
-          dataAttrName: Class.dataAttrName,
-          dataModelType: Class.dataModelType,
-          dataModelArgs: Class.dataModelArgs, // used in data model constructor, not serialized
-          //AW Need deep copy of options to support widget options editing
-          dataModelOptions: Class.dataModelOptions,
-          settingsModalOptions: Class.settingsModalOptions,
-          onSettingsClose: Class.onSettingsClose,
-          onSettingsDismiss: Class.onSettingsDismiss,
-          style: Class.style || {},
-          size: Class.size || {},
-          enableVerticalResize: (Class.enableVerticalResize === false) ? false : true
-        };
 
-      overrides = overrides || {};
-      angular.extend(this, angular.copy(defaults), overrides);
-      this.containerStyle = { width: '33%' }; // default width
-      this.contentStyle = {};
+    function defaults() {
+      return {
+        title: 'Widget',
+        style: {},
+        size: {},
+        enableVerticalResize: true,
+        containerStyle: { width: '33%' }, // default width
+        contentStyle: {}
+      };
+    };
+
+    // constructor for widget model instances
+    function WidgetModel(widgetDefinition, overrides) {
+  
+      // Extend this with the widget definition object with overrides merged in (deep extended).
+      angular.extend(this, defaults(), _.merge(angular.copy(widgetDefinition), overrides));
+
       this.updateContainerStyle(this.style);
 
-      if (Class.templateUrl) {
-        this.templateUrl = Class.templateUrl;
-      } else if (Class.template) {
-        this.template = Class.template;
-      } else {
-        var directive = Class.directive || Class.name;
-        this.directive = directive;
+      if (!this.templateUrl && !this.template && !this.directive) {
+        this.directive = widgetDefinition.name;
       }
 
       if (this.size && _.has(this.size, 'height')) {
@@ -931,6 +913,9 @@ angular.module('ui.dashboard')
 
       updateContainerStyle: function (style) {
         angular.extend(this.containerStyle, style);
+      },
+      serialize: function() {
+        return _.pick(this, ['title', 'name', 'style', 'size', 'dataModelOptions', 'attrs', 'storageHash']);
       }
     };
 
@@ -1333,17 +1318,7 @@ angular.module('ui.dashboard')
         }
 
         var serialized = _.map(widgets, function (widget) {
-          var widgetObject = {
-            title: widget.title,
-            name: widget.name,
-            style: widget.style,
-            size: widget.size,
-            dataModelOptions: widget.dataModelOptions,
-            storageHash: widget.storageHash,
-            attrs: widget.attrs
-          };
-
-          return widgetObject;
+          return widget.serialize();
         });
 
         var item = { widgets: serialized, hash: this.hash };
