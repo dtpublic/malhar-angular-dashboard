@@ -35,7 +35,8 @@ gulp.task('serve', ['watch'], function () {
   browserSyncInit([
     paths.tmp + '/serve',
     paths.src,
-    paths.bower + '/bootstrap'
+    paths.bower + '/bootstrap',
+    paths.tmp + '/partials/'
   ], [
     paths.tmp + '/serve/{app,components}/**/*.css',
     paths.src + '/{app,components}/**/*.js',
