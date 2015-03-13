@@ -45,18 +45,6 @@ angular.module('ui.dashboard')
         };
 
         // from dashboard="options"
-        // scope.options = scope.$eval(attrs.dashboard);
-
-        // extend default settingsModalOptions
-        // scope.options.settingsModalOptions = scope.options.settingsModalOptions || {};
-
-        // extend options with defaults
-        // angular.extend(defaults.settingsModalOptions, scope.options.settingsModalOptions);
-        // angular.extend(scope.options.settingsModalOptions, defaults.settingsModalOptions);
-        // angular.extend(defaults, scope.options);
-        // angular.extend(scope.options, defaults);
-
-        // from dashboard="options"
         scope.options = scope.$eval(attrs.dashboard);
 
         // Deep options
@@ -70,9 +58,6 @@ angular.module('ui.dashboard')
 
         // Shallow options
         _.defaults(scope.options, defaults);
-
-        // jQuery.extend(true, defaults, scope.options);
-        // jQuery.extend(scope.options, defaults);
 
         var sortableDefaults = {
           stop: function () {
@@ -1108,7 +1093,7 @@ angular.module('ui.dashboard')
           layout.dashboard = layout.dashboard || {};
           layout.dashboard.storage = self;
           layout.dashboard.storageId = layout.id = self._getLayoutId.call(self,layout);
-          layout.dashboard.widgetDefinitions = self.widgetDefinitions;
+          layout.dashboard.widgetDefinitions = layout.widgetDefinitions || self.widgetDefinitions;
           layout.dashboard.stringifyStorage = false;
           layout.dashboard.defaultWidgets = layout.defaultWidgets || self.defaultWidgets;
           layout.dashboard.widgetButtons = self.widgetButtons;
