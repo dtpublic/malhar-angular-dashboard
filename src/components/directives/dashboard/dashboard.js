@@ -21,14 +21,6 @@ angular.module('ui.dashboard')
 
   .directive('dashboard', ['WidgetModel', 'WidgetDefCollection', '$modal', 'DashboardState', '$log', function (WidgetModel, WidgetDefCollection, $modal, DashboardState, $log) {
 
-    var sortableDefaults = {
-      stop: function () {
-        scope.saveDashboard();
-      },
-      handle: '.widget-header',
-      distance: 5
-    };
-
     return {
       restrict: 'A',
       templateUrl: function(element, attr) {
@@ -70,6 +62,13 @@ angular.module('ui.dashboard')
         _.defaults(scope.options, defaults);
 
         // sortable options
+        var sortableDefaults = {
+          stop: function () {
+            scope.saveDashboard();
+          },
+          handle: '.widget-header',
+          distance: 5
+        };
         scope.sortableOptions = angular.extend({}, sortableDefaults, scope.options.sortableOptions || {});
 
       }],
