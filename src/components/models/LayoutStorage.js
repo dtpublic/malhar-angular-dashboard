@@ -77,7 +77,7 @@ angular.module('ui.dashboard')
           layout.dashboard = layout.dashboard || {};
           layout.dashboard.storage = self;
           layout.dashboard.storageId = layout.id = self._getLayoutId.call(self,layout);
-          layout.dashboard.widgetDefinitions = self.widgetDefinitions;
+          layout.dashboard.widgetDefinitions = layout.widgetDefinitions || self.widgetDefinitions;
           layout.dashboard.stringifyStorage = false;
           layout.dashboard.defaultWidgets = layout.defaultWidgets || self.defaultWidgets;
           layout.dashboard.widgetButtons = self.widgetButtons;

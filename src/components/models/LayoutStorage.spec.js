@@ -340,6 +340,26 @@ describe('Factory: LayoutStorage', function () {
       expect(newLayouts[1].dashboard.defaultWidgets).toEqual(options.defaultWidgets);
     });
 
+    it('should look for widgetDefinitions on storage options if not supplied on layout definition', function() {
+      options.widgetDefinitions = [{name: 'a'}, {name: 'b'}, {name: 'c'}];
+      storage = new LayoutStorage(options);
+
+      var newLayouts = [ { title: 'my-layout', widgetDefinitions: [] }, { title: 'my-layout-2' } ];
+      storage.add(newLayouts);
+      expect(newLayouts[0].dashboard.widgetDefinitions === newLayouts[0].widgetDefinitions).toEqual(true);
+      expect(newLayouts[1].dashboard.widgetDefinitions === options.widgetDefinitions).toEqual(true);
+    });
+
+    it('should use widgetDefinitions if supplied in the layout definition', function() {
+      options.widgetDefinitions = [{name: 'a'}, {name: 'b'}, {name: 'c'}];
+      storage = new LayoutStorage(options);
+
+      var newLayouts = [ { title: 'my-layout', widgetDefinitions: [] }, { title: 'my-layout-2' } ];
+      storage.add(newLayouts);
+      expect(newLayouts[0].dashboard.widgetDefinitions).toEqual([]);
+      expect(newLayouts[1].dashboard.widgetDefinitions).toEqual(options.widgetDefinitions);
+    });
+
   });
 
   describe('the remove method', function() {
