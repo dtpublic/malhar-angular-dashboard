@@ -1,6 +1,6 @@
 {
   "name": "malhar-angular-dashboard",
-  "version": "0.8.2",
+  "version": "1.0.0",
   "dependencies": {
     "bootstrap": "~3.3.1",
     "angular-bootstrap": "0.12.x",
