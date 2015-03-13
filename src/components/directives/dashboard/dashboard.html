@@ -38,6 +38,7 @@
                         <span class="label label-primary" ng-if="!options.hideWidgetName">{{widget.name}}</span>
                         <span ng-click="removeWidget(widget);" class="glyphicon glyphicon-remove" ng-if="!options.hideWidgetClose"></span>
                         <span ng-click="openWidgetSettings(widget);" class="glyphicon glyphicon-cog" ng-if="!options.hideWidgetSettings"></span>
+                        <span ng-click="widget.contentStyle.display = widget.contentStyle.display === 'none' ? 'block' : 'none'" class="glyphicon" ng-class="{'glyphicon-plus': widget.contentStyle.display === 'none', 'glyphicon-minus': widget.contentStyle.display !== 'none' }"></span>
                     </h3>
                 </div>
                 <div class="panel-body widget-content" ng-style="widget.contentStyle"></div>

@@ -18,7 +18,17 @@
 angular.module('ui.dashboard', ['ui.bootstrap', 'ui.sortable']);
 
 angular.module('ui.dashboard')
+
   .directive('dashboard', ['WidgetModel', 'WidgetDefCollection', '$modal', 'DashboardState', '$log', function (WidgetModel, WidgetDefCollection, $modal, DashboardState, $log) {
+
+    var sortableDefaults = {
+      stop: function () {
+        scope.saveDashboard();
+      },
+      handle: '.widget-header',
+      distance: 5
+    };
+
     return {
       restrict: 'A',
       templateUrl: function(element, attr) {
@@ -59,12 +69,7 @@ angular.module('ui.dashboard')
         // Shallow options
         _.defaults(scope.options, defaults);
 
-        var sortableDefaults = {
-          stop: function () {
-            scope.saveDashboard();
-          },
-          handle: '.widget-header'
-        };
+        // sortable options
         scope.sortableOptions = angular.extend({}, sortableDefaults, scope.options.sortableOptions || {});
 
       }],
@@ -73,7 +78,6 @@ angular.module('ui.dashboard')
         // Save default widget config for reset
         scope.defaultWidgets = scope.options.defaultWidgets;
 
-        //scope.widgetDefs = scope.options.widgetDefinitions;
         scope.widgetDefs = new WidgetDefCollection(scope.options.widgetDefinitions);
         var count = 1;
 
