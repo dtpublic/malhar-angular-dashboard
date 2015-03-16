@@ -156,10 +156,10 @@ It is possible to use your own template for the dashboard and widget markup (rep
 |  defaultWidgets    | Array | n/a | yes | List of objects where an object is `{ name: [NAME_OF_WIDGET_DEFINITION] }`. TODO: Allow just list of names.
 |  widgetButtons     | Boolean | true | no | Display buttons for adding and removing widgets.
 |  storage   | Object | null | no | If defined, this object should implement three methods: `setItem`, `getItem`, and `removeItem`. See the **Persistence** section below.
-|  storageId | String | null | no (yes if `storage` is defined) | This is used as the first parameter passed to the three `storage` methods above. See the **Persistence** | section below.
+|  storageId | String | null | no (yes if `storage` is defined) | This is used as the first parameter passed to the three `storage` methods above. See the **Persistence** section below.
 |  storageHash | String | '' | no | This is used to validate/invalidate loaded state. See the **Persistence** section below.
-|  stringifyStorage | Boolean | true | no | If set to true, the dashboard state will be converted to a JSON string before being passed to `storage.setItem`. Likewise, it will be | passed through JSON.parse after being retrieved from `storage.getItem`. See the **Persistence** section below.
-|  explicitSave | Boolean | false | no | The dashboard will not automatically save to storage for every change. Saves must instead be called explicitly using the `saveDashboard` | method that is attached to the option event upon initialization.
+|  stringifyStorage | Boolean | true | no | If set to true, the dashboard state will be converted to a JSON string before being passed to `storage.setItem`. Likewise, it will be passed through JSON.parse after being retrieved from `storage.getItem`. See the **Persistence** section below.
+|  explicitSave | Boolean | false | no | The dashboard will not automatically save to storage for every change. Saves must instead be called explicitly using the `saveDashboard` method that is attached to the option event upon initialization.
 |  sortableOptions | Object | n/a | no | Allows to specify the various [sortable options](http://api.jqueryui.com/sortable/#options) of the underlying jQuery UI Sortable.
 | hideWidgetSettings | Boolean | false | no | If true, the cog button in the top right corner of each widget will not be present. |
 | hideWidgetClose    | Boolean | false | no | If true, the "x" button in the top right corner of each widget will not be present. |
@@ -176,24 +176,26 @@ You can think of Widget Definition Objects as a __class__ and the widgets on the
 
 | key               | type     | default value | required | description
 | ----------------- | ------   | ------------- | -------- | -----------
-| name              | Object   | n/a           | true     | Name of Widget Definition Object. If no `templateUrl`, `template`, or `directive` are on the Widget Definition | Object, this is assumed to be a directive name. In other words, the `directive` attribute is set to this value.
+| name              | String   | n/a           | true     | Name of Widget Definition Object. If no `templateUrl`, `template`, or `directive` are on the Widget Definition Object, this is assumed to be a directive name. In other words, the `directive` attribute is set to this value.
 | title             | String   | n/a           | false    | Default title of widget instances
 | attrs             | Object   | n/a           | false    | Map of attributes to add to the markup of the widget. Changes to these will be stored when using the `storage` option | (see **Persistence** section below).
 | templateUrl       | String   | n/a           | false    | URL of template to use for widget content
 | template          | String   | n/a           | false    | String template (ignored if templateUrl is present)
 | directive         | String   | n/a           | false    | HTML-injectable directive name (eg. `"ng-show"`)
 | dataModelType     | Function or String | n/a | false    | Constructor for the dataModel object, which provides data to the widget (see below for more information).
-| dataModelOptions  | Object   | n/a           | false    | Arbitrary values to supply to the dataModel. Available on dataModel instance as this.dataModelOptions. Serializable | values in this object will also be saved if `storage` is being used (see the **Persistence** section below).
+| dataModelOptions  | Object   | n/a           | false    | Arbitrary values to supply to the dataModel. Available on dataModel instance as this.dataModelOptions. Serializable values in this object will also be saved if `storage` is being used (see the **Persistence** section below).
 | dataModelArgs     | Object   | n/a           | false    | Object to be passed to data model constructor function. This object is not serialized by default and if defined should be present in widget definitions.
 | dataAttrName      | String   | n/a           | false    | Name of attribute to bind `widgetData` model
-| storageHash       | String   | n/a           | false    | This is analogous to the `storageHash` option on the dashboard, except at a widget-level instead of a dashboard-wide | level. This can be helpful if you would only like to invalidate stored state of one widget at a time instead of all widgets.
+| storageHash       | String   | n/a           | false    | This is analogous to the `storageHash` option on the dashboard, except at a widget-level instead of a dashboard-wide level. This can be helpful if you would only like to invalidate stored state of one widget at a time instead of all widgets.
 | settingsModalOptions | Object | see below | no | Overrides same-named option in dashboard options for this widget. See the **Custom Widget Settings** section below. |
 | size              | Object   | n/a           | false    | Widget size, e.g { width: '50%', height: '250px' } |
 | style             | Object   | n/a           | false    | Widget style, e.g { float: 'right' } |
 | enableVerticalResize | Boolean  | true       | false    | Option to enable/disable vertical resize. Should be provided in "widgetDefinitions" since it is not serialized by default. |
 | onSettingsClose      | Function | see below | no | Overrides same-named option in dashboard options for this widget. See the **Custom Widget Settings** section below. |
 | onSettingsDismiss    | Function | see below | no | Overrides same-named option in dashboard options for this widget. See the **Custom Widget Settings** section below. |
+| serialize         | Function | see below | no | Define this to override how this widget gets saved to storage. See **persistence** section below. |
 
+As of v1.0.0, you can also add arbitrary data to your WDOs and this data will be copied to your widget. Keep in mind though, that if you want to SAVE some of this arbitrary info with storage, you will need to implement your own serialize method that includes this (see the **persistence** section below).
 
 ### Widget Resize
 
@@ -263,7 +265,7 @@ This dashboard component offers a means to save the state of the user's dashboar
 - widget titles
 - any serializable data stored in `dataModelOptions` if the widget instance has a `ds` (instantiated `dataModelType`)
 
-There are three options you can specify in the `dashboardOptions` object relating to persistence:
+There are four options you can specify in the `dashboardOptions` object relating to persistence:
 
 ### `storage` (Object)
 This object will be used by the dashboard to save its state. It should implement the following three methods:
@@ -284,6 +286,19 @@ This string will be stored along with the dashboard state. Then later, when stat
 ### `stringifyStorage` (Boolean)
 By default (`stringifyStorage=true`), the dashboard will convert its state (a JavaScript Object) to a string using `JSON.stringify` before passing it to `storage.setItem`. Additionally, the dashboard will assume that `storage.getItem` will return a JSON string and try to parse it with `JSON.parse`. This works with `window.localStorage` nicely, since objects cannot be used as `value` in `localStorage.setItem(key, value)`. However, if you are implementing your own `storage` and would not like this stringification business, set `stringifyStorage` to `false`.
 
+There are also two options you can specify on WDOs that relate to persistence:
+
+### `storageHash` (String)
+Analogous to the `storageHash` option on the dashboard, except at a widget-level instead of a dashboard-wide level. This can be helpful if you would only like to invalidate stored state of one widget at a time instead of all widgets.
+
+### `serialize` (Function)
+This function will determine how the state of the widget gets saved. It takes no arguments and should return a `JSON.stringify`able object. The default implementation is as follows:
+```js
+serialize: function() {
+  return _.pick(this, ['title', 'name', 'style', 'size', 'dataModelOptions', 'attrs', 'storageHash']);
+}
+```
+See [_.pick](https://lodash.com/docs#pick) for more details. The most common use-case for this would be to add another key to this list, or remove a key.
 
 Custom Widget Settings
 ----------------------
@@ -377,7 +392,7 @@ key | type | default value | required | description
 --- | ---- | ------------- | -------- | -----------
  widgetDefinitions | Array | n/a | yes | Same as in `dashboardOptions`
  lockDefaultLayouts | Boolean| false | no | `true` to lock default layouts (prevent from removing and renaming), layout lock can also be controlled with `locked` layout property
- defaultLayouts    | Array | n/a | yes | List of objects where an object is `{ title: [STRING_LAYOUT_TITLE], active: [BOOLEAN_ACTIVE_STATE], locked: [BOOLEAN], defaultWidgets: [ARRAY_DEFAULT_WIDGETS] }`. Note that `defaultWidgets` is the same as in `dashboardOptions`.
+ defaultLayouts    | Array | n/a | yes | List of objects where an object is `{ title: [STRING_LAYOUT_TITLE], active: [BOOLEAN_ACTIVE_STATE], locked: [BOOLEAN], defaultWidgets: [ARRAY_DEFAULT_WIDGETS], widgetDefinitions: [ARRAY_OF_WIDGET_DEFS] }`. Note that `defaultWidgets` is the same as in `dashboardOptions`. Also note that the `widgetDefinitions` array is optional on individual default layouts. By default, layouts will use the `widgetDefintions` from the dashboardLayouts options object. See issue #83.
  widgetButtons     | Boolean | true | no | Same as in `dashboardOptions`
  storage   | Object | null | no | Same as in `dashboardOptions`, only the saved objects look like: `{ layouts: [...], states: {...}, storageHash: '' }`
  storageId | String | null | no (yes if `storage` is defined) | This is used as the first parameter passed to the three `storage` methods `setItem`, `getItem`, `removeItem`. See the **Persistence** section above.
