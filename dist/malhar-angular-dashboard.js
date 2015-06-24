@@ -15,7 +15,7 @@
  */
 'use strict';
 
-angular.module('ui.dashboard', ['ui.bootstrap', 'ui.sortable']);
+angular.module('ui.dashboard', ['mm.foundation', 'ui.sortable']);
 
 angular.module('ui.dashboard')
 
@@ -139,7 +139,7 @@ angular.module('ui.dashboard')
          */
         scope.openWidgetSettings = function (widget) {
 
-          // Set up $modal options 
+          // Set up $modal options
           var options = _.defaults(
             { scope: scope },
             widget.settingsModalOptions,
@@ -151,7 +151,7 @@ angular.module('ui.dashboard')
               return widget;
             }
           };
-          
+
           // Create the modal
           var modalInstance = $modal.open(options);
           var onClose = widget.onSettingsClose || scope.options.onSettingsClose;
@@ -168,7 +168,7 @@ angular.module('ui.dashboard')
               scope.$emit('widgetChanged', widget);
             },
             function (reason) {
-              
+
               // Call the dismiss callback
               onDismiss(reason, scope);
 
@@ -968,10 +968,11 @@ angular.module('ui.dashboard')
       def = convertToDefinition(def);
       this.push(def);
       this.map[def.name] = def;
-    }
+    };
 
     return WidgetDefCollection;
   });
+
 /*
  * Copyright (c) 2014 DataTorrent, Inc. ALL Rights Reserved.
  *
