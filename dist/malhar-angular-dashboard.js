@@ -67,10 +67,25 @@ angular.module('ui.dashboard')
             scope.saveDashboard();
           },
           handle: '.widget-header',
-          distance: 5
+          distance: 5,
+          resizable: {
+             enabled: true,
+             handles: ['se'],
+             stop: function() { scope.saveDashboard(true) }
+          },
+          draggable: {
+           enabled: true, // whether dragging items is supported
+           handle: '.widget-header', // optional selector for resize handle
+           stop: function() { scope.saveDashboard(true) }
+         },
+         maxSizeY: 4,
+         maxSizeX: 4,
+         columns: 4,
+         rowHeight: 270,
+         defaultSizeY: 2
         };
-        scope.sortableOptions = angular.extend({}, sortableDefaults, scope.options.sortableOptions || {});
 
+        scope.sortableOptions = angular.extend({}, sortableDefaults, scope.options.sortableOptions || {});
       }],
       link: function (scope) {
 
@@ -211,7 +226,6 @@ angular.module('ui.dashboard')
             if (force) {
               scope.options.unsavedChangeCount = 0;
               scope.dashboardState.save(scope.widgets);
-
             } else {
               ++scope.options.unsavedChangeCount;
             }
@@ -278,12 +292,6 @@ angular.module('ui.dashboard')
         scope.options.saveDashboard = scope.externalSaveDashboard;
         scope.options.removeWidget = scope.removeWidget;
         scope.options.openWidgetSettings = scope.openWidgetSettings;
-
-        // save state
-        scope.$on('widgetChanged', function (event) {
-          event.stopPropagation();
-          scope.saveDashboard();
-        });
       }
     };
   }]);
@@ -1301,9 +1309,9 @@ angular.module('ui.dashboard')
 
     DashboardState.prototype = {
       /**
-       * Takes array of widget instance objects, serializes, 
+       * Takes array of widget instance objects, serializes,
        * and saves state.
-       * 
+       *
        * @param  {Array} widgets  scope.widgets from dashboard directive
        * @return {Boolean}        true on success, false on failure
        */
@@ -1314,8 +1322,15 @@ angular.module('ui.dashboard')
         }
 
         var serialized = _.map(widgets, function (widget) {
-          return widget.serialize();
+          var w = widget.serialize();
+          w.col = widget.col;
+          w.row = widget.row;
+          w.sizeX = widget.sizeX;
+          w.sizeY = widget.sizeY;
+          return w;
         });
+
+        console.log('serialized', _.clone(serialized));
 
         var item = { widgets: serialized, hash: this.hash };
 
@@ -1330,7 +1345,7 @@ angular.module('ui.dashboard')
       /**
        * Loads dashboard state from the storage object.
        * Can handle a synchronous response or a promise.
-       * 
+       *
        * @return {Array|Promise} Array of widget definitions or a promise
        */
       load: function () {

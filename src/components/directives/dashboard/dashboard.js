@@ -67,10 +67,25 @@ angular.module('ui.dashboard')
             scope.saveDashboard();
           },
           handle: '.widget-header',
-          distance: 5
+          distance: 5,
+          resizable: {
+             enabled: true,
+             handles: ['se'],
+             stop: function() { scope.saveDashboard(true) }
+          },
+          draggable: {
+           enabled: true, // whether dragging items is supported
+           handle: '.widget-header', // optional selector for resize handle
+           stop: function() { scope.saveDashboard(true) }
+         },
+         maxSizeY: 4,
+         maxSizeX: 4,
+         columns: 4,
+         rowHeight: 270,
+         defaultSizeY: 2
         };
-        scope.sortableOptions = angular.extend({}, sortableDefaults, scope.options.sortableOptions || {});
 
+        scope.sortableOptions = angular.extend({}, sortableDefaults, scope.options.sortableOptions || {});
       }],
       link: function (scope) {
 
@@ -211,7 +226,6 @@ angular.module('ui.dashboard')
             if (force) {
               scope.options.unsavedChangeCount = 0;
               scope.dashboardState.save(scope.widgets);
-
             } else {
               ++scope.options.unsavedChangeCount;
             }
@@ -278,12 +292,6 @@ angular.module('ui.dashboard')
         scope.options.saveDashboard = scope.externalSaveDashboard;
         scope.options.removeWidget = scope.removeWidget;
         scope.options.openWidgetSettings = scope.openWidgetSettings;
-
-        // save state
-        scope.$on('widgetChanged', function (event) {
-          event.stopPropagation();
-          scope.saveDashboard();
-        });
       }
     };
   }]);

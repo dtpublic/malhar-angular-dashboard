@@ -28,9 +28,9 @@ angular.module('ui.dashboard')
 
     DashboardState.prototype = {
       /**
-       * Takes array of widget instance objects, serializes, 
+       * Takes array of widget instance objects, serializes,
        * and saves state.
-       * 
+       *
        * @param  {Array} widgets  scope.widgets from dashboard directive
        * @return {Boolean}        true on success, false on failure
        */
@@ -41,8 +41,15 @@ angular.module('ui.dashboard')
         }
 
         var serialized = _.map(widgets, function (widget) {
-          return widget.serialize();
+          var w = widget.serialize();
+          w.col = widget.col;
+          w.row = widget.row;
+          w.sizeX = widget.sizeX;
+          w.sizeY = widget.sizeY;
+          return w;
         });
+
+        console.log('serialized', _.clone(serialized));
 
         var item = { widgets: serialized, hash: this.hash };
 
@@ -57,7 +64,7 @@ angular.module('ui.dashboard')
       /**
        * Loads dashboard state from the storage object.
        * Can handle a synchronous response or a promise.
-       * 
+       *
        * @return {Array|Promise} Array of widget definitions or a promise
        */
       load: function () {
