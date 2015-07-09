@@ -15,7 +15,7 @@
  */
 'use strict';
 
-angular.module('ui.dashboard', ['mm.foundation', 'ui.sortable']);
+  angular.module('ui.dashboard', ['mm.foundation', 'gridster']);
 
 angular.module('ui.dashboard')
 
