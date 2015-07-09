@@ -78,11 +78,6 @@ angular.module('ui.dashboard')
            handle: '.widget-header', // optional selector for resize handle
            stop: function() { scope.saveDashboard(true) }
          },
-         maxSizeY: 4,
-         maxSizeX: 4,
-         columns: 4,
-         rowHeight: 270,
-         defaultSizeY: 2
         };
 
         scope.sortableOptions = angular.extend({}, sortableDefaults, scope.options.sortableOptions || {});
