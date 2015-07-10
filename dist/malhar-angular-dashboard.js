@@ -287,6 +287,10 @@ angular.module('ui.dashboard')
         scope.options.saveDashboard = scope.externalSaveDashboard;
         scope.options.removeWidget = scope.removeWidget;
         scope.options.openWidgetSettings = scope.openWidgetSettings;
+
+        scope.$watch('widgets', function () {
+          scope.$root.$broadcast('dashboard.widgets.resized');
+        }, true);
       }
     };
   }]);
@@ -1311,7 +1315,7 @@ angular.module('ui.dashboard')
        * @return {Boolean}        true on success, false on failure
        */
       save: function (widgets) {
-        
+
         if (!this.storage) {
           return true;
         }
@@ -1324,8 +1328,6 @@ angular.module('ui.dashboard')
           w.sizeY = widget.sizeY;
           return w;
         });
-
-        console.log('serialized', _.clone(serialized));
 
         var item = { widgets: serialized, hash: this.hash };
 

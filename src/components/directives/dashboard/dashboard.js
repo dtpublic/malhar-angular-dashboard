@@ -287,6 +287,10 @@ angular.module('ui.dashboard')
         scope.options.saveDashboard = scope.externalSaveDashboard;
         scope.options.removeWidget = scope.removeWidget;
         scope.options.openWidgetSettings = scope.openWidgetSettings;
+
+        scope.$watch('widgets', function () {
+          scope.$root.$broadcast('dashboard.widgets.resized');
+        }, true);
       }
     };
   }]);

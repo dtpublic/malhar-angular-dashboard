@@ -35,7 +35,7 @@ angular.module('ui.dashboard')
        * @return {Boolean}        true on success, false on failure
        */
       save: function (widgets) {
-        
+
         if (!this.storage) {
           return true;
         }
@@ -48,8 +48,6 @@ angular.module('ui.dashboard')
           w.sizeY = widget.sizeY;
           return w;
         });
-
-        console.log('serialized', _.clone(serialized));
 
         var item = { widgets: serialized, hash: this.hash };
 
