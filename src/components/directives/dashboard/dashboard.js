@@ -85,7 +85,7 @@ angular.module('ui.dashboard')
       link: function (scope) {
 
         // Save default widget config for reset
-        scope.defaultWidgets = scope.options.defaultWidgets;
+        scope.defaultWidgets = scope.options.disableDefaultWidgets ? [] : scope.options.defaultWidgets;
 
         scope.widgetDefs = new WidgetDefCollection(scope.options.widgetDefinitions);
         var count = 1;
