@@ -288,6 +288,12 @@ angular.module('ui.dashboard')
         scope.options.removeWidget = scope.removeWidget;
         scope.options.openWidgetSettings = scope.openWidgetSettings;
 
+        // save state
+        scope.$on('widgetChanged', function (event) {
+          event.stopPropagation();
+          scope.saveDashboard();
+        });
+
         scope.$watch('widgets', function () {
           scope.$root.$broadcast('dashboard.widgets.resized');
         }, true);
