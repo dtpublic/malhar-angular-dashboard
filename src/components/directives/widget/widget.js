@@ -58,6 +58,11 @@ angular.module('ui.dashboard')
         scope.compileTemplate();
         scope.$emit('widgetAdded', widget);
 
+        // emit widget resized event when gridster transition ends
+        scope.$on('gridster-item-transition-end', function(event, item) {
+          scope.$emit('dashboard.widget.resized', item);
+        });
+
       }
 
     };
