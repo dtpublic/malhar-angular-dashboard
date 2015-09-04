@@ -104,11 +104,11 @@ Download the zip of this repo and use the files in the `dist` folder.
 
 ### include
 
-Load `dist/angular-ui-dashboard.js` and `dist/angular-ui-dashboard.css` in your html:
+Load `dist/malhar-angular-dashboard.js` and `dist/malhar-angular-dashboard.css` in your html:
 
 ```HTML
-<link rel="stylesheet" href="bower_components/malhar-angular-dashboard/dist/angular-ui-dashboard.css">
-<script src="bower_components/malhar-angular-dashboard/dist/angular-ui-dashboard.js"></script>
+<link rel="stylesheet" href="bower_components/malhar-angular-dashboard/dist/malhar-angular-dashboard.css">
+<script src="bower_components/malhar-angular-dashboard/dist/malhar-angular-dashboard.js"></script>
 ```
 
 Also be sure to add it to your apps dependency list:
