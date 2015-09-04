@@ -82,8 +82,8 @@ angular.module('ui.dashboard')
       },
 
       setHeight: function (height) {
-        this.contentStyle.height = height;
-        this.updateSize(this.contentStyle);
+        this.containerStyle.height = height;
+        this.updateSize(this.containerStyle);
       },
 
       setStyle: function (style) {
