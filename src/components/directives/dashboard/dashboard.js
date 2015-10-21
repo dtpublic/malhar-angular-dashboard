@@ -221,8 +221,12 @@ angular.module('ui.dashboard')
         /**
          * Wraps saveDashboard for external use.
          */
-        scope.externalSaveDashboard = function() {
-          scope.saveDashboard(true);
+        scope.externalSaveDashboard = function(force) {
+          if (angular.isDefined(force)) {
+            scope.saveDashboard(force);
+          } else {
+            scope.saveDashboard(true);
+          }
         };
 
         /**
