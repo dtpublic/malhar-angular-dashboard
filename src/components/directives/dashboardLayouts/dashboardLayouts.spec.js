@@ -33,7 +33,7 @@ describe('Directive: dashboard-layouts', function () {
     $mockTimeout = function(fn, delay) {
       toFn = fn;
     };
-    $provide.value('$modal', $mockModal);
+    $provide.value('$uibModal', $mockModal);
     $provide.value('$timeout', $mockTimeout);
   }));
 
