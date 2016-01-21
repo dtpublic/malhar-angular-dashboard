@@ -37,7 +37,7 @@ describe('Directive: dashboard', function () {
 
       }
     };
-    $provide.value('$modal', mockModal);
+    $provide.value('$uibModal', mockModal);
     $provide.value('$log', mockLog);
   }));
 
@@ -461,7 +461,7 @@ describe('Directive: dashboard', function () {
       expect(typeof childScope.openWidgetSettings).toEqual('function');
     });
 
-    it('should call $modal.open with default options', function() {
+    it('should call $uibModal.open with default options', function() {
       var widget = {};
       spyOn(mockModal, 'open').and.returnValue({
         result: { then: function(fn) {} }

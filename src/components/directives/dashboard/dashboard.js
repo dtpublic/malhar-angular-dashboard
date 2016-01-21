@@ -19,7 +19,7 @@ angular.module('ui.dashboard', ['ui.bootstrap', 'ui.sortable']);
 
 angular.module('ui.dashboard')
 
-  .directive('dashboard', ['WidgetModel', 'WidgetDefCollection', '$modal', 'DashboardState', '$log', function (WidgetModel, WidgetDefCollection, $modal, DashboardState, $log) {
+  .directive('dashboard', ['WidgetModel', 'WidgetDefCollection', '$uibModal', 'DashboardState', '$log', function (WidgetModel, WidgetDefCollection, $uibModal, DashboardState, $log) {
 
     return {
       restrict: 'A',
@@ -139,7 +139,7 @@ angular.module('ui.dashboard')
          */
         scope.openWidgetSettings = function (widget) {
 
-          // Set up $modal options 
+          // Set up $uibModal options 
           var options = _.defaults(
             { scope: scope },
             widget.settingsModalOptions,
@@ -153,7 +153,7 @@ angular.module('ui.dashboard')
           };
           
           // Create the modal
-          var modalInstance = $modal.open(options);
+          var modalInstance = $uibModal.open(options);
           var onClose = widget.onSettingsClose || scope.options.onSettingsClose;
           var onDismiss = widget.onSettingsDismiss || scope.options.onSettingsDismiss;
 
