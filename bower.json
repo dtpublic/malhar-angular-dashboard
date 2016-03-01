@@ -29,5 +29,7 @@
       "main": "src/showdown.js"
     }
   },
-  "resolutions": {}
+  "resolutions": {
+    "angular": "~1.3"
+  }
 }
