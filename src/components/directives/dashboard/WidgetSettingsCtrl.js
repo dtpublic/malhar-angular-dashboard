@@ -17,7 +17,7 @@
 'use strict';
 
 angular.module('ui.dashboard')
-  .controller('WidgetSettingsCtrl', ['$scope', '$modalInstance', 'widget', function ($scope, $modalInstance, widget) {
+  .controller('WidgetSettingsCtrl', ['$scope', '$uibModalInstance', 'widget', function ($scope, $uibModalInstance, widget) {
     // add widget to scope
     $scope.widget = widget;
 
@@ -25,10 +25,10 @@ angular.module('ui.dashboard')
     $scope.result = jQuery.extend(true, {}, widget);
 
     $scope.ok = function () {
-      $modalInstance.close($scope.result);
+      $uibModalInstance.close($scope.result);
     };
 
     $scope.cancel = function () {
-      $modalInstance.dismiss('cancel');
+      $uibModalInstance.dismiss('cancel');
     };
   }]);
