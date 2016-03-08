@@ -1,6 +1,6 @@
 language: node_js
 node_js:
-  - '0.10'
+  - '4.3.0'
 before_script:
   - 'npm install -g bower gulp'
   - 'bower install'

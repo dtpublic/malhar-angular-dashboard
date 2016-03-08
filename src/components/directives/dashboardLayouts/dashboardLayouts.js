@@ -17,8 +17,8 @@
 'use strict';
 
 angular.module('ui.dashboard')
-  .directive('dashboardLayouts', ['LayoutStorage', '$timeout', '$modal',
-    function(LayoutStorage, $timeout, $modal) {
+  .directive('dashboardLayouts', ['LayoutStorage', '$timeout', '$uibModal',
+    function(LayoutStorage, $timeout, $uibModal) {
       return {
         scope: true,
         templateUrl: function(element, attr) {
@@ -53,7 +53,7 @@ angular.module('ui.dashboard')
             var current = layoutStorage.getActiveLayout();
 
             if (current && current.dashboard.unsavedChangeCount) {
-              var modalInstance = $modal.open({
+              var modalInstance = $uibModal.open({
                 templateUrl: 'template/SaveChangesModal.html',
                 resolve: {
                   layout: function() {
