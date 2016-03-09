@@ -221,8 +221,12 @@ angular.module('ui.dashboard')
         /**
          * Wraps saveDashboard for external use.
          */
-        scope.externalSaveDashboard = function() {
-          scope.saveDashboard(true);
+        scope.externalSaveDashboard = function(force) {
+          if (angular.isDefined(force)) {
+            scope.saveDashboard(force);
+          } else {
+            scope.saveDashboard(true);
+          }
         };
 
         /**
@@ -293,6 +297,186 @@ $templateCache.put("components/directives/dashboard/dashboard.html","<div>\n    
 $templateCache.put("components/directives/dashboard/widget-settings-template.html","<div class=\"modal-header\">\n    <button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-hidden=\"true\" ng-click=\"cancel()\">&times;</button>\n  <h3>Widget Options <small>{{widget.title}}</small></h3>\n</div>\n\n<div class=\"modal-body\">\n    <form name=\"form\" novalidate class=\"form-horizontal\">\n        <div class=\"form-group\">\n            <label for=\"widgetTitle\" class=\"col-sm-2 control-label\">Title</label>\n            <div class=\"col-sm-10\">\n                <input type=\"text\" class=\"form-control\" name=\"widgetTitle\" ng-model=\"result.title\">\n            </div>\n        </div>\n        <div ng-if=\"widget.settingsModalOptions.partialTemplateUrl\"\n             ng-include=\"widget.settingsModalOptions.partialTemplateUrl\"></div>\n    </form>\n</div>\n\n<div class=\"modal-footer\">\n    <button type=\"button\" class=\"btn btn-default\" ng-click=\"cancel()\">Cancel</button>\n    <button type=\"button\" class=\"btn btn-primary\" ng-click=\"ok()\">OK</button>\n</div>");
 $templateCache.put("components/directives/dashboardLayouts/SaveChangesModal.html","<div class=\"modal-header\">\n    <button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-hidden=\"true\" ng-click=\"cancel()\">&times;</button>\n  <h3>Unsaved Changes to \"{{layout.title}}\"</h3>\n</div>\n\n<div class=\"modal-body\">\n    <p>You have {{layout.dashboard.unsavedChangeCount}} unsaved changes on this dashboard. Would you like to save them?</p>\n</div>\n\n<div class=\"modal-footer\">\n    <button type=\"button\" class=\"btn btn-default\" ng-click=\"cancel()\">Don\'t Save</button>\n    <button type=\"button\" class=\"btn btn-primary\" ng-click=\"ok()\">Save</button>\n</div>");
 $templateCache.put("components/directives/dashboardLayouts/dashboardLayouts.html","<ul ui-sortable=\"sortableOptions\" ng-model=\"layouts\" class=\"nav nav-tabs layout-tabs\">\n    <li ng-repeat=\"layout in layouts\" ng-class=\"{ active: layout.active }\">\n        <a ng-click=\"makeLayoutActive(layout)\">\n            <span ng-dblclick=\"editTitle(layout)\" ng-show=\"!layout.editingTitle\">{{layout.title}}</span>\n            <form action=\"\" class=\"layout-title\" ng-show=\"layout.editingTitle\" ng-submit=\"saveTitleEdit(layout)\">\n                <input type=\"text\" ng-model=\"layout.title\" class=\"form-control\" data-layout=\"{{layout.id}}\">\n            </form>\n            <span ng-if=\"!layout.locked\" ng-click=\"removeLayout(layout)\" class=\"glyphicon glyphicon-remove remove-layout-icon\"></span>\n            <!-- <span class=\"glyphicon glyphicon-pencil\"></span> -->\n            <!-- <span class=\"glyphicon glyphicon-remove\"></span> -->\n        </a>\n    </li>\n    <li>\n        <a ng-click=\"createNewLayout()\">\n            <span class=\"glyphicon glyphicon-plus\"></span>\n        </a>\n    </li>\n</ul>\n<div ng-repeat=\"layout in layouts | filter:isActive\" dashboard=\"layout.dashboard\" template-url=\"components/directives/dashboard/dashboard.html\"></div>");}]);
+/*
+ * Copyright (c) 2014 DataTorrent, Inc. ALL Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+'use strict';
+
+angular.module('ui.dashboard')
+  .directive('dashboardLayouts', ['LayoutStorage', '$timeout', '$uibModal',
+    function(LayoutStorage, $timeout, $uibModal) {
+      return {
+        scope: true,
+        templateUrl: function(element, attr) {
+          return attr.templateUrl ? attr.templateUrl : 'components/directives/dashboardLayouts/dashboardLayouts.html';
+        },
+        link: function(scope, element, attrs) {
+
+          scope.options = scope.$eval(attrs.dashboardLayouts);
+
+          var layoutStorage = new LayoutStorage(scope.options);
+
+          scope.layouts = layoutStorage.layouts;
+
+          scope.createNewLayout = function() {
+            var newLayout = {
+              title: 'Custom',
+              defaultWidgets: scope.options.defaultWidgets || []
+            };
+            layoutStorage.add(newLayout);
+            scope.makeLayoutActive(newLayout);
+            layoutStorage.save();
+            return newLayout;
+          };
+
+          scope.removeLayout = function(layout) {
+            layoutStorage.remove(layout);
+            layoutStorage.save();
+          };
+
+          scope.makeLayoutActive = function(layout) {
+
+            var current = layoutStorage.getActiveLayout();
+
+            if (current && current.dashboard.unsavedChangeCount) {
+              var modalInstance = $uibModal.open({
+                templateUrl: 'template/SaveChangesModal.html',
+                resolve: {
+                  layout: function() {
+                    return layout;
+                  }
+                },
+                controller: 'SaveChangesModalCtrl'
+              });
+
+              // Set resolve and reject callbacks for the result promise
+              modalInstance.result.then(
+                function() {
+                  current.dashboard.saveDashboard();
+                  scope._makeLayoutActive(layout);
+                },
+                function() {
+                  scope._makeLayoutActive(layout);
+                }
+              );
+            } else {
+              scope._makeLayoutActive(layout);
+            }
+
+          };
+
+          scope._makeLayoutActive = function(layout) {
+            angular.forEach(scope.layouts, function(l) {
+              if (l !== layout) {
+                l.active = false;
+              } else {
+                l.active = true;
+              }
+            });
+            layoutStorage.save();
+          };
+
+          scope.isActive = function(layout) {
+            return !!layout.active;
+          };
+
+          scope.editTitle = function(layout) {
+            if (layout.locked) {
+              return;
+            }
+
+            var input = element.find('input[data-layout="' + layout.id + '"]');
+            layout.editingTitle = true;
+
+            $timeout(function() {
+              input.focus()[0].setSelectionRange(0, 9999);
+            });
+          };
+
+          // saves whatever is in the title input as the new title
+          scope.saveTitleEdit = function(layout) {
+            layout.editingTitle = false;
+            layoutStorage.save();
+          };
+
+          scope.options.saveLayouts = function() {
+            layoutStorage.save(true);
+          };
+          scope.options.addWidget = function() {
+            var layout = layoutStorage.getActiveLayout();
+            if (layout) {
+              layout.dashboard.addWidget.apply(layout.dashboard, arguments);
+            }
+          };
+          scope.options.loadWidgets = function() {
+            var layout = layoutStorage.getActiveLayout();
+            if (layout) {
+              layout.dashboard.loadWidgets.apply(layout.dashboard, arguments);
+            }
+          };
+          scope.options.saveDashboard = function() {
+            var layout = layoutStorage.getActiveLayout();
+            if (layout) {
+              layout.dashboard.saveDashboard.apply(layout.dashboard, arguments);
+            }
+          };
+
+          var sortableDefaults = {
+            stop: function() {
+              scope.options.saveLayouts();
+            },
+            distance: 5
+          };
+          scope.sortableOptions = angular.extend({}, sortableDefaults, scope.options.sortableOptions || {});
+        }
+      };
+    }
+  ]);
+/*
+ * Copyright (c) 2014 DataTorrent, Inc. ALL Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+'use strict';
+
+angular.module('ui.dashboard')
+  .controller('SaveChangesModalCtrl', ['$scope', '$uibModalInstance', 'layout', function ($scope, $uibModalInstance, layout) {
+    
+    // add layout to scope
+    $scope.layout = layout;
+
+    $scope.ok = function () {
+      $uibModalInstance.close();
+    };
+
+    $scope.cancel = function () {
+      $uibModalInstance.dismiss();
+    };
+  }]);
 /*
  * Copyright (c) 2014 DataTorrent, Inc. ALL Rights Reserved.
  *
@@ -614,186 +798,6 @@ angular.module('ui.dashboard')
 'use strict';
 
 angular.module('ui.dashboard')
-  .directive('dashboardLayouts', ['LayoutStorage', '$timeout', '$uibModal',
-    function(LayoutStorage, $timeout, $uibModal) {
-      return {
-        scope: true,
-        templateUrl: function(element, attr) {
-          return attr.templateUrl ? attr.templateUrl : 'components/directives/dashboardLayouts/dashboardLayouts.html';
-        },
-        link: function(scope, element, attrs) {
-
-          scope.options = scope.$eval(attrs.dashboardLayouts);
-
-          var layoutStorage = new LayoutStorage(scope.options);
-
-          scope.layouts = layoutStorage.layouts;
-
-          scope.createNewLayout = function() {
-            var newLayout = {
-              title: 'Custom',
-              defaultWidgets: scope.options.defaultWidgets || []
-            };
-            layoutStorage.add(newLayout);
-            scope.makeLayoutActive(newLayout);
-            layoutStorage.save();
-            return newLayout;
-          };
-
-          scope.removeLayout = function(layout) {
-            layoutStorage.remove(layout);
-            layoutStorage.save();
-          };
-
-          scope.makeLayoutActive = function(layout) {
-
-            var current = layoutStorage.getActiveLayout();
-
-            if (current && current.dashboard.unsavedChangeCount) {
-              var modalInstance = $uibModal.open({
-                templateUrl: 'template/SaveChangesModal.html',
-                resolve: {
-                  layout: function() {
-                    return layout;
-                  }
-                },
-                controller: 'SaveChangesModalCtrl'
-              });
-
-              // Set resolve and reject callbacks for the result promise
-              modalInstance.result.then(
-                function() {
-                  current.dashboard.saveDashboard();
-                  scope._makeLayoutActive(layout);
-                },
-                function() {
-                  scope._makeLayoutActive(layout);
-                }
-              );
-            } else {
-              scope._makeLayoutActive(layout);
-            }
-
-          };
-
-          scope._makeLayoutActive = function(layout) {
-            angular.forEach(scope.layouts, function(l) {
-              if (l !== layout) {
-                l.active = false;
-              } else {
-                l.active = true;
-              }
-            });
-            layoutStorage.save();
-          };
-
-          scope.isActive = function(layout) {
-            return !!layout.active;
-          };
-
-          scope.editTitle = function(layout) {
-            if (layout.locked) {
-              return;
-            }
-
-            var input = element.find('input[data-layout="' + layout.id + '"]');
-            layout.editingTitle = true;
-
-            $timeout(function() {
-              input.focus()[0].setSelectionRange(0, 9999);
-            });
-          };
-
-          // saves whatever is in the title input as the new title
-          scope.saveTitleEdit = function(layout) {
-            layout.editingTitle = false;
-            layoutStorage.save();
-          };
-
-          scope.options.saveLayouts = function() {
-            layoutStorage.save(true);
-          };
-          scope.options.addWidget = function() {
-            var layout = layoutStorage.getActiveLayout();
-            if (layout) {
-              layout.dashboard.addWidget.apply(layout.dashboard, arguments);
-            }
-          };
-          scope.options.loadWidgets = function() {
-            var layout = layoutStorage.getActiveLayout();
-            if (layout) {
-              layout.dashboard.loadWidgets.apply(layout.dashboard, arguments);
-            }
-          };
-          scope.options.saveDashboard = function() {
-            var layout = layoutStorage.getActiveLayout();
-            if (layout) {
-              layout.dashboard.saveDashboard.apply(layout.dashboard, arguments);
-            }
-          };
-
-          var sortableDefaults = {
-            stop: function() {
-              scope.options.saveLayouts();
-            },
-            distance: 5
-          };
-          scope.sortableOptions = angular.extend({}, sortableDefaults, scope.options.sortableOptions || {});
-        }
-      };
-    }
-  ]);
-/*
- * Copyright (c) 2014 DataTorrent, Inc. ALL Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-'use strict';
-
-angular.module('ui.dashboard')
-  .controller('SaveChangesModalCtrl', ['$scope', '$uibModalInstance', 'layout', function ($scope, $uibModalInstance, layout) {
-    
-    // add layout to scope
-    $scope.layout = layout;
-
-    $scope.ok = function () {
-      $uibModalInstance.close();
-    };
-
-    $scope.cancel = function () {
-      $uibModalInstance.dismiss();
-    };
-  }]);
-/*
- * Copyright (c) 2014 DataTorrent, Inc. ALL Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-'use strict';
-
-angular.module('ui.dashboard')
   .controller('WidgetSettingsCtrl', ['$scope', '$uibModalInstance', 'widget', function ($scope, $uibModalInstance, widget) {
     // add widget to scope
     $scope.widget = widget;
@@ -968,10 +972,11 @@ angular.module('ui.dashboard')
       def = convertToDefinition(def);
       this.push(def);
       this.map[def.name] = def;
-    }
+    };
 
     return WidgetDefCollection;
   });
+
 /*
  * Copyright (c) 2014 DataTorrent, Inc. ALL Rights Reserved.
  *
