@@ -70,7 +70,7 @@ angular.module('app')
       storageId: 'custom-settings',
 
       /*
-      // Overrides default $modal options.
+      // Overrides default $uibModal options.
       // This can also be set on individual
       // widget definition objects (see above).
       settingsModalOptions: {
@@ -83,7 +83,7 @@ angular.module('app')
         //
         // controller: 'CustomSettingsModalCtrl'
         //
-        // Other options passed to $modal.open can be put here,
+        // Other options passed to $uibModal.open can be put here,
         // eg:
         //
         // backdrop: false,
@@ -114,7 +114,7 @@ angular.module('app')
       }
     };
   })
-  .controller('WidgetSpecificSettingsCtrl', function ($scope, $modalInstance, widget) {
+  .controller('WidgetSpecificSettingsCtrl', function ($scope, $uibModalInstance, widget) {
     // add widget to scope
     $scope.widget = widget;
 
@@ -123,11 +123,11 @@ angular.module('app')
 
     $scope.ok = function () {
       console.log('calling ok from widget-specific settings controller!');
-      $modalInstance.close($scope.result);
+      $uibModalInstance.close($scope.result);
     };
 
     $scope.cancel = function () {
       console.log('calling cancel from widget-specific settings controller!');
-      $modalInstance.dismiss('cancel');
+      $uibModalInstance.dismiss('cancel');
     };
   })
