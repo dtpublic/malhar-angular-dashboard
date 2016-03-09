@@ -56,11 +56,11 @@ Widget Library using the dashboard [[source code](https://github.com/DataTorrent
 Build
 -----
 
- Project is built with Grunt.
+ Project is built with Gulp.
 
  ``` bash
-    $ npm install -g grunt-cli
-    $ grunt
+    $ npm install -g gulp
+    $ gulp
  ```
 
 Requirements
@@ -80,14 +80,15 @@ Getting Started
 
 See [simple demo](demo) (two widgets) for a quick start.
 
-Running demo with Grunt.
+Running demo.
 
  ``` bash
     $ bower install
-    $ grunt demo
+    $ gulp build:demo
+    $ gulp serve
  ```
 
-Application will be available at http://127.0.0.1:9000
+Application will be available at http://localhost:3000/
 
 ### download
 
@@ -379,7 +380,7 @@ Overriding widget settings for a specific widget is almost exactly like overridi
 
 Dashboard Layouts
 -----------------
-One common requirement for user-customizable dashboards is the ability to have multiple layouts consisting of the same set of widget definitions. This sounds more confusing than it is, so the best way to understand it is to take a look at the [layouts demo](http://datatorrent.github.io/malhar-angular-dashboard/#/layouts). You can also see this demo by running `grunt demo` and navigating to `/#/layouts` (or `/#/layouts/explicit-saving`, behavior when `options.explicitSave` is `true`). This is achieved by using the `dashboard-layouts` directive:
+One common requirement for user-customizable dashboards is the ability to have multiple layouts consisting of the same set of widget definitions. This sounds more confusing than it is, so the best way to understand it is to take a look at the [layouts demo](http://datatorrent.github.io/malhar-angular-dashboard/#/layouts). You can also see this demo by running `gulp serve` and navigating to `/#/layouts` (or `/#/layouts/explicit-saving`, behavior when `options.explicitSave` is `true`). This is achieved by using the `dashboard-layouts` directive:
 
 ```HTML
 <div dashboard-layouts="layoutOptions"></div>
