@@ -52,7 +52,7 @@ angular.module('app')
     return {
       restrict: 'A',
       replace: true,
-      templateUrl: 'template/fluid.html',
+      templateUrl: 'app/template/fluid.html',
       scope: true,
       controller: function ($scope) {
         $scope.$on('widgetResized', function (event, size) {
