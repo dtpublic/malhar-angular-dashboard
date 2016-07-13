@@ -282,6 +282,8 @@ angular.module('ui.dashboard')
         scope.options.saveDashboard = scope.externalSaveDashboard;
         scope.options.removeWidget = scope.removeWidget;
         scope.options.openWidgetSettings = scope.openWidgetSettings;
+        scope.options.clear = scope.clear;
+        scope.options.resetWidgetsToDefault = scope.resetWidgetsToDefault;
 
         // save state
         scope.$on('widgetChanged', function (event) {

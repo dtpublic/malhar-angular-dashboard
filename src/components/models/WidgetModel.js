@@ -47,21 +47,29 @@ angular.module('ui.dashboard')
       }
 
       if (this.style && _.has(this.style, 'width')) { //TODO deprecate style attribute
-        this.setWidth(this.style.width);
+        if (_.has(this.style, 'minWidth')) {
+          this.setWidth(this.style.width, undefined, this.style.minWidth, undefined);
+        } else {
+          this.setWidth(this.style.width, undefined);
+        }
       }
 
       if (this.size && _.has(this.size, 'width')) {
-        this.setWidth(this.size.width);
+        if (_.has(this.size, 'minWidth')) {
+          this.setWidth(this.size.width, undefined, this.size.minWidth, undefined);
+        } else {
+          this.setWidth(this.size.width, undefined);
+        }
       }
     }
 
     WidgetModel.prototype = {
       // sets the width (and widthUnits)
-      setWidth: function (width, units) {
+      setWidth: function (width, widthUnits, minWidth, minWidthUnits) {
         width = width.toString();
-        units = units || width.replace(/^[-\.\d]+/, '') || '%';
+        widthUnits = widthUnits || width.replace(/^[-\.\d]+/, '') || '%';
 
-        this.widthUnits = units;
+        this.widthUnits = widthUnits;
         width = parseFloat(width);
 
         if (width < 0 || isNaN(width)) {
@@ -69,12 +77,33 @@ angular.module('ui.dashboard')
           return false;
         }
 
-        if (units === '%') {
+        if (widthUnits === '%') {
           width = Math.min(100, width);
           width = Math.max(0, width);
         }
 
-        this.containerStyle.width = width + '' + units;
+
+        if (minWidth !== undefined) {
+          minWidth = minWidth.toString();
+          minWidthUnits = minWidthUnits || minWidth.replace(/^[-\.\d]+/, '') || '%';
+
+          this.minWidthUnits = minWidthUnits;
+          minWidth = parseFloat(minWidth);
+
+          if (minWidth < 0 || isNaN(minWidth)) {
+            $log.warn('malhar-angular-dashboard: setWidth was called when minWidth was ' + minWidth);
+            return false;
+          }
+
+          if (minWidthUnits === '%') {
+            minWidth = Math.min(100, minWidth);
+            minWidth = Math.max(0, minWidth);
+          }
+
+          width = _.max([minWidth, width]); // if width < minWidth, set width = minWidth
+        }
+
+        this.containerStyle.width = width + '' + widthUnits;
 
         this.updateSize(this.containerStyle);
 

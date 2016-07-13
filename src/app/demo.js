@@ -116,7 +116,8 @@ angular.module('app', [
     {
       name: 'random',
       style: {
-        width: '50%'
+        width: '50%',
+        minWidth: '39%'
       }
     },
     {
