@@ -189,7 +189,7 @@ You can think of Widget Definition Objects as a __class__ and the widgets on the
 | dataAttrName      | String   | n/a           | false    | Name of attribute to bind `widgetData` model
 | storageHash       | String   | n/a           | false    | This is analogous to the `storageHash` option on the dashboard, except at a widget-level instead of a dashboard-wide level. This can be helpful if you would only like to invalidate stored state of one widget at a time instead of all widgets.
 | settingsModalOptions | Object | see below | no | Overrides same-named option in dashboard options for this widget. See the **Custom Widget Settings** section below. |
-| size              | Object   | n/a           | false    | Widget size, e.g { width: '50%', height: '250px' } |
+| size              | Object   | n/a           | false    | Widget size, e.g { width: '50%', minWidth: '27%', height: '250px' } |
 | style             | Object   | n/a           | false    | Widget style, e.g { float: 'right' } |
 | enableVerticalResize | Boolean  | true       | false    | Option to enable/disable vertical resize. Should be provided in "widgetDefinitions" since it is not serialized by default. |
 | onSettingsClose      | Function | see below | no | Overrides same-named option in dashboard options for this widget. See the **Custom Widget Settings** section below. |
@@ -209,6 +209,7 @@ Example
         directive: 'wt-fluid',
         size: {
           width: '50%',
+          minWidth: '27%',
           height: '250px'
         }
       }
