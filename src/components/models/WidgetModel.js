@@ -64,6 +64,11 @@ angular.module('ui.dashboard')
         this.widthUnits = units;
         width = parseFloat(width);
 
+        // check with min width if set, unit refer to width's unit
+        if (this.size && _.has(this.size, 'minWidth')) {
+          width = _.max([parseFloat(this.size.minWidth), width]);
+        }
+
         if (width < 0 || isNaN(width)) {
           $log.warn('malhar-angular-dashboard: setWidth was called when width was ' + width);
           return false;
