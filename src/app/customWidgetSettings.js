@@ -19,7 +19,6 @@
 angular.module('app')
   .controller('CustomSettingsDemoCtrl', function($scope, $interval, $window, widgetDefinitions, defaultWidgets, RandomDataModel) {
 
-
     // Add an additional widget with setting overrides
     var definitions = [{
       name: 'congfigurable widget',
@@ -30,7 +29,7 @@ angular.module('app')
         limit: 10
       },
       settingsModalOptions: {
-        partialTemplateUrl: 'template/configurableWidgetModalOptions.html'
+        partialTemplateUrl: 'app/template/configurableWidgetModalOptions.html'
       },
       onSettingsClose: function (result, widget) {
         if (widget.dataModel && widget.dataModel.updateLimit) {
@@ -43,7 +42,7 @@ angular.module('app')
       dataAttrName: 'value',
       dataModelType: RandomDataModel,
       settingsModalOptions: {
-        templateUrl: 'template/WidgetSpecificSettings.html',
+        templateUrl: 'app/template/WidgetSpecificSettings.html',
         controller: 'WidgetSpecificSettingsCtrl',
         backdrop: false
       },
