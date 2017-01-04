@@ -293,6 +293,17 @@ describe('Directive: dashboard-layouts', function () {
       expect(LayoutStorage.prototype.save).toHaveBeenCalled();
     });
 
+    it('should call event.preventDefault', function() {
+      var layout = { id: '1' };
+      var evt = {
+        preventDefault: function() {
+        }
+      };
+      spyOn(evt, 'preventDefault');
+      childScope.saveTitleEdit(layout, evt);
+      expect(evt.preventDefault).toHaveBeenCalled();
+    })
+
   });
 
   describe('the saveLayouts method', function() {
