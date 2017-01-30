@@ -5,5 +5,5 @@ RUN mkdir -p /usr/src/app
 EXPOSE 3000
 WORKDIR /usr/src/app
 ADD . /usr/src/app
-RUN bower install --allow-root && ls -ltr
+RUN bower install --allow-root && npm install
 RUN gulp 
