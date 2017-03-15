@@ -159,17 +159,6 @@ describe('Controller: DashboardWidgetCtrl', function() {
       $scope.saveTitleEdit(widget);
       expect(widget.editingTitle).toEqual(false);
     });
-
-    it('should call event preventDefault', function() {
-      var widget = { editingTitle: true };
-      var evt = {
-        preventDefault: function() {}
-      };
-      spyOn(evt, 'preventDefault');
-      $scope.saveTitleEdit(widget, evt);
-      expect(evt.preventDefault).toHaveBeenCalled();
-    });
-
   });
 
 });
