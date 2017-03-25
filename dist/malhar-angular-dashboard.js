@@ -294,11 +294,207 @@ angular.module('ui.dashboard')
     };
   }]);
 
-angular.module("ui.dashboard").run(["$templateCache", function($templateCache) {$templateCache.put("components/directives/dashboard/altDashboard.html","<div>\n    <div class=\"btn-toolbar\" ng-if=\"!options.hideToolbar\">\n        <div class=\"btn-group\" ng-if=\"!options.widgetButtons\">\n            <span class=\"dropdown\" on-toggle=\"toggled(open)\">\n              <button type=\"button\" class=\"btn btn-primary dropdown-toggle\" ng-disabled=\"disabled\">\n                Button dropdown <span class=\"caret\"></span>\n              </button>\n              <ul class=\"dropdown-menu\" role=\"menu\">\n                <li ng-repeat=\"widget in widgetDefs\">\n                  <a href=\"#\" ng-click=\"addWidgetInternal($event, widget);\" class=\"dropdown-toggle\">{{widget.name}}</a>\n                </li>\n              </ul>\n            </span>\n        </div>\n\n        <div class=\"btn-group\" ng-if=\"options.widgetButtons\">\n            <button ng-repeat=\"widget in widgetDefs\"\n                    ng-click=\"addWidgetInternal($event, widget);\" type=\"button\" class=\"btn btn-primary\">\n                {{widget.name}}\n            </button>\n        </div>\n\n        <button class=\"btn btn-warning\" ng-click=\"resetWidgetsToDefault()\">Default Widgets</button>\n\n        <button ng-if=\"options.storage && options.explicitSave\" ng-click=\"options.saveDashboard()\" class=\"btn btn-success\" ng-hide=\"!options.unsavedChangeCount\">{{ !options.unsavedChangeCount ? \"Alternative - No Changes\" : \"Save\" }}</button>\n\n        <button ng-click=\"clear();\" ng-hide=\"!widgets.length\" type=\"button\" class=\"btn btn-info\">Clear</button>\n    </div>\n\n    <div ui-sortable=\"sortableOptions\" ng-model=\"widgets\" class=\"dashboard-widget-area\">\n        <div ng-repeat=\"widget in widgets\" ng-style=\"widget.style\" class=\"widget-container\" widget>\n            <div class=\"widget panel panel-default\">\n                <div class=\"widget-header panel-heading\">\n                    <h3 class=\"panel-title\">\n                        <span class=\"widget-title\" ng-dblclick=\"editTitle(widget)\" ng-hide=\"widget.editingTitle\">{{widget.title}}</span>\n                        <form action=\"\" class=\"widget-title\" ng-show=\"widget.editingTitle\" ng-submit=\"saveTitleEdit(widget)\">\n                            <input type=\"text\" ng-model=\"widget.title\" class=\"form-control\">\n                        </form>\n                        <span class=\"label label-primary\" ng-if=\"!options.hideWidgetName\">{{widget.name}}</span>\n                        <span ng-click=\"removeWidget(widget);\" class=\"glyphicon glyphicon-remove\" ng-if=\"!options.hideWidgetClose\"></span>\n                        <span ng-click=\"openWidgetSettings(widget);\" class=\"glyphicon glyphicon-cog\" ng-if=\"!options.hideWidgetSettings\"></span>\n                    </h3>\n                </div>\n                <div class=\"panel-body widget-content\"></div>\n                <div class=\"widget-ew-resizer\" ng-mousedown=\"grabResizer($event)\"></div>\n            </div>\n        </div>\n    </div>\n</div>\n");
-$templateCache.put("components/directives/dashboard/dashboard.html","<div>\n    <div class=\"btn-toolbar\" ng-if=\"!options.hideToolbar\">\n        <div class=\"btn-group\" ng-if=\"!options.widgetButtons\">\n            <span class=\"dropdown\" on-toggle=\"toggled(open)\">\n              <button type=\"button\" class=\"btn btn-primary dropdown-toggle\" data-toggle=\"dropdown\">\n                Button dropdown <span class=\"caret\"></span>\n              </button>\n              <ul class=\"dropdown-menu\" role=\"menu\">\n                <li ng-repeat=\"widget in widgetDefs\">\n                  <a href=\"#\" ng-click=\"addWidgetInternal($event, widget);\" class=\"dropdown-toggle\"><span class=\"label label-primary\">{{widget.name}}</span></a>\n                </li>\n              </ul>\n            </span>\n    </div>\n        <div class=\"btn-group\" ng-if=\"options.widgetButtons\">\n            <button ng-repeat=\"widget in widgetDefs\"\n                    ng-click=\"addWidgetInternal($event, widget);\" type=\"button\" class=\"btn btn-primary\">\n                {{widget.name}}\n            </button>\n        </div>\n\n        <button class=\"btn btn-warning\" ng-click=\"resetWidgetsToDefault()\">Default Widgets</button>\n\n        <button ng-if=\"options.storage && options.explicitSave\" ng-click=\"options.saveDashboard()\" class=\"btn btn-success\" ng-disabled=\"!options.unsavedChangeCount\">{{ !options.unsavedChangeCount ? \"all saved\" : \"save changes (\" + options.unsavedChangeCount + \")\" }}</button>\n\n        <button ng-click=\"clear();\" type=\"button\" class=\"btn btn-info\">Clear</button>\n    </div>\n\n    <div ui-sortable=\"sortableOptions\" ng-model=\"widgets\" class=\"dashboard-widget-area\">\n        <div ng-repeat=\"widget in widgets\" ng-style=\"widget.containerStyle\" class=\"widget-container\" widget>\n            <div class=\"widget panel panel-default\">\n                <div class=\"widget-header panel-heading\">\n                    <h3 class=\"panel-title\">\n                        <span class=\"widget-title\" ng-dblclick=\"editTitle(widget)\" ng-hide=\"widget.editingTitle\">{{widget.title}}</span>\n                        <form action=\"\" class=\"widget-title\" ng-show=\"widget.editingTitle\" ng-submit=\"saveTitleEdit(widget)\">\n                            <input type=\"text\" ng-model=\"widget.title\" class=\"form-control\">\n                        </form>\n                        <span class=\"label label-primary\" ng-if=\"!options.hideWidgetName\">{{widget.name}}</span>\n                        <span ng-click=\"removeWidget(widget);\" class=\"glyphicon glyphicon-remove\" ng-if=\"!options.hideWidgetClose\"></span>\n                        <span ng-click=\"openWidgetSettings(widget);\" class=\"glyphicon glyphicon-cog\" ng-if=\"!options.hideWidgetSettings\"></span>\n                        <span ng-click=\"widget.contentStyle.display = widget.contentStyle.display === \'none\' ? \'block\' : \'none\'\" class=\"glyphicon\" ng-class=\"{\'glyphicon-plus\': widget.contentStyle.display === \'none\', \'glyphicon-minus\': widget.contentStyle.display !== \'none\' }\"></span>\n                    </h3>\n                </div>\n                <div class=\"panel-body widget-content\" ng-style=\"widget.contentStyle\"></div>\n                <div class=\"widget-ew-resizer\" ng-mousedown=\"grabResizer($event)\"></div>\n                <div ng-if=\"widget.enableVerticalResize\" class=\"widget-s-resizer\" ng-mousedown=\"grabSouthResizer($event)\"></div>\n            </div>\n        </div>\n    </div>\n</div>");
+angular.module("ui.dashboard").run(["$templateCache", function($templateCache) {$templateCache.put("components/directives/dashboard/altDashboard.html","<div>\n    <div class=\"btn-toolbar\" ng-if=\"!options.hideToolbar\">\n        <div class=\"btn-group\" ng-if=\"!options.widgetButtons\">\n            <span class=\"dropdown\" on-toggle=\"toggled(open)\">\n              <button type=\"button\" class=\"btn btn-primary dropdown-toggle\" ng-disabled=\"disabled\">\n                Button dropdown <span class=\"caret\"></span>\n              </button>\n              <ul class=\"dropdown-menu\" role=\"menu\">\n                <li ng-repeat=\"widget in widgetDefs\">\n                  <a href=\"#\" ng-click=\"addWidgetInternal($event, widget);\" class=\"dropdown-toggle\">{{widget.name}}</a>\n                </li>\n              </ul>\n            </span>\n        </div>\n\n        <div class=\"btn-group\" ng-if=\"options.widgetButtons\">\n            <button ng-repeat=\"widget in widgetDefs\"\n                    ng-click=\"addWidgetInternal($event, widget);\" type=\"button\" class=\"btn btn-primary\">\n                {{widget.name}}\n            </button>\n        </div>\n\n        <button class=\"btn btn-warning\" ng-click=\"resetWidgetsToDefault()\">Default Widgets</button>\n\n        <button ng-if=\"options.storage && options.explicitSave\" ng-click=\"options.saveDashboard()\" class=\"btn btn-success\" ng-hide=\"!options.unsavedChangeCount\">{{ !options.unsavedChangeCount ? \"Alternative - No Changes\" : \"Save\" }}</button>\n\n        <button ng-click=\"clear();\" ng-hide=\"!widgets.length\" type=\"button\" class=\"btn btn-info\">Clear</button>\n    </div>\n\n    <div ui-sortable=\"sortableOptions\" ng-model=\"widgets\" class=\"dashboard-widget-area\">\n        <div ng-repeat=\"widget in widgets\" ng-style=\"widget.style\" class=\"widget-container\" widget>\n            <div class=\"widget panel panel-default\">\n                <div class=\"widget-header panel-heading\">\n                    <h3 class=\"panel-title\">\n                        <span class=\"widget-title\" ng-dblclick=\"editTitle(widget)\" ng-hide=\"widget.editingTitle\">{{widget.title}}</span>\n                        <form action=\"\" class=\"widget-title\" ng-show=\"widget.editingTitle\" ng-submit=\"saveTitleEdit(widget, $event)\">\n                            <input type=\"text\" ng-model=\"widget.title\" ng-blur=\"titleLostFocus(widget, $event)\" class=\"form-control\">\n                        </form>\n                        <span class=\"label label-primary\" ng-if=\"!options.hideWidgetName\">{{widget.name}}</span>\n                        <span ng-click=\"removeWidget(widget);\" class=\"glyphicon glyphicon-remove\" ng-if=\"!options.hideWidgetClose\"></span>\n                        <span ng-click=\"openWidgetSettings(widget);\" class=\"glyphicon glyphicon-cog\" ng-if=\"!options.hideWidgetSettings\"></span>\n                    </h3>\n                </div>\n                <div class=\"panel-body widget-content\"></div>\n                <div class=\"widget-ew-resizer\" ng-mousedown=\"grabResizer($event)\"></div>\n            </div>\n        </div>\n    </div>\n</div>\n");
+$templateCache.put("components/directives/dashboard/dashboard.html","<div>\n    <div class=\"btn-toolbar\" ng-if=\"!options.hideToolbar\">\n        <div class=\"btn-group\" ng-if=\"!options.widgetButtons\">\n            <span class=\"dropdown\" on-toggle=\"toggled(open)\">\n              <button type=\"button\" class=\"btn btn-primary dropdown-toggle\" data-toggle=\"dropdown\">\n                Button dropdown <span class=\"caret\"></span>\n              </button>\n              <ul class=\"dropdown-menu\" role=\"menu\">\n                <li ng-repeat=\"widget in widgetDefs\">\n                  <a href=\"#\" ng-click=\"addWidgetInternal($event, widget);\" class=\"dropdown-toggle\"><span class=\"label label-primary\">{{widget.name}}</span></a>\n                </li>\n              </ul>\n            </span>\n    </div>\n        <div class=\"btn-group\" ng-if=\"options.widgetButtons\">\n            <button ng-repeat=\"widget in widgetDefs\"\n                    ng-click=\"addWidgetInternal($event, widget);\" type=\"button\" class=\"btn btn-primary\">\n                {{widget.name}}\n            </button>\n        </div>\n\n        <button class=\"btn btn-warning\" ng-click=\"resetWidgetsToDefault()\">Default Widgets</button>\n\n        <button ng-if=\"options.storage && options.explicitSave\" ng-click=\"options.saveDashboard()\" class=\"btn btn-success\" ng-disabled=\"!options.unsavedChangeCount\">{{ !options.unsavedChangeCount ? \"all saved\" : \"save changes (\" + options.unsavedChangeCount + \")\" }}</button>\n\n        <button ng-click=\"clear();\" type=\"button\" class=\"btn btn-info\">Clear</button>\n    </div>\n\n    <div ui-sortable=\"sortableOptions\" ng-model=\"widgets\" class=\"dashboard-widget-area\">\n        <div ng-repeat=\"widget in widgets\" ng-style=\"widget.containerStyle\" class=\"widget-container\" widget>\n            <div class=\"widget panel panel-default\">\n                <div class=\"widget-header panel-heading\">\n                    <h3 class=\"panel-title\">\n                        <span class=\"widget-title\" ng-dblclick=\"editTitle(widget)\" ng-hide=\"widget.editingTitle\">{{widget.title}}</span>\n                        <form action=\"\" class=\"widget-title\" ng-show=\"widget.editingTitle\" ng-submit=\"saveTitleEdit(widget, $event)\">\n                            <input type=\"text\" ng-model=\"widget.title\" ng-blur=\"titleLostFocus(widget, $event)\" class=\"form-control\">\n                        </form>\n                        <span class=\"label label-primary\" ng-if=\"!options.hideWidgetName\">{{widget.name}}</span>\n                        <span ng-click=\"removeWidget(widget);\" class=\"glyphicon glyphicon-remove\" ng-if=\"!options.hideWidgetClose\"></span>\n                        <span ng-click=\"openWidgetSettings(widget);\" class=\"glyphicon glyphicon-cog\" ng-if=\"!options.hideWidgetSettings\"></span>\n                        <span ng-click=\"widget.contentStyle.display = widget.contentStyle.display === \'none\' ? \'block\' : \'none\'\" class=\"glyphicon\" ng-class=\"{\'glyphicon-plus\': widget.contentStyle.display === \'none\', \'glyphicon-minus\': widget.contentStyle.display !== \'none\' }\"></span>\n                    </h3>\n                </div>\n                <div class=\"panel-body widget-content\" ng-style=\"widget.contentStyle\"></div>\n                <div class=\"widget-ew-resizer\" ng-mousedown=\"grabResizer($event)\"></div>\n                <div ng-if=\"widget.enableVerticalResize\" class=\"widget-s-resizer\" ng-mousedown=\"grabSouthResizer($event)\"></div>\n            </div>\n        </div>\n    </div>\n</div>");
 $templateCache.put("components/directives/dashboard/widget-settings-template.html","<div class=\"modal-header\">\n    <button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-hidden=\"true\" ng-click=\"cancel()\">&times;</button>\n  <h3>Widget Options <small>{{widget.title}}</small></h3>\n</div>\n\n<div class=\"modal-body\">\n    <form name=\"form\" novalidate class=\"form-horizontal\">\n        <div class=\"form-group\">\n            <label for=\"widgetTitle\" class=\"col-sm-2 control-label\">Title</label>\n            <div class=\"col-sm-10\">\n                <input type=\"text\" class=\"form-control\" name=\"widgetTitle\" ng-model=\"result.title\">\n            </div>\n        </div>\n        <div ng-if=\"widget.settingsModalOptions.partialTemplateUrl\"\n             ng-include=\"widget.settingsModalOptions.partialTemplateUrl\"></div>\n    </form>\n</div>\n\n<div class=\"modal-footer\">\n    <button type=\"button\" class=\"btn btn-default\" ng-click=\"cancel()\">Cancel</button>\n    <button type=\"button\" class=\"btn btn-primary\" ng-click=\"ok()\">OK</button>\n</div>");
 $templateCache.put("components/directives/dashboardLayouts/SaveChangesModal.html","<div class=\"modal-header\">\n    <button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-hidden=\"true\" ng-click=\"cancel()\">&times;</button>\n  <h3>Unsaved Changes to \"{{layout.title}}\"</h3>\n</div>\n\n<div class=\"modal-body\">\n    <p>You have {{layout.dashboard.unsavedChangeCount}} unsaved changes on this dashboard. Would you like to save them?</p>\n</div>\n\n<div class=\"modal-footer\">\n    <button type=\"button\" class=\"btn btn-default\" ng-click=\"cancel()\">Don\'t Save</button>\n    <button type=\"button\" class=\"btn btn-primary\" ng-click=\"ok()\">Save</button>\n</div>");
-$templateCache.put("components/directives/dashboardLayouts/dashboardLayouts.html","<ul ui-sortable=\"sortableOptions\" ng-model=\"layouts\" class=\"nav nav-tabs layout-tabs\">\n    <li ng-repeat=\"layout in layouts\" ng-class=\"{ active: layout.active }\">\n        <a ng-click=\"makeLayoutActive(layout)\">\n            <span ng-dblclick=\"editTitle(layout)\" ng-show=\"!layout.editingTitle\">{{layout.title}}</span>\n            <form action=\"\" class=\"layout-title\" ng-show=\"layout.editingTitle\" ng-submit=\"saveTitleEdit(layout)\">\n                <input type=\"text\" ng-model=\"layout.title\" class=\"form-control\" data-layout=\"{{layout.id}}\">\n            </form>\n            <span ng-if=\"!layout.locked\" ng-click=\"removeLayout(layout)\" class=\"glyphicon glyphicon-remove remove-layout-icon\"></span>\n            <!-- <span class=\"glyphicon glyphicon-pencil\"></span> -->\n            <!-- <span class=\"glyphicon glyphicon-remove\"></span> -->\n        </a>\n    </li>\n    <li>\n        <a ng-click=\"createNewLayout()\">\n            <span class=\"glyphicon glyphicon-plus\"></span>\n        </a>\n    </li>\n</ul>\n<div ng-repeat=\"layout in layouts | filter:isActive\" dashboard=\"layout.dashboard\" template-url=\"components/directives/dashboard/dashboard.html\"></div>");}]);
+$templateCache.put("components/directives/dashboardLayouts/dashboardLayouts.html","<ul ui-sortable=\"sortableOptions\" ng-model=\"layouts\" class=\"nav nav-tabs layout-tabs\">\n    <li ng-repeat=\"layout in layouts\" ng-class=\"{ active: layout.active }\">\n        <a ng-click=\"makeLayoutActive(layout)\">\n            <span ng-dblclick=\"editTitle(layout)\" ng-show=\"!layout.editingTitle\">{{layout.title}}</span>\n            <form action=\"\" class=\"layout-title\" ng-show=\"layout.editingTitle\" ng-submit=\"saveTitleEdit(layout, $event)\">\n                <input type=\"text\" ng-model=\"layout.title\" ng-blur=\"titleLostFocus(layout, $event)\" class=\"form-control\" data-layout=\"{{layout.id}}\">\n            </form>\n            <span ng-if=\"!layout.locked\" ng-click=\"removeLayout(layout)\" class=\"glyphicon glyphicon-remove remove-layout-icon\"></span>\n            <!-- <span class=\"glyphicon glyphicon-pencil\"></span> -->\n            <!-- <span class=\"glyphicon glyphicon-remove\"></span> -->\n        </a>\n    </li>\n    <li>\n        <a ng-click=\"createNewLayout()\">\n            <span class=\"glyphicon glyphicon-plus\"></span>\n        </a>\n    </li>\n</ul>\n<div ng-repeat=\"layout in layouts | filter:isActive\" dashboard=\"layout.dashboard\" template-url=\"components/directives/dashboard/dashboard.html\"></div>");}]);
+/*
+ * Copyright (c) 2014 DataTorrent, Inc. ALL Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+'use strict';
+
+angular.module('ui.dashboard')
+  .directive('dashboardLayouts', ['LayoutStorage', '$timeout', '$uibModal',
+    function(LayoutStorage, $timeout, $uibModal) {
+      return {
+        scope: true,
+        templateUrl: function(element, attr) {
+          return attr.templateUrl ? attr.templateUrl : 'components/directives/dashboardLayouts/dashboardLayouts.html';
+        },
+        link: function(scope, element, attrs) {
+
+          scope.options = scope.$eval(attrs.dashboardLayouts);
+
+          var layoutStorage = new LayoutStorage(scope.options);
+
+          scope.layouts = layoutStorage.layouts;
+
+          scope.createNewLayout = function() {
+            var newLayout = {
+              title: 'Custom',
+              defaultWidgets: scope.options.defaultWidgets || []
+            };
+            layoutStorage.add(newLayout);
+            scope.makeLayoutActive(newLayout);
+            layoutStorage.save();
+            return newLayout;
+          };
+
+          scope.removeLayout = function(layout) {
+            layoutStorage.remove(layout);
+            layoutStorage.save();
+          };
+
+          scope.makeLayoutActive = function(layout) {
+
+            var current = layoutStorage.getActiveLayout();
+
+            if (current && current.dashboard.unsavedChangeCount) {
+              var modalInstance = $uibModal.open({
+                templateUrl: 'template/SaveChangesModal.html',
+                resolve: {
+                  layout: function() {
+                    return layout;
+                  }
+                },
+                controller: 'SaveChangesModalCtrl'
+              });
+
+              // Set resolve and reject callbacks for the result promise
+              modalInstance.result.then(
+                function() {
+                  current.dashboard.saveDashboard();
+                  scope._makeLayoutActive(layout);
+                },
+                function() {
+                  scope._makeLayoutActive(layout);
+                }
+              );
+            } else {
+              scope._makeLayoutActive(layout);
+            }
+
+          };
+
+          scope._makeLayoutActive = function(layout) {
+            angular.forEach(scope.layouts, function(l) {
+              if (l !== layout) {
+                l.active = false;
+              } else {
+                l.active = true;
+              }
+            });
+            layoutStorage.save();
+          };
+
+          scope.isActive = function(layout) {
+            return !!layout.active;
+          };
+
+          scope.editTitle = function(layout) {
+            if (layout.locked) {
+              return;
+            }
+
+            var input = element.find('input[data-layout="' + layout.id + '"]');
+            layout.editingTitle = true;
+
+            $timeout(function() {
+              input.focus()[0].setSelectionRange(0, 9999);
+            });
+          };
+
+          // saves whatever is in the title input as the new title
+          scope.saveTitleEdit = function(layout, event) {
+            layout.editingTitle = false;
+            layoutStorage.save();
+
+            // When a browser is open and the user clicks on the tab title to change it,
+            // upon pressing the Enter key, the page refreshes.
+            // This statement prevents that.
+            var evt = event || window.event;
+            if (evt) {
+              evt.preventDefault();
+            }
+          };
+
+          scope.titleLostFocus = function(layout, event) {
+            // user clicked some where; now we lost focus to the input box
+            // lets see if we need to save the title
+            if (layout.editingTitle) {
+              scope.saveTitleEdit(layout, event);
+            }
+          };
+
+          scope.options.saveLayouts = function() {
+            layoutStorage.save(true);
+          };
+          scope.options.addWidget = function() {
+            var layout = layoutStorage.getActiveLayout();
+            if (layout) {
+              layout.dashboard.addWidget.apply(layout.dashboard, arguments);
+            }
+          };
+          scope.options.loadWidgets = function() {
+            var layout = layoutStorage.getActiveLayout();
+            if (layout) {
+              layout.dashboard.loadWidgets.apply(layout.dashboard, arguments);
+            }
+          };
+          scope.options.saveDashboard = function() {
+            var layout = layoutStorage.getActiveLayout();
+            if (layout) {
+              layout.dashboard.saveDashboard.apply(layout.dashboard, arguments);
+            }
+          };
+
+          var sortableDefaults = {
+            stop: function() {
+              scope.options.saveLayouts();
+            },
+            distance: 5
+          };
+          scope.sortableOptions = angular.extend({}, sortableDefaults, scope.options.sortableOptions || {});
+        }
+      };
+    }
+  ]);
+/*
+ * Copyright (c) 2014 DataTorrent, Inc. ALL Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+'use strict';
+
+angular.module('ui.dashboard')
+  .controller('SaveChangesModalCtrl', ['$scope', '$uibModalInstance', 'layout', function ($scope, $uibModalInstance, layout) {
+    
+    // add layout to scope
+    $scope.layout = layout;
+
+    $scope.ok = function () {
+      $uibModalInstance.close();
+    };
+
+    $scope.cancel = function () {
+      $uibModalInstance.dismiss();
+    };
+  }]);
 /*
  * Copyright (c) 2014 DataTorrent, Inc. ALL Rights Reserved.
  *
@@ -580,9 +776,25 @@ angular.module('ui.dashboard')
       };
 
       // saves whatever is in the title input as the new title
-      $scope.saveTitleEdit = function(widget) {
+      $scope.saveTitleEdit = function(widget, event) {
         widget.editingTitle = false;
         $scope.$emit('widgetChanged', widget);
+
+        // When a browser is open and the user clicks on the widget title to change it,
+        // upon pressing the Enter key, the page refreshes.
+        // This statement prevents that.
+        var evt = event || window.event;
+        if (evt) {
+          evt.preventDefault();
+        }
+      };
+
+      $scope.titleLostFocus = function(widget, event) {
+        // user clicked some where; now we lost focus to the input box
+        // lets see if we need to save the title
+        if (widget.editingTitle) {
+          $scope.saveTitleEdit(widget, event);
+        }
       };
 
       $scope.compileTemplate = function() {
@@ -601,186 +813,6 @@ angular.module('ui.dashboard')
       };
     }
   ]);
-/*
- * Copyright (c) 2014 DataTorrent, Inc. ALL Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-'use strict';
-
-angular.module('ui.dashboard')
-  .directive('dashboardLayouts', ['LayoutStorage', '$timeout', '$uibModal',
-    function(LayoutStorage, $timeout, $uibModal) {
-      return {
-        scope: true,
-        templateUrl: function(element, attr) {
-          return attr.templateUrl ? attr.templateUrl : 'components/directives/dashboardLayouts/dashboardLayouts.html';
-        },
-        link: function(scope, element, attrs) {
-
-          scope.options = scope.$eval(attrs.dashboardLayouts);
-
-          var layoutStorage = new LayoutStorage(scope.options);
-
-          scope.layouts = layoutStorage.layouts;
-
-          scope.createNewLayout = function() {
-            var newLayout = {
-              title: 'Custom',
-              defaultWidgets: scope.options.defaultWidgets || []
-            };
-            layoutStorage.add(newLayout);
-            scope.makeLayoutActive(newLayout);
-            layoutStorage.save();
-            return newLayout;
-          };
-
-          scope.removeLayout = function(layout) {
-            layoutStorage.remove(layout);
-            layoutStorage.save();
-          };
-
-          scope.makeLayoutActive = function(layout) {
-
-            var current = layoutStorage.getActiveLayout();
-
-            if (current && current.dashboard.unsavedChangeCount) {
-              var modalInstance = $uibModal.open({
-                templateUrl: 'template/SaveChangesModal.html',
-                resolve: {
-                  layout: function() {
-                    return layout;
-                  }
-                },
-                controller: 'SaveChangesModalCtrl'
-              });
-
-              // Set resolve and reject callbacks for the result promise
-              modalInstance.result.then(
-                function() {
-                  current.dashboard.saveDashboard();
-                  scope._makeLayoutActive(layout);
-                },
-                function() {
-                  scope._makeLayoutActive(layout);
-                }
-              );
-            } else {
-              scope._makeLayoutActive(layout);
-            }
-
-          };
-
-          scope._makeLayoutActive = function(layout) {
-            angular.forEach(scope.layouts, function(l) {
-              if (l !== layout) {
-                l.active = false;
-              } else {
-                l.active = true;
-              }
-            });
-            layoutStorage.save();
-          };
-
-          scope.isActive = function(layout) {
-            return !!layout.active;
-          };
-
-          scope.editTitle = function(layout) {
-            if (layout.locked) {
-              return;
-            }
-
-            var input = element.find('input[data-layout="' + layout.id + '"]');
-            layout.editingTitle = true;
-
-            $timeout(function() {
-              input.focus()[0].setSelectionRange(0, 9999);
-            });
-          };
-
-          // saves whatever is in the title input as the new title
-          scope.saveTitleEdit = function(layout) {
-            layout.editingTitle = false;
-            layoutStorage.save();
-          };
-
-          scope.options.saveLayouts = function() {
-            layoutStorage.save(true);
-          };
-          scope.options.addWidget = function() {
-            var layout = layoutStorage.getActiveLayout();
-            if (layout) {
-              layout.dashboard.addWidget.apply(layout.dashboard, arguments);
-            }
-          };
-          scope.options.loadWidgets = function() {
-            var layout = layoutStorage.getActiveLayout();
-            if (layout) {
-              layout.dashboard.loadWidgets.apply(layout.dashboard, arguments);
-            }
-          };
-          scope.options.saveDashboard = function() {
-            var layout = layoutStorage.getActiveLayout();
-            if (layout) {
-              layout.dashboard.saveDashboard.apply(layout.dashboard, arguments);
-            }
-          };
-
-          var sortableDefaults = {
-            stop: function() {
-              scope.options.saveLayouts();
-            },
-            distance: 5
-          };
-          scope.sortableOptions = angular.extend({}, sortableDefaults, scope.options.sortableOptions || {});
-        }
-      };
-    }
-  ]);
-/*
- * Copyright (c) 2014 DataTorrent, Inc. ALL Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-'use strict';
-
-angular.module('ui.dashboard')
-  .controller('SaveChangesModalCtrl', ['$scope', '$uibModalInstance', 'layout', function ($scope, $uibModalInstance, layout) {
-    
-    // add layout to scope
-    $scope.layout = layout;
-
-    $scope.ok = function () {
-      $uibModalInstance.close();
-    };
-
-    $scope.cancel = function () {
-      $uibModalInstance.dismiss();
-    };
-  }]);
 /*
  * Copyright (c) 2014 DataTorrent, Inc. ALL Rights Reserved.
  *
