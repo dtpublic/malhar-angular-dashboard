@@ -1,0 +1,14 @@
+
+dependencies:
+  pre: 
+   - wget -qO- https://deb.nodesource.com/setup_4.x | sudo bash -
+   - sudo apt-get install nodejs
+   - npm install -g bower gulp
+   - bower install
+
+  post:
+   - gulp
+
+test:
+  override:
+   - npm test
