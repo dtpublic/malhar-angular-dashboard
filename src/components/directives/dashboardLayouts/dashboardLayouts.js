@@ -124,8 +124,16 @@ angular.module('ui.dashboard')
           scope.titleLostFocus = function(layout, event) {
             // user clicked some where; now we lost focus to the input box
             // lets see if we need to save the title
-            if (layout.editingTitle) {
-              scope.saveTitleEdit(layout, event);
+            if (layout && layout.editingTitle) {
+              if (layout.title !== '') {
+                scope.saveTitleEdit(layout, event);
+              } else {
+                // can't save blank title
+                var input = element.find('input[data-layout="' + layout.id + '"]');
+                $timeout(function() {
+                  input.focus();
+                });
+              }
             }
           };
 
