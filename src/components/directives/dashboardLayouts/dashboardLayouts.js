@@ -108,9 +108,33 @@ angular.module('ui.dashboard')
           };
 
           // saves whatever is in the title input as the new title
-          scope.saveTitleEdit = function(layout) {
+          scope.saveTitleEdit = function(layout, event) {
             layout.editingTitle = false;
             layoutStorage.save();
+
+            // When a browser is open and the user clicks on the tab title to change it,
+            // upon pressing the Enter key, the page refreshes.
+            // This statement prevents that.
+            var evt = event || window.event;
+            if (evt) {
+              evt.preventDefault();
+            }
+          };
+
+          scope.titleLostFocus = function(layout, event) {
+            // user clicked some where; now we lost focus to the input box
+            // lets see if we need to save the title
+            if (layout && layout.editingTitle) {
+              if (layout.title !== '') {
+                scope.saveTitleEdit(layout, event);
+              } else {
+                // can't save blank title
+                var input = element.find('input[data-layout="' + layout.id + '"]');
+                $timeout(function() {
+                  input.focus();
+                });
+              }
+            }
           };
 
           scope.options.saveLayouts = function() {
