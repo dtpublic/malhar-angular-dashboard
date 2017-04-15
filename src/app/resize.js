@@ -36,6 +36,10 @@ angular.module('app')
     $interval(function () {
       $scope.randomValue = Math.random();
     }, 500);
+
+    $scope.prependWidget = function() {
+      $scope.dashboardOptions.prependWidget({ name: 'random', title: 'Prepend Widget'});
+    };
   })
   .controller('ResizableCtrl', function ($scope) {
     $scope.$on('widgetResized', function (event, size) {

@@ -36,6 +36,9 @@ angular.module('app')
       $scope.randomValue = Math.random();
     }, 500);
 
+    $scope.prependWidget = function() {
+      $scope.layoutOptions.prependWidget({name: 'random', title: 'Prepend Widget'});
+    };
   })
   .controller('LayoutsDemoExplicitSaveCtrl', function($scope, widgetDefinitions, defaultWidgets, LayoutStorage, $interval) {
     $scope.layoutOptions = {
@@ -56,4 +59,7 @@ angular.module('app')
       $scope.randomValue = Math.random();
     }, 500);
 
+    $scope.prependWidget = function() {
+      $scope.layoutOptions.prependWidget({name: 'random', title: 'Prepend Widget'});
+    };
   });
