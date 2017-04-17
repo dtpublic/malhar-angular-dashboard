@@ -43,7 +43,7 @@ When **adding new javascript files**, please prepend the Apache v2.0 license hea
 Examples
 --------
 
-[Simple demo](http://datatorrent.github.io/malhar-angular-dashboard/#/) (minimum dependencies) [[source code](demo)]
+[Simple demo](http://datatorrent.github.io/malhar-angular-dashboard/#/) (minimum dependencies) [[source code](src/app)]
 
 [Advanced demo](http://datatorrent.github.io/malhar-dashboard-webapp/#/) (charts, visualization, data sources, etc.) [[source code](https://github.com/DataTorrent/malhar-dashboard-webapp)]
 
@@ -73,12 +73,12 @@ Requirements
 - Angular UI Sortable
 - Angular Bootstrap
 
-Example of including dependencies from CDN [here](demo/index.html)
+Example of including dependencies from CDN [here](src/index.html)
 
 Getting Started
 ---------------
 
-See [simple demo](demo) (two widgets) for a quick start.
+See [demo](http://datatorrent.github.io/malhar-angular-dashboard/#/) (several widgets) for a quick start.
 
 Running demo.
 
@@ -140,7 +140,7 @@ Include the dashboard directive on the element you wish to place widgets in:
 ```
 
 ### Custom Template
-It is possible to use your own template for the dashboard and widget markup (replacing [template/dashboard.html](https://github.com/DataTorrent/malhar-angular-dashboard/blob/master/template/dashboard.html)). To do so, include a `template-url` attribute on the element to become dashboard:
+It is possible to use your own template for the dashboard and widget markup (replacing [dashboard/dashboard.html](src/components/directives/dashboard/dashboard.html)). To do so, include a `template-url` attribute on the element to become dashboard:
 
 ```HTML
 <div dashboard="dashboardOptions" template-url="path/to/my-template.html"></div>
@@ -224,10 +224,10 @@ When widget is resized 'widgetResized' event is broadcasted to the widget scope.
 The best way to provide data to a widget is to specify a `dataModelType` in the Widget Definition Object (above). This function is used as a constructor whenever a new widget is instantiated on the page.
 If `dataModelType` is a string it will be looked up with $injector (it should be valid AngularJS provider/factory/service).
 In most cases data model should implement the following methods: `init`, and `destroy`.
-Please see [widget directive file](https://github.com/DataTorrent/malhar-angular-dashboard/blob/master/src/directives/widget.js) for implementation details.
+Please see [widget directive file](src/components/directives/widget/widget.js) for implementation details.
 
 #### `setup`
-This function is called once when a widget is instantiated. It takes two arguments: (1) the instance of the [`WidgetModel`](https://github.com/DataTorrent/malhar-angular-dashboard/blob/master/src/models/widgetModel.js) constructor that corresponds to the widget instance, and (2) the scope of the widget.
+This function is called once when a widget is instantiated. It takes two arguments: (1) the instance of the [`WidgetModel`](src/components/models/WidgetModel.js) constructor that corresponds to the widget instance, and (2) the scope of the widget.
 
 #### `init`
 This function is called once when a widget is instantiated. This function does not take any arguments.
@@ -235,7 +235,7 @@ This function is called once when a widget is instantiated. This function does n
 #### `destroy`
 This function is called when the widget is removed from the dashboard. It does not take any arguments. It should be used to clean up any listeners that may otherwise hang around, e.g. unsubscribing to a WebSocket topic or RESTful endpoint.
 
-It is recommended to prototypically extend from the [`WidgetDataModel`](https://github.com/DataTorrent/malhar-angular-dashboard/blob/master/src/models/widgetDataModel.js) constructor, which implements the `setup` function. [Take a look at the code here](https://github.com/DataTorrent/malhar-angular-dashboard/blob/master/src/models/widgetDataModel.js).
+It is recommended to prototypically extend from the [`WidgetDataModel`](src/components/models/widgetDataModel.js) constructor, which implements the `setup` function. [Take a look at the code here](src/components/models/widgetDataModel.js).
 
 Here is an example way to extend from `WidgetDataModel`:
 
