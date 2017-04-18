@@ -11,7 +11,21 @@ module.exports = function(config) {
 
     plugins : [
         'karma-phantomjs-launcher',
-        'karma-jasmine'
-    ]
+        'karma-jasmine',
+        'karma-coverage'
+    ],
+
+    reporters: ['dots', 'coverage'],
+
+    coverageReporter: {
+      type : 'html',
+      // where to store the report
+      dir : 'coverage/'
+    },
+
+    preprocessors: {
+      'src/**/!(*spec)+(.js)': ['coverage']
+    }
   });
+
 };

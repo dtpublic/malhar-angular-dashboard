@@ -17,7 +17,7 @@
 'use strict';
 
 angular.module('app')
-  .controller('CustomSettingsDemoCtrl', function($scope, $interval, $window, widgetDefinitions, defaultWidgets, RandomDataModel) {
+  .controller('CustomSettingsDemoCtrl', function($scope, $window, widgetDefinitions, defaultWidgets, RandomDataModel) {
 
     // Add an additional widget with setting overrides
     var definitions = [{
@@ -50,6 +50,7 @@ angular.module('app')
         jQuery.extend(true, widget, result);
       },
       onSettingsDismiss: function(reason, scope) {
+        // console.log('Widget-specific settings dismissed', reason);
       }
     }];
 
@@ -94,9 +95,9 @@ angular.module('app')
       // and not rejected). This can also be set on individual
       // widgets (see above).
       onSettingsClose: function(result, widget, scope) {
-        console.log('Settings result: ', result);
-        console.log('Widget: ', widget);
-        console.log('Dashboard scope: ', scope);
+        // console.log('Settings result: ', result);
+        // console.log('Widget: ', widget);
+        // console.log('Dashboard scope: ', scope);
         jQuery.extend(true, widget, result);
       },
 
@@ -105,8 +106,8 @@ angular.module('app')
       // and not resolved). This can also be set on individual
       // widgets (see above).
       onSettingsDismiss: function(reason, scope) {
-        console.log('Settings have been dismissed: ', reason);
-        console.log('Dashboard scope: ', scope);
+        // console.log('Settings have been dismissed: ', reason);
+        // console.log('Dashboard scope: ', scope);
       }
     };
 
@@ -122,12 +123,12 @@ angular.module('app')
     $scope.result = jQuery.extend(true, {}, widget);
 
     $scope.ok = function () {
-      console.log('calling ok from widget-specific settings controller!');
+      // console.log('calling ok from widget-specific settings controller!');
       $uibModalInstance.close($scope.result);
     };
 
     $scope.cancel = function () {
-      console.log('calling cancel from widget-specific settings controller!');
+      // console.log('calling cancel from widget-specific settings controller!');
       $uibModalInstance.dismiss('cancel');
     };
   })

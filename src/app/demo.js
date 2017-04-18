@@ -66,6 +66,18 @@ angular.module('app', [
         title: 'layouts explicit saving',
         description: 'This demo showcases dashboard layouts with explicit saving enabled.'
       })
+      .when('/dynamic-options', {
+        templateUrl: 'app/template/dynamicOptions.html',
+        controller: 'DynamicOptionsCtrl',
+        title: 'dynamic options',
+        description: 'This demo showcases loading dashboard options dynamically.'
+      })
+      .when('/dynamic-data', {
+        templateUrl: 'app/template/dynamicData.html',
+        controller: 'DynamicDataCtrl',
+        title: 'dynamic data',
+        description: 'This demo showcases loading the widgets and refreshing the contents as the source data is updated.'
+      })
       .otherwise({
         redirectTo: '/'
       });

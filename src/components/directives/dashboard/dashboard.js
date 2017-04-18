@@ -49,14 +49,10 @@ angular.module('ui.dashboard')
         // from dashboard="options"
         scope.options = scope.$eval(attrs.dashboard);
 
-        // Deep options
-        scope.options.settingsModalOptions = scope.options.settingsModalOptions || {};
-        _.each(['settingsModalOptions'], function(key) {
-          // Ensure it exists on scope.options
-          scope.options[key] = scope.options[key] || {};
-          // Set defaults
-          _.defaults(scope.options[key], defaults[key]);
-        });
+        // Ensure settingsModalOptions exists on scope.options
+        scope.options.settingsModalOptions = scope.options.settingsModalOptions !== undefined ? scope.options.settingsModalOptions : {};
+        // Set defaults
+        _.defaults(scope.options.settingsModalOptions, defaults.settingsModalOptions);
 
         // Shallow options
         _.defaults(scope.options, defaults);

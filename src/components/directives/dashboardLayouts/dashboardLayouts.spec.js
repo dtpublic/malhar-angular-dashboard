@@ -276,6 +276,15 @@ describe('Directive: dashboard-layouts', function () {
       toFn();
     });
 
+    it('should exit editTitle when locked', function() {
+      var layout = {
+        id: '2',
+        locked: true
+      };
+      childScope.editTitle(layout);
+      expect(layout.editingTitle).toBeUndefined();
+    });
+
   });
 
   describe('the saveTitleEdit method', function() {
@@ -415,6 +424,16 @@ describe('Directive: dashboard-layouts', function () {
         expect(function() {
           options.saveDashboard();
         }).not.toThrow();
+      });
+
+    });
+
+    describe('the sortableDefaults.stop function', function() {
+
+      it('should call saveLayouts', function() {
+        spyOn(childScope.options, 'saveLayouts').and.callThrough();
+        childScope.sortableOptions.stop();
+        expect(childScope.options.saveLayouts).toHaveBeenCalled();
       });
 
     });

@@ -1,0 +1,13 @@
+<div class="row">
+	<div class="col-md-12">
+		<div>
+			<div>Add item to cart:</div>
+				<input ng-model="item.name" placeholder="Item name" />
+				<input ng-model="item.qty" type="number" placeholder="Quantity" />
+				<input ng-model="item.price" type="number" placeholder="Unit Price" />
+				<button ng-click="addItem()" class="btn btn-default btn-sm">Add</button>
+				<button ng-click="autoFillCart()" class="btn btn-default btn-sm">Auto Fill Cart</button>
+			</div>
+		<div dashboard="dashboardOptions" class="dashboard-container"></div>
+	</div>
+</div>

@@ -1,0 +1,8 @@
+<table class="people">
+	<tr ng-repeat="person in people">
+		<td>{{::person.name}}</td>
+		<td>{{::person.email}}</td>
+		<td>{{::person.phone}}</td>
+		<td><button ng-click="removePerson(person)" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove"></span></button></td>
+	</tr>
+</table>

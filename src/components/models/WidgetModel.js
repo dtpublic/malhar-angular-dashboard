@@ -32,7 +32,6 @@ angular.module('ui.dashboard')
 
     // constructor for widget model instances
     function WidgetModel(widgetDefinition, overrides) {
-  
       // Extend this with the widget definition object with overrides merged in (deep extended).
       angular.extend(this, defaults(), _.merge(angular.copy(widgetDefinition), overrides));
 
@@ -65,13 +64,12 @@ angular.module('ui.dashboard')
         width = parseFloat(width);
 
         // check with min width if set, unit refer to width's unit
-        if (this.size && _.has(this.size, 'minWidth')) {
+        if (this.size && _.has(this.size, 'minWidth') && _.endsWith(this.size.minWidth, units)) {
           width = _.max([parseFloat(this.size.minWidth), width]);
         }
-
         if (width < 0 || isNaN(width)) {
           $log.warn('malhar-angular-dashboard: setWidth was called when width was ' + width);
-          return false;
+          return;
         }
 
         if (units === '%') {
@@ -83,7 +81,7 @@ angular.module('ui.dashboard')
 
         this.updateSize(this.containerStyle);
 
-        return true;
+        return width + units;
       },
 
       setHeight: function (height) {
