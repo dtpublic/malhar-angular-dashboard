@@ -43,7 +43,7 @@ angular.module('app')
       widgetDefinitions: definitions,
       defaultWidgets: defaultWidgets,
       storage: $window.localStorage,
-      storageId: 'demo_dynamic-options'
+      storageId: 'demo_dynamic-options_' + Date.now()
     };
 
     $scope.toggleWidget = function() {
@@ -51,6 +51,7 @@ angular.module('app')
 
       var obj = _.cloneDeep($scope.dashboardOptions);
       obj.defaultWidgets[0].name = $scope.style;
+      obj.storageId = 'demo_dynamic-options_' + Date.now();
       $timeout(function() {
         delete $scope.dashboardOptions;
       }, 0);
