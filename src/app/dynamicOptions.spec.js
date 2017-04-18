@@ -46,7 +46,7 @@ describe('Controller: DynamicOptionsCtrl', function() {
       expect($scope.dashboardOptions.widgetDefinitions[1].includeUrl).toEqual('app/template/peopleThumbnail.html');
       expect($scope.dashboardOptions.defaultWidgets).toBeDefined();
       expect($scope.dashboardOptions.storage).toBeDefined();
-      expect($scope.dashboardOptions.storageId).toEqual('demo_dynamic-options');
+      expect($scope.dashboardOptions.storageId.indexOf('demo_dynamic-options') === 0).toEqual(true);
     });
 
   });
