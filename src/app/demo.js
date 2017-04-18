@@ -141,5 +141,9 @@ angular.module('app', [
       $scope.randomValue = Math.random();
     }, 500);
 
+    $scope.prependWidget = function() {
+      $scope.dashboardOptions.prependWidget({ name: 'random', title: 'Prepend Widget'});
+    };
+
   });
 

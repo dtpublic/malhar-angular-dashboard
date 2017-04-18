@@ -30,4 +30,8 @@ angular.module('app')
     $interval(function () {
       $scope.randomValue = Math.random();
     }, 500);
+
+    $scope.prependWidget = function() {
+      $scope.dashboardOptions.prependWidget({ name: 'random', title: 'Prepend Widget'});
+    };
   });

@@ -314,6 +314,56 @@ describe('Directive: dashboard', function () {
 
   });
 
+  describe('the prependWidget function', function() {
+
+    var widgetCreated, widgetPassed, widgetDefault;
+
+    beforeEach(function() {
+      childScope.widgets.push = function(w) {
+        widgetCreated = w;
+      }
+    });
+
+    it('should be a function', function() {
+      expect(typeof childScope.prependWidget).toEqual('function');
+    });
+
+    it('should add new widget to beginning of array', function () {
+      spyOn(childScope.widgetDefs, 'getByName').and.returnValue({ title: 'defaultTitle', name: 'A' });
+      childScope.prependWidget({ name: 'A', title: 'new prepend widget' }, true);
+      expect(childScope.widgets.length).toEqual(3);
+      expect(childScope.widgets[0].title).toEqual('new prepend widget');
+      expect(childScope.widgets[1].title).toEqual('Widget 1');
+      expect(childScope.widgets[2].title).toEqual('Widget 2');
+    });
+
+    describe('the doNotSave parameter', function() {
+
+      it('should save if set to false', function() {
+        spyOn(childScope.widgetDefs, 'getByName').and.returnValue({ title: 'defaultTitle', name: 'A' });
+        spyOn(childScope, 'saveDashboard');
+        childScope.prependWidget({ name: 'A' }, false);
+        expect(childScope.saveDashboard).toHaveBeenCalled();
+      });
+
+      it('should save if not set', function() {
+        spyOn(childScope.widgetDefs, 'getByName').and.returnValue({ title: 'defaultTitle', name: 'A' });
+        spyOn(childScope, 'saveDashboard');
+        childScope.prependWidget({ name: 'A' });
+        expect(childScope.saveDashboard).toHaveBeenCalled();
+      });
+
+      it('should prevent save from being called if set to true', function() {
+        spyOn(childScope.widgetDefs, 'getByName').and.returnValue({ title: 'defaultTitle', name: 'A' });
+        spyOn(childScope, 'saveDashboard');
+        childScope.prependWidget({ name: 'A' }, true);
+        expect(childScope.saveDashboard).not.toHaveBeenCalled();
+      });
+
+    });
+
+  });
+
   describe('the removeWidget function', function() {
 
     it('should be a function', function() {

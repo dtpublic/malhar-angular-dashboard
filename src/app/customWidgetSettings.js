@@ -47,12 +47,9 @@ angular.module('app')
         backdrop: false
       },
       onSettingsClose: function(result, widget) {
-        console.log('Widget-specific settings resolved!');
         jQuery.extend(true, widget, result);
       },
       onSettingsDismiss: function(reason, scope) {
-        console.log('Settings have been dismissed: ', reason);
-        console.log('Dashboard scope: ', scope);
       }
     }];
 
@@ -111,6 +108,10 @@ angular.module('app')
         console.log('Settings have been dismissed: ', reason);
         console.log('Dashboard scope: ', scope);
       }
+    };
+
+    $scope.prependWidget = function() {
+      $scope.dashboardOptions.prependWidget({ name: 'congfigurable widget', title: 'Prepend Widget'});
     };
   })
   .controller('WidgetSpecificSettingsCtrl', function ($scope, $uibModalInstance, widget) {

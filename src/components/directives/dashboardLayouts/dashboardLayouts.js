@@ -146,6 +146,12 @@ angular.module('ui.dashboard')
               layout.dashboard.addWidget.apply(layout.dashboard, arguments);
             }
           };
+          scope.options.prependWidget = function() {
+            var layout = layoutStorage.getActiveLayout();
+            if (layout) {
+              layout.dashboard.prependWidget.apply(layout.dashboard, arguments);
+            }
+          };
           scope.options.loadWidgets = function() {
             var layout = layoutStorage.getActiveLayout();
             if (layout) {

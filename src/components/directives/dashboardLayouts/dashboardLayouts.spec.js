@@ -330,11 +330,13 @@ describe('Directive: dashboard-layouts', function () {
         active: true,
         dashboard: {
           addWidget: function() {},
+          prependWidget: function() {},
           loadWidgets: function() {},
           saveDashboard: function() {}
         }
       };
       spyOn(mockDash.dashboard, 'addWidget');
+      spyOn(mockDash.dashboard, 'prependWidget');
       spyOn(mockDash.dashboard, 'loadWidgets');
       spyOn(mockDash.dashboard, 'saveDashboard');
       galSpy = spyOn(LayoutStorage.prototype, 'getActiveLayout').and;
@@ -355,6 +357,25 @@ describe('Directive: dashboard-layouts', function () {
         galSpy.returnValue(null);
         expect(function() {
           options.addWidget();
+        }).not.toThrow();
+      });
+
+    });
+
+    describe('the prependWidget method', function() {
+
+      it('should call dashboard.prependWidget method of the active layout', function() {
+        options.prependWidget(1,2,3);
+        expect(mockDash.dashboard.prependWidget).toHaveBeenCalled();
+        var firstCall = mockDash.dashboard.prependWidget.calls.first();
+        expect(firstCall.object).toEqual(mockDash.dashboard);
+        expect(firstCall.args).toEqual([1,2,3]);
+      });
+
+      it('should do nothing if there is no active layout', function() {
+        galSpy.returnValue(null);
+        expect(function() {
+          options.prependWidget();
         }).not.toThrow();
       });
 
