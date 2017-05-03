@@ -17,6 +17,26 @@
     border-radius: 5px;
     position: relative;
     height: 100%;
+
+    .panel-title {
+        div.container {
+            display: flex;
+            padding: 0px;
+            width: 100%;
+
+            div.title {
+                flex: 1 1 auto;
+                overflow: hidden;
+                padding-right: 4px;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+
+            div.buttons {
+                flex: 0 0 auto;
+            }
+        }
+    }
 }
 .widget-header {
     overflow: hidden;
@@ -27,7 +47,6 @@
 }
 .widget-header .glyphicon {
     cursor: pointer;
-    float: right;
     opacity: 0.5;
     margin-left: 5px;
 }
