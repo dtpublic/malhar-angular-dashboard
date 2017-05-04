@@ -151,7 +151,7 @@ describe('Controller: DashboardWidgetCtrl', function() {
     it('should update marquee', function() {
       evt.which = 1;
       evt.clientX = 50;
-      $scope.grabResizer(evt);
+      $scope.grabResizer(evt, 'e');
 
       // let's mock event
       var e = $.Event('mousemove');
@@ -159,8 +159,8 @@ describe('Controller: DashboardWidgetCtrl', function() {
 
       jQuery(injections.$window).trigger(e);
 
-      // started at 50, ends at 300, new width should be 250
-      expect($element.find('div.widget-resizer-marquee').css('width')).toEqual('250px');
+      // started at 50, ends at 300, new width should be 250 + 4 (4 is for the left + right border widths)
+      expect($element.find('div.widget-resizer-marquee').css('width')).toEqual('254px');
     });
 
     it('should hide marquee', function() {
@@ -176,14 +176,6 @@ describe('Controller: DashboardWidgetCtrl', function() {
       expect($element.find('div.widget-resizer-marquee').length).toEqual(0);
     });
 
-    it('should support GrabSouthResizer', function() {
-      // for backward compatibility, we kep the GrabSouthResizer
-      evt.width = 1;
-      $scope.grabSouthResizer(evt);
-
-      expect($element.find('div.widget-resizer-marquee').length).toEqual(1);
-    });
-
     it('should support vertical mousemove', function() {
       evt.which = 1;
       evt.clientY = 50;
@@ -195,8 +187,8 @@ describe('Controller: DashboardWidgetCtrl', function() {
 
       jQuery(injections.$window).trigger(e);
 
-      // started at 50, ends at 300, new width should be 250
-      expect($element.find('div.widget-resizer-marquee').css('height')).toEqual('250px');
+      // started at 50, ends at 300, new height should be 250 + 4 (4 is for the top + bottom heights)
+      expect($element.find('div.widget-resizer-marquee').css('height')).toEqual('254px');
     });
 
     it('should support vertical mouseup', function() {

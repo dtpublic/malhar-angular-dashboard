@@ -16,6 +16,21 @@
   position: relative;
   height: 100%;
 }
+.widget .panel-title div.container {
+  display: flex;
+  padding: 0px;
+  width: 100%;
+}
+.widget .panel-title div.container div.title {
+  flex: 1 1 auto;
+  overflow: hidden;
+  padding-right: 4px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.widget .panel-title div.container div.buttons {
+  flex: 0 0 auto;
+}
 .widget-header {
   overflow: hidden;
 }
@@ -25,7 +40,6 @@
 }
 .widget-header .glyphicon {
   cursor: pointer;
-  float: right;
   opacity: 0.5;
   margin-left: 5px;
 }
@@ -45,27 +59,135 @@
 .widget-content {
   overflow: hidden;
 }
-.widget .widget-ew-resizer {
-  position: absolute;
-  width: 5px;
-  right: -2px;
+.widget-left-resizer {
+  background-color: transparent;
+  display: flex;
+  flex-direction: column;
   height: 100%;
-  top: 0;
-  cursor: ew-resize;
+  position: absolute;
+  left: -2px;
+  top: 0px;
+  width: 5px;
 }
-.widget .widget-s-resizer {
-  cursor: ns-resize;
+.widget-left-resizer .nw-resizer {
+  background-color: transparent;
+  cursor: nwse-resize;
+  flex: 0 0 auto;
+  height: 15px;
+}
+.widget-left-resizer .w-resizer {
+  background-color: transparent;
+  cursor: ew-resize;
+  flex: 1 1 auto;
+}
+.widget-left-resizer .sw-resizer {
+  background-color: transparent;
+  cursor: nesw-resize;
+  flex: 0 0 auto;
+  height: 15px;
+}
+.widget-right-resizer {
+  background-color: transparent;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  position: absolute;
+  right: -2px;
+  top: 0px;
+  width: 5px;
+}
+.widget-right-resizer .ne-resizer {
+  background-color: transparent;
+  cursor: nesw-resize;
+  flex: 0 0 auto;
+  height: 15px;
+}
+.widget-right-resizer .e-resizer {
+  background-color: transparent;
+  cursor: ew-resize;
+  flex: 1 1 auto;
+}
+.widget-right-resizer .se-resizer {
+  background-color: transparent;
+  cursor: nwse-resize;
+  flex: 0 0 auto;
+  height: 15px;
+}
+.widget .widget-top-resizer {
+  background-color: transparent;
+  display: flex;
   height: 5px;
   width: 100%;
-  bottom: -7px;
+  left: 0;
+  position: absolute;
+  top: -2px;
+}
+.widget .widget-top-resizer .nw-resizer {
+  background-color: transparent;
+  cursor: nwse-resize;
+  flex: 0 0 auto;
+  width: 18px;
+}
+.widget .widget-top-resizer .n-resizer {
+  background-color: transparent;
+  cursor: ns-resize;
+  flex: 1 1 auto;
+}
+.widget .widget-top-resizer .ne-resizer {
+  background-color: transparent;
+  cursor: nesw-resize;
+  flex: 0 0 auto;
+  width: 18px;
+}
+.widget .widget-bottom-resizer {
+  background-color: transparent;
+  bottom: -2px;
+  display: flex;
+  height: 5px;
+  position: absolute;
+  width: 100%;
   left: 0;
 }
+.widget .widget-bottom-resizer .sw-resizer {
+  background-color: transparent;
+  cursor: nesw-resize;
+  flex: 0 0 auto;
+  width: 18px;
+}
+.widget .widget-bottom-resizer .s-resizer {
+  background-color: transparent;
+  cursor: ns-resize;
+  flex: 1 1 auto;
+}
+.widget .widget-bottom-resizer .se-resizer {
+  background-color: transparent;
+  cursor: nwse-resize;
+  flex: 0 0 auto;
+  width: 18px;
+}
 .widget .widget-resizer-marquee {
-  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.5);
+  xborder: 2px dashed #09305f;
+  border: 2px dotted #79a0e0;
   position: absolute;
-  top: 0;
-  left: 0;
+  top: -2px;
+  left: -2px;
   z-index: 2;
+}
+.widget .widget-resizer-marquee.n,
+.widget .widget-resizer-marquee.s {
+  cursor: ns-resize;
+}
+.widget .widget-resizer-marquee.w,
+.widget .widget-resizer-marquee.e {
+  cursor: ew-resize;
+}
+.widget .widget-resizer-marquee.nw,
+.widget .widget-resizer-marquee.se {
+  cursor: nwse-resize;
+}
+.widget .widget-resizer-marquee.sw,
+.widget .widget-resizer-marquee.ne {
+  cursor: nesw-resize;
 }
 .remove-layout-icon {
   vertical-align: text-top;

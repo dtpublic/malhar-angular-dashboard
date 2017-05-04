@@ -23,7 +23,7 @@ angular.module('ui.dashboard')
       return {
         title: 'Widget',
         style: {},
-        size: {},
+        size: { width: '33%' },
         enableVerticalResize: true,
         containerStyle: { width: '33%' }, // default width
         contentStyle: {}
@@ -87,6 +87,8 @@ angular.module('ui.dashboard')
       setHeight: function (height) {
         this.contentStyle.height = height;
         this.updateSize(this.contentStyle);
+
+        return height + 'px';
       },
 
       setStyle: function (style) {

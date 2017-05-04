@@ -48,8 +48,26 @@
                     </h3>
                 </div>
                 <div class="panel-body widget-content" ng-style="widget.contentStyle"></div>
-                <div class="widget-ew-resizer" ng-mousedown="grabResizer($event)"></div>
-                <div ng-if="widget.enableVerticalResize" class="widget-s-resizer" ng-mousedown="grabSouthResizer($event)"></div>
+                <div class="widget-left-resizer">
+                    <div ng-if="widget.enableVerticalResize" class="nw-resizer" ng-mousedown="grabResizer($event, 'nw')"></div>
+                    <div class="w-resizer" ng-mousedown="grabResizer($event, 'w')"></div>
+                    <div ng-if="widget.enableVerticalResize" class="sw-resizer" ng-mousedown="grabResizer($event, 'sw')"></div>
+                </div>
+                <div class="widget-right-resizer">
+                    <div ng-if="widget.enableVerticalResize" class="ne-resizer" ng-mousedown="grabResizer($event, 'ne')"></div>
+                    <div class="e-resizer" ng-mousedown="grabResizer($event, 'e')"></div>
+                    <div ng-if="widget.enableVerticalResize" class="se-resizer" ng-mousedown="grabResizer($event, 'se')"></div>
+                </div>
+                <div ng-if="widget.enableVerticalResize" class="widget-top-resizer">
+                    <div class="nw-resizer" ng-mousedown="grabResizer($event, 'nw')"></div>
+                    <div class="n-resizer" ng-mousedown="grabResizer($event, 'n')"></div>
+                    <div class="ne-resizer" ng-mousedown="grabResizer($event, 'ne')"></div>
+                </div>
+                <div ng-if="widget.enableVerticalResize" class="widget-bottom-resizer">
+                    <div class="sw-resizer" ng-mousedown="grabResizer($event, 'sw')"></div>
+                    <div class="s-resizer" ng-mousedown="grabResizer($event, 's')"></div>
+                    <div class="se-resizer" ng-mousedown="grabResizer($event, 'se')"></div>
+                </div>
             </div>
         </div>
     </div>

@@ -86,76 +86,152 @@ angular.module('ui.dashboard')
           return;
         }
 
+window.widget = widget
+
         e.stopPropagation();
         e.originalEvent.preventDefault();
 
         // get the starting horizontal position
-        var initVal = (region === 's' ? e.clientY : e.clientX);
+        var initX = e.clientX;
+        var initY = e.clientY;
 
         // Get the current width of the widget and dashboard
-        var pixelWidth = widgetElm.width();
-        var pixelHeight = widgetElm.height();
-        var widgetStyleWidth = widget.containerStyle.width;
-        var widgetStyleHeight = widget.containerStyle.height;
-        var widthUnits = widget.widthUnits;
-        var pixelVal = (region === 's' ? pixelHeight : pixelWidth);
-        var unitVal = parseFloat(region === 's' ? widgetStyleHeight : widgetStyleWidth);
+        var currentWidthPixel = widgetElm.width() + 4;
+        var currentHeightPixel = widgetElm.height() + 4;
+        var widthUnits = (widget.containerStyle.width || '0%').match(/\%|px/)[0];
+
+        // pixel does not exactly equal browser width * percent (because of margin and padding)
+        // calculate factor for later usegit st
+        var parenWidth = $element.parent().width();
+
+        var headerHeight = 0;
+        var header = widgetElm.find('.widget-header.panel-heading');
+
+        if (header && header.outerHeight) {
+          headerHeight = (header.outerHeight() || 0);
+        }
+
+        var marginRight = parseInt(widgetElm.css('margin-right'));
+
+        // minWidth is used to prevent marquee from drawing less than min width allowed
+        var minWidth;
+        if (widget.size && widget.size.minWidth) {
+          if (widget.size.minWidth.indexOf('%') > -1) {
+            // min width is %, calculate based on window width
+            minWidth = parseInt(widget.size.minWidth) * parenWidth / 100 - marginRight;
+          } else {
+            // min width is in pixels
+            minWidth = parseInt(widget.size.minWidth) - marginRight;
+          }
+        } else {
+          // just default min width to 40 if not set
+          minWidth = 40;
+        }
+
+        // minHeight is used to prevent marquee from drawing less than min height allowed
+        var minHeight;
+        if (widget.size && widget.size.minHeight) {
+          // min width is in pixels
+          minHeight = parseInt(widget.size.minHeight) + headerHeight + 4;
+        } else {
+          minHeight = 40 + headerHeight;
+        }
 
         // create marquee element for resize action
-        var $marquee = angular.element('<div class="widget-resizer-marquee" style="height: ' + pixelHeight + 'px; width: ' + pixelWidth + 'px;"></div>');
+        var $marquee = angular.element('<div class="widget-resizer-marquee ' + region + '" style="height: ' + currentHeightPixel + 'px; width: ' + currentWidthPixel + 'px;"></div>');
         widgetElm.append($marquee);
-
-        // determine the unit/pixel ratio
-        var transformMultiplier = unitVal / (region === 's' ? pixelHeight : pixelWidth);
 
         // updates marquee with preview of new width
         var mousemove = function(e) {
-          var curVal = (region === 's' ? e.clientY : e.clientX);
-          var pixelChange = curVal - initVal;
-          var newVal = pixelVal + pixelChange;
-          var style = (region === 's' ? 'height' : 'width');
-          $marquee.css(style, newVal + 'px');
+          var newWidth, newHeight, top, left;
+          switch(region) {
+            case 'nw':
+              newWidth = Math.max(minWidth, currentWidthPixel + initX - e.clientX);
+              newHeight = Math.max(minHeight, currentHeightPixel + initY - e.clientY);
+              left = currentWidthPixel - newWidth - 2;
+              top = currentHeightPixel - newHeight - 2;
+              break;
+            case 'n':
+              newHeight = Math.max(minHeight, currentHeightPixel + initY - e.clientY);
+              top = currentHeightPixel - newHeight - 2;
+              break;
+            case 'ne':
+              newWidth = Math.max(minWidth, currentWidthPixel + e.clientX - initX);
+              newHeight = Math.max(minHeight, currentHeightPixel + initY - e.clientY);
+              top = currentHeightPixel - newHeight - 2;
+              break;
+            case 'e':
+              newWidth = Math.max(minWidth, currentWidthPixel + e.clientX - initX);
+              break;
+            case 'se':
+              newWidth = Math.max(minWidth, currentWidthPixel + e.clientX - initX);
+              newHeight = Math.max(minHeight, currentHeightPixel + e.clientY - initY);
+              break;
+            case 's':
+              newHeight = Math.max(minHeight, currentHeightPixel + e.clientY - initY);
+              break;
+            case 'sw':
+              newWidth = Math.max(minWidth, currentWidthPixel + initX - e.clientX);
+              newHeight = Math.max(minHeight, currentHeightPixel + e.clientY - initY);
+              left = currentWidthPixel - newWidth - 2;
+              break;
+            case 'w':
+              newWidth = Math.max(minWidth, currentWidthPixel + initX - e.clientX);
+              left = currentWidthPixel - newWidth - 2;
+              break;
+          }
+          if (top !== undefined) {
+            $marquee.css('top', top + 'px');
+          }
+          if (left !== undefined) {
+            $marquee.css('left', left);
+          }
+          if (newWidth !== undefined) {
+            $marquee.css('width', newWidth + 'px');
+          }
+          if (newHeight !== undefined) {
+            $marquee.css('height', newHeight + 'px');
+          }
         };
 
         // sets new widget width on mouseup
         var mouseup = function(e) {
           // remove listener and marquee
           jQuery($window).off('mousemove', mousemove);
+
+          var marqueeWidth = parseInt($marquee.width()) + 4;
+          var marqueeHeight = parseInt($marquee.height());
+
           $marquee.remove();
 
-          // calculate change in units
-          var curVal = (region === 's' ? e.clientY : e.clientX);
-          var pixelChange = curVal - initVal;
-          var unitChange = Math.round(pixelChange * transformMultiplier * 100) / 100;
+          var newWidth, newHeight;
 
+          if (['nw', 'w', 'sw', 'ne', 'e', 'se'].indexOf(region) > -1) {
+            // possible width change
+            if (widthUnits === '%') {
+              // convert new width to percent to call the setWidth function
+              newWidth = (marqueeWidth + marginRight) / parenWidth * 100;
+            } else {
+              newWidth = marqueeWidth + marginRight;
+            }
+          }
+          if (['nw', 'n', 'ne', 'sw', 's', 'se'].indexOf(region) > -1) {
+            // possible height change
+            newHeight = marqueeHeight - headerHeight;
+          }
           // add to initial unit width
           var obj = {};
-          if (region === 's') {
-            var widgetContainer = widgetElm.find('.widget-content'),
-                height = parseInt(widgetContainer.css('height'), 10);
-            obj.height = widget.setHeight(height + pixelChange);
-          } else {
-            obj.width = widget.setWidth(unitVal + unitChange, widthUnits);
+          if (newWidth !== undefined) {
+            obj.width = widget.setWidth(newWidth, widthUnits);
+          }
+          if (newHeight !== undefined) {
+            obj.height = widget.setHeight(newHeight);
           }
           $scope.$emit('widgetChanged', widget);
           $scope.$apply();
           $scope.$broadcast('widgetResized', obj);
-          applyMinWidth();
         };
         jQuery($window).on('mousemove', mousemove).one('mouseup', mouseup);
-      };
-
-      $scope.grabSouthResizer = function(e) {
-        // graphSouthResizer is kept for backward compatibility only
-        // For new code,  html should have use the following examples:
-        //   <div class="widget-ew-resizer" ng-mousedown="grabResizer($event, 'e')"></div>
-        //   <div class="widget-s-resizer" ng-mousedown="grabResizer($event, 's')"></div>
-        //
-        // Old code example (which should still works):
-        //   <div class="widget-ew-resizer" ng-mousedown="grabResizer($event)"></div>
-        //   <div class="widget-s-resizer" ng-mousedown="grabSouthResizer($event)"></div>
-
-        $scope.grabResizer(e, 's');
       };
 
       // replaces widget title with input
@@ -260,16 +336,29 @@ angular.module('ui.dashboard')
         }
       }
 
+      function applyMinHeight() {
+        if ($scope.widget.size && $scope.widget.size.minHeight) {
+          var minHeight = parseInt($scope.widget.size.minHeight);
+          if ($element.height() < minHeight) {
+            $scope.widget.setHeight(minHeight);
+          }
+        }
+      }
+
       jQuery($window).on('resize', function() {
         $timeout.cancel(resizeTimeoutId);
         // default resize timeout to 100 milliseconds
         var time = ($scope.widget && $scope.widget.resizeTimeout !== undefined ? $scope.widget.resizeTimeout : 100);
-        resizeTimeoutId = $timeout(applyMinWidth, time);
+        resizeTimeoutId = $timeout(function() {
+          applyMinWidth();
+          applyMinHeight();
+        }, time);
       });
 
       $scope.$on('widgetAdded', function() {
         $timeout(function() {
           applyMinWidth();
+          applyMinHeight();
         }, 0);
       });
     }
