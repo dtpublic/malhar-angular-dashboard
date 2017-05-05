@@ -17,29 +17,22 @@
     border-radius: 5px;
     position: relative;
     height: 100%;
-
-    .panel-title {
-        div.container {
-            display: flex;
-            padding: 0px;
-            width: 100%;
-
-            div.title {
-                flex: 1 1 auto;
-                overflow: hidden;
-                padding-right: 4px;
-                text-overflow: ellipsis;
-                white-space: nowrap;
-            }
-
-            div.buttons {
-                flex: 0 0 auto;
-            }
-        }
-    }
 }
 .widget-header {
+    display: flex;
     overflow: hidden;
+
+    .panel-title {
+        flex: 1 1 auto;
+        overflow: hidden;
+        padding-right: 4px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .buttons {
+        flex: 0 0 auto;
+    }
 }
 .widget-header .label {
     display: inline-block;
@@ -47,6 +40,7 @@
 }
 .widget-header .glyphicon {
     cursor: pointer;
+    float: right;
     opacity: 0.5;
     margin-left: 5px;
 }
@@ -69,7 +63,7 @@
     overflow: hidden;
 }
 
-.widget-left-resizer {
+.widget .widget-w-resizer {
     background-color: transparent;
     display: flex;
     flex-direction: column;
@@ -101,7 +95,7 @@
     }
 }
 
-.widget-right-resizer {
+.widget .widget-e-resizer {
     background-color: transparent;
     display: flex;
     flex-direction: column;
@@ -133,7 +127,7 @@
     }
 }
 
-.widget .widget-top-resizer {
+.widget .widget-n-resizer {
     background-color: transparent;
     display: flex;
     height: 5px;
@@ -163,7 +157,7 @@
     }
 }
 
-.widget .widget-bottom-resizer {
+.widget .widget-s-resizer {
     background-color: transparent;
     bottom: -2px;
     display: flex;

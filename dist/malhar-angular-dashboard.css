@@ -16,23 +16,19 @@
   position: relative;
   height: 100%;
 }
-.widget .panel-title div.container {
+.widget-header {
   display: flex;
-  padding: 0px;
-  width: 100%;
+  overflow: hidden;
 }
-.widget .panel-title div.container div.title {
+.widget-header .panel-title {
   flex: 1 1 auto;
   overflow: hidden;
   padding-right: 4px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.widget .panel-title div.container div.buttons {
+.widget-header .buttons {
   flex: 0 0 auto;
-}
-.widget-header {
-  overflow: hidden;
 }
 .widget-header .label {
   display: inline-block;
@@ -40,6 +36,7 @@
 }
 .widget-header .glyphicon {
   cursor: pointer;
+  float: right;
   opacity: 0.5;
   margin-left: 5px;
 }
@@ -59,7 +56,7 @@
 .widget-content {
   overflow: hidden;
 }
-.widget-left-resizer {
+.widget .widget-w-resizer {
   background-color: transparent;
   display: flex;
   flex-direction: column;
@@ -69,24 +66,24 @@
   top: 0px;
   width: 5px;
 }
-.widget-left-resizer .nw-resizer {
+.widget .widget-w-resizer .nw-resizer {
   background-color: transparent;
   cursor: nwse-resize;
   flex: 0 0 auto;
   height: 15px;
 }
-.widget-left-resizer .w-resizer {
+.widget .widget-w-resizer .w-resizer {
   background-color: transparent;
   cursor: ew-resize;
   flex: 1 1 auto;
 }
-.widget-left-resizer .sw-resizer {
+.widget .widget-w-resizer .sw-resizer {
   background-color: transparent;
   cursor: nesw-resize;
   flex: 0 0 auto;
   height: 15px;
 }
-.widget-right-resizer {
+.widget .widget-e-resizer {
   background-color: transparent;
   display: flex;
   flex-direction: column;
@@ -96,24 +93,24 @@
   top: 0px;
   width: 5px;
 }
-.widget-right-resizer .ne-resizer {
+.widget .widget-e-resizer .ne-resizer {
   background-color: transparent;
   cursor: nesw-resize;
   flex: 0 0 auto;
   height: 15px;
 }
-.widget-right-resizer .e-resizer {
+.widget .widget-e-resizer .e-resizer {
   background-color: transparent;
   cursor: ew-resize;
   flex: 1 1 auto;
 }
-.widget-right-resizer .se-resizer {
+.widget .widget-e-resizer .se-resizer {
   background-color: transparent;
   cursor: nwse-resize;
   flex: 0 0 auto;
   height: 15px;
 }
-.widget .widget-top-resizer {
+.widget .widget-n-resizer {
   background-color: transparent;
   display: flex;
   height: 5px;
@@ -122,24 +119,24 @@
   position: absolute;
   top: -2px;
 }
-.widget .widget-top-resizer .nw-resizer {
+.widget .widget-n-resizer .nw-resizer {
   background-color: transparent;
   cursor: nwse-resize;
   flex: 0 0 auto;
   width: 18px;
 }
-.widget .widget-top-resizer .n-resizer {
+.widget .widget-n-resizer .n-resizer {
   background-color: transparent;
   cursor: ns-resize;
   flex: 1 1 auto;
 }
-.widget .widget-top-resizer .ne-resizer {
+.widget .widget-n-resizer .ne-resizer {
   background-color: transparent;
   cursor: nesw-resize;
   flex: 0 0 auto;
   width: 18px;
 }
-.widget .widget-bottom-resizer {
+.widget .widget-s-resizer {
   background-color: transparent;
   bottom: -2px;
   display: flex;
@@ -148,18 +145,18 @@
   width: 100%;
   left: 0;
 }
-.widget .widget-bottom-resizer .sw-resizer {
+.widget .widget-s-resizer .sw-resizer {
   background-color: transparent;
   cursor: nesw-resize;
   flex: 0 0 auto;
   width: 18px;
 }
-.widget .widget-bottom-resizer .s-resizer {
+.widget .widget-s-resizer .s-resizer {
   background-color: transparent;
   cursor: ns-resize;
   flex: 1 1 auto;
 }
-.widget .widget-bottom-resizer .se-resizer {
+.widget .widget-s-resizer .se-resizer {
   background-color: transparent;
   cursor: nwse-resize;
   flex: 0 0 auto;

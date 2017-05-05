@@ -86,8 +86,6 @@ angular.module('ui.dashboard')
           return;
         }
 
-window.widget = widget
-
         e.stopPropagation();
         e.originalEvent.preventDefault();
 
@@ -225,7 +223,7 @@ window.widget = widget
             obj.width = widget.setWidth(newWidth, widthUnits);
           }
           if (newHeight !== undefined) {
-            obj.height = widget.setHeight(newHeight);
+            obj.height = parseInt(widget.setHeight(newHeight));
           }
           $scope.$emit('widgetChanged', widget);
           $scope.$apply();
