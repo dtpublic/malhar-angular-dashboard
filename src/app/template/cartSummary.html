@@ -1,0 +1,23 @@
+<table ng-controller="CartCtrl" class="cart-summary">
+	<tbody ng-show="cart.items.length > 0">
+		<tr>
+			<td>Cart Total:</td>
+			<td>{{cart.total | currency}}</td>
+		</tr>
+		<tr>
+			<td>Total Qty:</td>
+			<td>{{cart.qty}}</td>
+		</tr>
+		<tr>
+			<td>Most Expensive:</td>
+			<td ng-show="cart.expItem.name">{{cart.expItem.qty}} {{cart.expItem.name}} @{{cart.expItem.price | currency}}</td>
+		</tr>
+		<tr>
+			<td>Cheapest:</td>
+			<td ng-show="cart.cheapItem.name">{{cart.cheapItem.qty}} {{cart.cheapItem.name}} @{{cart.cheapItem.price | currency}}</td>
+		</tr>
+	</tbody>
+	<tbody ng-show="cart.items.length === 0">
+		<tr><td class="empty">The cart is empty</td></tr>
+	</tbody>
+</table>

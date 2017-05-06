@@ -4,7 +4,8 @@ describe('Directive: widget', function () {
 
   var element, scope, rootScope, isoScope, compile, provide;
 
-  function Type() {
+  function Type(args) {
+    this.args = args;
   }
 
   Type.prototype = {
@@ -99,6 +100,12 @@ describe('Directive: widget', function () {
     expect(function () {
       compileWidget()
     }).toThrowError();
+  });
+
+  it('should use dataModelArgs', function() {
+    scope.widget.dataModelArgs = 'test data model arg';
+    compileWidget();
+    expect(scope.widget.dataModel.args).toEqual('test data model arg');
   });
 
 });

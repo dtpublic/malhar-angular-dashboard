@@ -19,7 +19,20 @@
     height: 100%;
 }
 .widget-header {
+    display: flex;
     overflow: hidden;
+
+    .panel-title {
+        flex: 1 1 auto;
+        overflow: hidden;
+        padding-right: 4px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .buttons {
+        flex: 0 0 auto;
+    }
 }
 .widget-header .label {
     display: inline-block;
@@ -50,29 +63,154 @@
     overflow: hidden;
 }
 
-.widget .widget-ew-resizer {
-    position: absolute;
-    width: 5px;
-    right: -2px;
+.widget .widget-w-resizer {
+    background-color: transparent;
+    display: flex;
+    flex-direction: column;
     height:100%;
-    top:0;
-    cursor: ew-resize;
+    position: absolute;
+    left: -2px;
+    top: 0px;
+    width: 5px;
+
+    .nw-resizer {
+        background-color: transparent;
+        cursor: nwse-resize;
+        flex: 0 0 auto;
+        height: 15px;
+    }
+
+
+    .w-resizer {
+        background-color: transparent;
+        cursor: ew-resize;
+        flex: 1 1 auto;
+    }
+
+    .sw-resizer {
+        background-color: transparent;
+        cursor: nesw-resize;
+        flex: 0 0 auto;
+        height: 15px;
+    }
+}
+
+.widget .widget-e-resizer {
+    background-color: transparent;
+    display: flex;
+    flex-direction: column;
+    height:100%;
+    position: absolute;
+    right: -2px;
+    top: 0px;
+    width: 5px;
+
+    .ne-resizer {
+        background-color: transparent;
+        cursor: nesw-resize;
+        flex: 0 0 auto;
+        height: 15px;
+    }
+
+
+    .e-resizer {
+        background-color: transparent;
+        cursor: ew-resize;
+        flex: 1 1 auto;
+    }
+
+    .se-resizer {
+        background-color: transparent;
+        cursor: nwse-resize;
+        flex: 0 0 auto;
+        height: 15px;
+    }
+}
+
+.widget .widget-n-resizer {
+    background-color: transparent;
+    display: flex;
+    height: 5px;
+    width: 100%;
+    left: 0;
+    position: absolute;
+    top: -2px;
+
+    .nw-resizer {
+        background-color: transparent;
+        cursor: nwse-resize;
+        flex: 0 0 auto;
+        width: 18px;
+    }
+
+    .n-resizer {
+        background-color: transparent;
+        cursor: ns-resize;
+        flex: 1 1 auto;
+    }
+
+    .ne-resizer {
+        background-color: transparent;
+        cursor: nesw-resize;
+        flex: 0 0 auto;
+        width: 18px;
+    }
 }
 
 .widget .widget-s-resizer {
-    cursor: ns-resize;
+    background-color: transparent;
+    bottom: -2px;
+    display: flex;
     height: 5px;
+    position: absolute;
     width: 100%;
-    bottom: -7px;
     left: 0;
+
+    .sw-resizer {
+        background-color: transparent;
+        cursor: nesw-resize;
+        flex: 0 0 auto;
+        width: 18px;
+    }
+
+    .s-resizer {
+        background-color: transparent;
+        cursor: ns-resize;
+        flex: 1 1 auto;
+    }
+
+    .se-resizer {
+        background-color: transparent;
+        cursor: nwse-resize;
+        flex: 0 0 auto;
+        width: 18px;
+    }
 }
 
+
 .widget .widget-resizer-marquee {
-    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.5);
+    xborder: 2px dashed #09305f;
+    border: 2px dotted #79a0e0;
     position: absolute;
-    top: 0;
-    left: 0;
+    top: -2px;
+    left: -2px;
     z-index: 2;
+}
+
+.widget .widget-resizer-marquee.n, .widget .widget-resizer-marquee.s {
+    cursor: ns-resize;
+}
+
+.widget .widget-resizer-marquee.w, .widget .widget-resizer-marquee.e {
+    cursor: ew-resize;
+}
+
+.widget .widget-resizer-marquee.nw, .widget .widget-resizer-marquee.se {
+    cursor: nwse-resize;
+}
+
+.widget .widget-resizer-marquee.sw, .widget .widget-resizer-marquee.ne {
+    cursor: nesw-resize;
 }
 
 .remove-layout-icon {

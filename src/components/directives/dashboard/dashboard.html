@@ -36,14 +36,34 @@
                             <input type="text" ng-model="widget.title" ng-blur="titleLostFocus(widget, $event)" class="form-control">
                         </form>
                         <span class="label label-primary" ng-if="!options.hideWidgetName">{{widget.name}}</span>
+                    </h3>
+                    <div class="buttons">
                         <span ng-click="removeWidget(widget);" class="glyphicon glyphicon-remove" ng-if="!options.hideWidgetClose"></span>
                         <span ng-click="openWidgetSettings(widget);" class="glyphicon glyphicon-cog" ng-if="!options.hideWidgetSettings"></span>
                         <span ng-click="widget.contentStyle.display = widget.contentStyle.display === 'none' ? 'block' : 'none'" class="glyphicon" ng-class="{'glyphicon-plus': widget.contentStyle.display === 'none', 'glyphicon-minus': widget.contentStyle.display !== 'none' }"></span>
-                    </h3>
+                    </div>
                 </div>
                 <div class="panel-body widget-content" ng-style="widget.contentStyle"></div>
-                <div class="widget-ew-resizer" ng-mousedown="grabResizer($event)"></div>
-                <div ng-if="widget.enableVerticalResize" class="widget-s-resizer" ng-mousedown="grabSouthResizer($event)"></div>
+                <div class="widget-w-resizer">
+                    <div ng-if="widget.enableVerticalResize" class="nw-resizer" ng-mousedown="grabResizer($event, 'nw')"></div>
+                    <div class="w-resizer" ng-mousedown="grabResizer($event, 'w')"></div>
+                    <div ng-if="widget.enableVerticalResize" class="sw-resizer" ng-mousedown="grabResizer($event, 'sw')"></div>
+                </div>
+                <div class="widget-e-resizer">
+                    <div ng-if="widget.enableVerticalResize" class="ne-resizer" ng-mousedown="grabResizer($event, 'ne')"></div>
+                    <div class="e-resizer" ng-mousedown="grabResizer($event, 'e')"></div>
+                    <div ng-if="widget.enableVerticalResize" class="se-resizer" ng-mousedown="grabResizer($event, 'se')"></div>
+                </div>
+                <div ng-if="widget.enableVerticalResize" class="widget-n-resizer">
+                    <div class="nw-resizer" ng-mousedown="grabResizer($event, 'nw')"></div>
+                    <div class="n-resizer" ng-mousedown="grabResizer($event, 'n')"></div>
+                    <div class="ne-resizer" ng-mousedown="grabResizer($event, 'ne')"></div>
+                </div>
+                <div ng-if="widget.enableVerticalResize" class="widget-s-resizer">
+                    <div class="sw-resizer" ng-mousedown="grabResizer($event, 'sw')"></div>
+                    <div class="s-resizer" ng-mousedown="grabResizer($event, 's')"></div>
+                    <div class="se-resizer" ng-mousedown="grabResizer($event, 'se')"></div>
+                </div>
             </div>
         </div>
     </div>

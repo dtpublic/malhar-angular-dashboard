@@ -1,0 +1,20 @@
+<table ng-controller="CartCtrl" class="cart-detail">
+    <tbody ng-show="cart.items.length > 0">
+        <tr>
+            <th>Name</th>
+            <th>Qty</th>
+            <th>Unit</th>
+            <th>Total</th>
+        </tr>
+        <tr ng-repeat="item in cart.items | orderBy: 'name'">
+            <td>{{::item.name}}</td>
+            <td>{{item.qty}}</td>
+            <td>{{item.price | currency}}</td>
+            <td>{{item.total | currency}}</td>
+            <td><button ng-click="removeItem(item)" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove"></span></button></td>
+        </tr>
+    </tbody>
+    <tbody ng-show="cart.items.length === 0">
+        <tr><td class="empty">The cart is empty</td></tr>
+    </tbody>
+</table>

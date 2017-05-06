@@ -2,22 +2,36 @@
 
 describe('Controller: DashboardWidgetCtrl', function() {
 
-  var $scope, $element, $timeout, injections;
+  var $scope, $element, injections;
 
   beforeEach(module('ui.dashboard'));
 
-  beforeEach(inject(function($rootScope, $controller){
+  beforeEach(inject(function($rootScope, $controller, $timeout, $window){
     $scope = $rootScope.$new();
-    $element = angular.element('<div><div class="widget"></div></div>');
-    $timeout = function timeout(fn) {
-      fn();
+    var parent = angular.element('<div style="width: 400px; height: 200px;"><div>');
+    $element = angular.element('<div><div class="widget"><form class="widget-title"><input type="text" value="Test Title"/></form></div></div>');
+    parent.append($element);
+
+    // let's mock the $timeout so we can spy on it
+    // however, we still want to retain the original $timeout functionality
+    // to test for time sensitive operations
+    function timeout(fn, delay) {
+      $timeout(fn, delay);
     };
+    timeout.flush = function(ms) {
+      $timeout.flush(ms);
+    };
+    timeout.cancel = function(id) {
+      $timeout.cancel(id);
+    }
+
     injections = {
       $scope: $scope,
       $element: $element,
-      $timeout: $timeout
+      $timeout: timeout,
+      $window: $window
     };
-    spyOn(injections, '$timeout');
+    spyOn(injections, '$timeout').and.callThrough();
     $controller('DashboardWidgetCtrl', injections);
   }));
 
@@ -134,6 +148,62 @@ describe('Controller: DashboardWidgetCtrl', function() {
       expect($element.find('.widget-resizer-marquee').length).toBeGreaterThan(0);
     });
 
+    it('should update marquee', function() {
+      evt.which = 1;
+      evt.clientX = 50;
+      $scope.grabResizer(evt, 'e');
+
+      // let's mock event
+      var e = $.Event('mousemove');
+      e.clientX = 300;
+
+      jQuery(injections.$window).trigger(e);
+
+      // started at 50, ends at 300, new width should be 250 + 4 (4 is for the left + right border widths)
+      expect($element.find('div.widget-resizer-marquee').css('width')).toEqual('254px');
+    });
+
+    it('should hide marquee', function() {
+      evt.width = 1;
+      $scope.grabResizer(evt);
+
+      // let's mock event
+      var e = $.Event('mouseup');
+      e.clientX = 300;
+
+      jQuery(injections.$window).trigger(e);
+
+      expect($element.find('div.widget-resizer-marquee').length).toEqual(0);
+    });
+
+    it('should support vertical mousemove', function() {
+      evt.which = 1;
+      evt.clientY = 50;
+      $scope.grabResizer(evt, 's');
+
+      // let's mock event
+      var e = $.Event('mousemove');
+      e.clientY = 300;
+
+      jQuery(injections.$window).trigger(e);
+
+      // started at 50, ends at 300, new height should be 250 + 4 (4 is for the top + bottom heights)
+      expect($element.find('div.widget-resizer-marquee').css('height')).toEqual('254px');
+    });
+
+    it('should support vertical mouseup', function() {
+      evt.width = 1;
+      $scope.grabResizer(evt, 's');
+
+      // let's mock event
+      var e = $.Event('mouseup');
+      e.clientY = 300;
+
+      jQuery(injections.$window).trigger(e);
+
+      expect($element.find('div.widget-resizer-marquee').length).toEqual(0);
+    });
+
   });
 
   describe('the editTitle method', function() {
@@ -147,6 +217,7 @@ describe('Controller: DashboardWidgetCtrl', function() {
     it('should call $timeout', function() {
       var widget = {};
       $scope.editTitle(widget);
+      injections.$timeout.flush();
       expect(injections.$timeout).toHaveBeenCalled();
     });
 
@@ -168,6 +239,233 @@ describe('Controller: DashboardWidgetCtrl', function() {
       spyOn(evt, 'preventDefault');
       $scope.saveTitleEdit(widget, evt);
       expect(evt.preventDefault).toHaveBeenCalled();
+    });
+
+  });
+
+  describe('the applyMinWidth function', function() {
+
+    it('should set 500px as width', function() {
+      $scope.widget = {
+        size: {
+          width: '30%',
+          minWidth: '500px'
+        }
+      };
+
+      $scope.$broadcast('widgetAdded');
+      injections.$timeout.flush();
+      expect($element.width()).toEqual(500);
+    });
+
+    it('should set 80% as width', function() {
+      $scope.widget = {
+        size: {
+          width: '20px',
+          minWidth: '80%'
+        }
+      };
+
+      $scope.$broadcast('widgetAdded');
+      injections.$timeout.flush();
+      expect($element.width()).toEqual(320);  // <<< 80% of 400px is 320px
+    });
+
+
+    it('should set 300px as width', function() {
+      $scope.widget = {
+        style: {
+          width: '40%',
+          minWidth: '300px'
+        }
+      };
+
+      $scope.$broadcast('widgetAdded');
+      injections.$timeout.flush();
+      expect($element.width()).toEqual(300);
+    });
+
+    it('should set 350px as width', function() {
+      $scope.widget = {
+        style: {
+          width: '40%',
+          minWidth: '350'
+        }
+      };
+
+      $scope.$broadcast('widgetAdded');
+      injections.$timeout.flush();
+      expect($element.width()).toEqual(350);
+    });
+
+    it('should set 90% as width', function() {
+      $scope.widget = {
+        style: {
+          width: '50px',
+          minWidth: '90%'
+        }
+      };
+
+      $scope.$broadcast('widgetAdded');
+      injections.$timeout.flush();
+      expect($element.width()).toEqual(360);  // <<< 90% of 400px is 360px
+    });
+
+    it('should set 600px as width', function() {
+      $scope.widget = {
+        style: {
+          width: '600px',
+          minWidth: '20%'
+        }
+      };
+
+      $scope.$broadcast('widgetAdded');
+      injections.$timeout.flush();
+      expect($element.width()).toEqual(600);
+    });
+
+    it('should not set width if missing', function() {
+      $scope.widget = {
+        style: {
+          minWidth: '200px'
+        }
+      };
+
+      $scope.$broadcast('widgetAdded');
+      injections.$timeout.flush();
+      expect($element.width()).toEqual(0);
+    });
+
+    it('should not set width', function() {
+      // applyMinWidth only applies the minWidth setting if the
+      // width unit and minWidth unit are different
+      $scope.widget = {
+        style: {
+          width: '50px',
+          minWidth: '600px'
+        }
+      };
+
+      $scope.$broadcast('widgetAdded');
+      injections.$timeout.flush();
+      expect($element.width()).toEqual(0);
+    });
+
+    it('should not set width', function() {
+      // applyMinWidth only applies the minWidth setting if the
+      // width unit and minWidth unit are different
+      $scope.widget = {
+        style: {
+          width: '50%',
+          minWidth: '90%'
+        }
+      };
+
+      $scope.$broadcast('widgetAdded');
+      injections.$timeout.flush();
+      expect($element.width()).toEqual(0);
+    });
+
+    it('should not set width', function() {
+      // applyMinWidth only applies the minWidth setting if the
+      // width unit and minWidth unit are different
+      $scope.widget = {
+        size: {
+          width: 'bad value',
+          minWidth: '50%'
+        }
+      };
+
+      $scope.$broadcast('widgetAdded');
+      injections.$timeout.flush();
+      expect($element.width()).toEqual(0);
+    });
+
+    it('should not set width', function() {
+      // applyMinWidth only applies the minWidth setting if the
+      // width unit and minWidth unit are different
+      $scope.widget = {
+        size: {
+          minWidth: 'bad value'
+        }
+      };
+
+      $scope.$broadcast('widgetAdded');
+      injections.$timeout.flush();
+      expect($element.width()).toEqual(0);
+    });
+
+  });
+
+  describe('the resize event', function() {
+    beforeEach(function() {
+      $scope.widget = {
+        size: {
+          width: '20px',
+          minWidth: '90%'
+        }
+      };
+    });
+
+    it('should not run applyMinWidth', function() {
+      // promise to run is cancelled because of we didn't wait long enough
+      injections.$window.innerWidth = 1000;
+      angular.element(injections.$window).triggerHandler('resize');
+      $scope.$digest();
+      injections.$timeout.flush(0);
+      expect($element.width()).toEqual(0);
+    });
+
+    it('should not run applyMinWidth', function() {
+      // promise to run is cancelled because of we didn't wait long enough
+      $scope.widget.resizeTimeout = 2000;
+      injections.$window.innerWidth = 1000;
+      angular.element(injections.$window).triggerHandler('resize');
+      $scope.$digest();
+      injections.$timeout.flush(1000);
+      expect($element.width()).toEqual(0);
+    });
+
+    it('should run applyMinWidth with default delay', function() {
+      injections.$window.innerWidth = 1000;
+      angular.element(injections.$window).triggerHandler('resize');
+      $scope.$digest();
+      injections.$timeout.flush(100);
+      expect($element.width()).toEqual(360);
+    });
+
+    it('should run applyMinWidth with override delay', function() {
+      $scope.widget.resizeTimeout = 50;
+      injections.$window.innerWidth = 1000;
+      angular.element(injections.$window).triggerHandler('resize');
+      $scope.$digest();
+      injections.$timeout.flush(50);
+      expect($element.width()).toEqual(360);
+    });
+
+  });
+
+  describe('the findWidgetContainer function', function() {
+
+    it('should find the .widget-content', function() {
+      // let's mock an element
+      var markup = '<div>some parent text<div class="widget-content">my mock div</div></div>',
+          element = angular.element(markup),
+          el = $scope.findWidgetContainer(element);
+      expect(el.length).toEqual(1);
+      expect(el.text()).toEqual('my mock div');
+    });
+
+  });
+
+  describe('the compileTemplate function', function() {
+
+    it('should create a new widget', function() {
+      $scope.widget = {
+        templateUrl: 'some/template.html'
+      };
+      var el = $scope.compileTemplate();
+      expect(el.length).toEqual(1);
     });
 
   });

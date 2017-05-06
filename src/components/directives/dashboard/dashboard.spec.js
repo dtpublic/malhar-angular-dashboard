@@ -18,7 +18,7 @@
 
 describe('Directive: dashboard', function () {
 
-  var scope, element, childScope, DashboardState, mockModal, modalOptions, $compile, $q, mockLog;
+  var scope, element, childScope, DashboardState, mockModal, modalOptions, $compile, $rootScope, $q, mockLog;
 
   // mock UI Sortable
   beforeEach(function () {
@@ -41,12 +41,14 @@ describe('Directive: dashboard', function () {
     $provide.value('$log', mockLog);
   }));
 
-  beforeEach(inject(function (_$compile_, $rootScope, _DashboardState_, _$q_) {
+  beforeEach(inject(function (_$compile_, _$rootScope_, _DashboardState_, _$q_) {
     // services
-    scope = $rootScope.$new();
     $compile = _$compile_;
+    $rootScope = _$rootScope_;
     DashboardState = _DashboardState_;
     $q = _$q_;
+
+    scope = $rootScope.$new();
 
     // options
     var widgetDefinitions = [
@@ -159,6 +161,17 @@ describe('Directive: dashboard', function () {
 
     it('should exist', function() {
       expect(typeof childScope.sortableOptions).toEqual('object');
+    });
+
+    it('should handle missing sortableOptions', function() {
+      var scope = $rootScope.$new();
+      scope.dashboardOptions = _.cloneDeep(childScope.dashboardOptions);
+      delete scope.dashboardOptions.sortableOptions;
+      element = $compile('<div dashboard="dashboardOptions"></div>')(scope);
+      scope.$digest();
+      var isoScope = element.scope();
+
+      expect(childScope.sortableOptions).toBeDefined();
     });
 
     it('should be possible to be extendable from the dashboardOptions', function() {
@@ -392,6 +405,13 @@ describe('Directive: dashboard', function () {
 
   describe('the saveDashboard function', function() {
 
+    it('should initialize the unsavedChangeCount to 0', function() {
+      childScope.options.explicitSave = true;
+      delete childScope.options.unsavedChangeCount;
+      childScope.saveDashboard();
+      expect(childScope.options.unsavedChangeCount).toEqual(1);
+    });
+
     it('should be attached to the options object after initialization', function() {
       expect(typeof scope.dashboardOptions.saveDashboard).toEqual('function');
       expect(scope.dashboardOptions.saveDashboard === childScope.externalSaveDashboard).toEqual(true);
@@ -432,7 +452,7 @@ describe('Directive: dashboard', function () {
       expect(scope.dashboardOptions.unsavedChangeCount).toEqual(3);
     });
 
-    it('should reset the cound of unsaved changes if a successful force save occurs', function() {
+    it('should reset the count of unsaved changes if a successful force save occurs', function() {
       scope.dashboardOptions.explicitSave = true;
       spyOn(childScope.dashboardState, 'save').and.returnValue(true);
 
@@ -443,6 +463,30 @@ describe('Directive: dashboard', function () {
       childScope.saveDashboard(true);
 
       expect(scope.dashboardOptions.unsavedChangeCount).toEqual(0);
+    });
+
+    it('should call the externalSaveDashboard function', function() {
+      spyOn(childScope, 'saveDashboard').and.callThrough();
+      childScope.externalSaveDashboard();
+      expect(childScope.saveDashboard).toHaveBeenCalled();
+    });
+
+    it('should call the externalSaveDashboard with force as false', function() {
+      // make sure force parameter is used
+      childScope.options.explicitSave = true;
+      spyOn(childScope, 'saveDashboard').and.callThrough();
+      childScope.externalSaveDashboard(false);
+      expect(childScope.saveDashboard).toHaveBeenCalled();
+      expect(childScope.options.unsavedChangeCount).toEqual(1);
+    });
+
+    it('should call the externalSaveDashboard with force as true', function() {
+      // make sure force parameter is used
+      childScope.options.explicitSave = true;
+      spyOn(childScope, 'saveDashboard').and.callThrough();
+      childScope.externalSaveDashboard(true);
+      expect(childScope.saveDashboard).toHaveBeenCalled();
+      expect(childScope.options.unsavedChangeCount).toEqual(0);
     });
 
   });
@@ -921,6 +965,138 @@ describe('Directive: dashboard', function () {
       spyOn(mockLog, 'info');
       onSettingsDismiss('dismiss reason');
       expect(mockLog.info).toHaveBeenCalled();
+    });
+
+  });
+
+  describe('the loading of saved widgets', function() {
+
+    it('should load saved widget array', function() {
+      var scope = $rootScope.$new();
+      scope.dashboardOptions = _.cloneDeep(childScope.dashboardOptions);
+
+      // let's mock and simulate that we have a saved widget
+      DashboardState.prototype.load = function() {
+        return [
+          {
+            name: 'wt-one',
+            title: 'My saved widget'
+          }
+        ];
+      };
+
+      element = $compile('<div dashboard="dashboardOptions"></div>')(scope);
+      scope.$digest();
+      var isoScope = element.scope();
+
+      expect(isoScope.widgets.length).toEqual(1);
+      expect(isoScope.widgets[0].name).toEqual('wt-one');
+      expect(isoScope.widgets[0].title).toEqual('My saved widget');
+    });
+
+    it('should load saved widget promise', function() {
+      var scope = $rootScope.$new();
+      scope.dashboardOptions = _.cloneDeep(childScope.dashboardOptions);
+
+      // let's mock and simulate that we have a saved widget
+      DashboardState.prototype.load = function() {
+        return {
+          then: function(cb) {
+            cb([
+              {
+                name: 'wt-two',
+                title: 'My saved widget #2'
+              }
+            ]);
+          }
+        };
+      };
+
+      element = $compile('<div dashboard="dashboardOptions"></div>')(scope);
+      scope.$digest();
+      var isoScope = element.scope();
+
+      expect(isoScope.widgets.length).toEqual(1);
+      expect(isoScope.widgets[0].name).toEqual('wt-two');
+      expect(isoScope.widgets[0].title).toEqual('My saved widget #2');
+    });
+
+  });
+
+  describe('the resetWidgetsToDefault function', function() {
+
+    it('should clear existing and load default widgets', function() {
+      var scope = $rootScope.$new();
+      scope.dashboardOptions = _.cloneDeep(childScope.dashboardOptions);
+
+      // let's mock and simulate that we have a saved widget
+      DashboardState.prototype.load = function() {
+        return {
+          then: function(cb) {
+            cb([
+              {
+                name: 'wt-two',
+                title: 'My saved widget #2'
+              }
+            ]);
+          }
+        };
+      };
+
+      element = $compile('<div dashboard="dashboardOptions"></div>')(scope);
+      scope.$digest();
+      var isoScope = element.scope();
+
+      // we loaded the controller with 1 widget
+      // the reset should load the default widgets
+      // so we now have 2
+      isoScope.resetWidgetsToDefault();
+      expect(isoScope.widgets.length).toEqual(2);
+    });
+
+  });
+
+  describe('the addWidgetInternal function', function() {
+
+    it('should call the addWidget function', function() {
+      // let's mock an event
+      var evt = {
+        preventDefault: function() {}
+      };
+      spyOn(evt, 'preventDefault');
+
+      // let's define widget to add
+      var widget = {
+        name: 'wt-one',
+        title: 'My widget #3'
+      };
+
+      childScope.addWidgetInternal(evt, widget);
+      expect(evt.preventDefault).toHaveBeenCalled();
+      expect(childScope.widgets[2].name).toEqual('wt-one');
+      expect(childScope.widgets[2].title).toEqual('My widget #3');
+    })
+
+  });
+
+  describe('the controller with settingsModalOptions defined', function() {
+
+    it('should use defined settingsModalOptions', function() {
+      var scope = $rootScope.$new();
+      scope.dashboardOptions = _.cloneDeep(childScope.dashboardOptions);
+      scope.dashboardOptions.settingsModalOptions = {
+        templateUrl: 'app/template/WidgetSpecificSettings.html',
+        controller: 'WidgetSpecificSettingsCtrl',
+        backdrop: false
+      };
+
+      element = $compile('<div dashboard="dashboardOptions"></div>')(scope);
+      scope.$digest();
+      var isoScope = element.scope();
+
+      expect(isoScope.options.settingsModalOptions.templateUrl).toEqual('app/template/WidgetSpecificSettings.html');
+      expect(isoScope.options.settingsModalOptions.controller).toEqual('WidgetSpecificSettingsCtrl');
+      expect(isoScope.options.settingsModalOptions.backdrop).toBe(false);
     });
 
   });

@@ -194,6 +194,13 @@ describe('Factory: LayoutStorage', function () {
       expect(storage.layouts.map(function(l) {return l.title})).toEqual(['something', 'something', 'something']);
     });
 
+    it('should set locked property to true', function() {
+      options.lockDefaultLayouts = true;
+      storage = new LayoutStorage(options);
+      storage.load();
+      expect(storage.layouts['0'].locked).toBe(true);
+    });
+
     it('should be able to handle async loading via promise', inject(function($rootScope,$q) {
       var deferred = $q.defer();
       spyOn(options.storage, 'getItem').and.returnValue(deferred.promise);

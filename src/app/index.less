@@ -12,5 +12,77 @@
     width: 50px;
   }
 }
+
+table.people {
+	width: 100%;
+
+	td {
+		border: lightgray 1px solid;
+		padding: 4px;
+	}
+
+	td:last-child {
+		text-align: center;
+		width: 60px;
+	}
+}
+
+div.people {
+	border: lightgray 1px solid;
+	border-radius: 6px;
+	display: inline-block;
+	margin: 6px;
+	padding: 4px 6px;
+	width: 180px;
+}
+
+.empty {
+	border: none;
+	color: grey;
+	text-align: left;
+}
+
+
+table.cart-detail {
+	width: 100%;
+
+	th:first-child, td:first-child {
+		text-align: left;
+	}
+
+	th {
+		text-align: right;
+	}
+
+	td {
+		border: lightgray 1px solid;
+		padding: 4px;
+		text-align: right;
+	}
+
+	td:last-child {
+		text-align: center;
+		width: 50px;
+	}
+
+	td.empty {
+		.empty
+	}
+}
+
+table.cart-summary {
+	td {
+		padding: 4px;
+	}
+	td:first-child {
+		padding-right: 8px;
+		text-align: right;
+	}
+
+	td.empty {
+		.empty
+	}
+}
+
 // injector
 // endinjector
