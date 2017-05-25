@@ -687,8 +687,8 @@ angular.module('ui.dashboard')
         var initY = e.clientY;
 
         // Get the current width of the widget and dashboard
-        var currentWidthPixel = widgetElm.width() + 4;
-        var currentHeightPixel = widgetElm.height() + 4;
+        var currentWidthPixel = widgetElm.width() + 2;
+        var currentHeightPixel = widgetElm.height() + 2;
         var widthUnits = (widget.containerStyle.width || '0%').match(/\%|px/)[0];
 
         // pixel does not exactly equal browser width * percent (because of margin and padding)
@@ -741,6 +741,8 @@ angular.module('ui.dashboard')
 
         // create marquee element for resize action
         var $marquee = angular.element('<div class="widget-resizer-marquee ' + region + '" style="height: ' + currentHeightPixel + 'px; width: ' + currentWidthPixel + 'px;"></div>');
+        $marquee.css('top', '-1px');
+        $marquee.css('left', '-1px');
         widgetElm.append($marquee);
 
         var calculateHeight = function(width, includeMargins) {
@@ -826,13 +828,13 @@ angular.module('ui.dashboard')
           jQuery($window).off('mousemove', mousemove);
 
           var marqueeWidth = parseInt($marquee.width()) + 4;
-          var marqueeHeight = parseInt($marquee.height());
+          var marqueeHeight = parseInt($marquee.height()) + 4;
 
           $marquee.remove();
 
           var newWidth, newHeight, newWidthPixels;
 
-          if (['nw', 'w', 'sw', 'ne', 'e', 'se'].indexOf(region) > -1) {
+          if (marqueeWidth !== currentWidthPixel && ['nw', 'w', 'sw', 'ne', 'e', 'se'].indexOf(region) > -1) {
             // possible width change
             newWidthPixels = marqueeWidth + marginRight;
             if (widthUnits === '%') {
@@ -842,16 +844,16 @@ angular.module('ui.dashboard')
               newWidth = newWidthPixels;
             }
           }
-          if (['nw', 'n', 'ne', 'sw', 's', 'se'].indexOf(region) > -1) {
+          if (marqueeHeight !== currentHeightPixel && ['nw', 'n', 'ne', 'sw', 's', 'se'].indexOf(region) > -1) {
             // possible height change
-            newHeight = marqueeHeight - headerHeight;
+            newHeight = marqueeHeight - headerHeight - 2;
           }
 
-          if (['w', 'e'].indexOf(region) > -1) {
+          if (newWidthPixels !== undefined && ['w', 'e'].indexOf(region) > -1) {
             newHeight = calculateHeight(newWidthPixels);
           }
 
-          if (['n', 's'].indexOf(region) > -1) {
+          if (newHeight !== undefined && ['n', 's'].indexOf(region) > -1) {
             newWidthPixels = calculateWidth(newHeight);
             if (newWidthPixels !== undefined) {
               if (widthUnits === '%') {
@@ -1017,7 +1019,6 @@ angular.module('ui.dashboard')
       $scope.$on('widgetAdded', function() {
         $timeout(function() {
           applyMinWidth();
-          applyMinHeight();
           applyHeightRatio();
         }, 0);
       });

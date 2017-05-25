@@ -160,7 +160,7 @@ describe('Controller: DashboardWidgetCtrl', function() {
       jQuery(injections.$window).trigger(e);
 
       // started at 50, ends at 300, new width should be 250 + 4 (4 is for the left + right border widths)
-      expect($element.find('div.widget-resizer-marquee').css('width')).toEqual('254px');
+      expect($element.find('div.widget-resizer-marquee').css('width')).toEqual('252px');
     });
 
     it('should hide marquee', function() {
@@ -188,7 +188,7 @@ describe('Controller: DashboardWidgetCtrl', function() {
       jQuery(injections.$window).trigger(e);
 
       // started at 50, ends at 300, new height should be 250 + 4 (4 is for the top + bottom heights)
-      expect($element.find('div.widget-resizer-marquee').css('height')).toEqual('254px');
+      expect($element.find('div.widget-resizer-marquee').css('height')).toEqual('252px');
     });
 
     it('should support vertical mouseup', function() {
