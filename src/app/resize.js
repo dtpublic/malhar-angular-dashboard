@@ -26,7 +26,8 @@ angular.module('app')
       { name: 'resizable', title: 'resizable (width: 50%, minWidth: 40%)', size: { width: '50%', minWidth: '40%' }, resizeTimeout: 0 },
       { name: 'resizable', title: 'resizable (width: 50%, minWidth: 900px)', size: { width: '50%', minWidth: '900px' }, resizeTimeout: 0  },
       { name: 'resizable', title: 'resizable (width: 500px, minWidth: 70%)', size: { width: '500px', minWidth: '70%' }, resizeTimeout: 0  },
-      { name: 'resizable', title: 'resizable (width: 500px, minWidth: 400px, minHeight: 100px)', size: { width: '200px', height: '50px', minWidth: '400px', minHeight: '100px' }, resizeTimeout: 0  }
+      { name: 'resizable', title: 'resizable (width: 500px, minWidth: 400px, minHeight: 100px)', size: { width: '200px', height: '50px', minWidth: '400px', minHeight: '100px' }, resizeTimeout: 0  },
+      { name: 'resizable', title: 'resizable (height = 25% of width)', size: { width: '50%', height: '50px', minWidth: '400px', minHeight: '100px', heightToWidthRatio: .25 }, resizeTimeout: 0 }
     ];
 
     $scope.dashboardOptions = {

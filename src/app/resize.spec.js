@@ -52,7 +52,7 @@ describe('Controller: ResizeDemoCtrl', function () {
   it('should have dashboardOptions object defined', function() {
     expect(scope.dashboardOptions.widgetButtons).toEqual(true);
     expect(scope.dashboardOptions.widgetDefinitions).toEqual(widgetDefinitions);
-    expect(scope.dashboardOptions.defaultWidgets.length).toEqual(8);
+    expect(scope.dashboardOptions.defaultWidgets.length).toEqual(9);
     expect(scope.dashboardOptions.storage).toBeDefined();
     expect(scope.dashboardOptions.storageId).toEqual('demo_resize');
 

@@ -94,13 +94,13 @@ angular.module('ui.dashboard')
         var initY = e.clientY;
 
         // Get the current width of the widget and dashboard
-        var currentWidthPixel = widgetElm.width() + 4;
-        var currentHeightPixel = widgetElm.height() + 4;
+        var currentWidthPixel = widgetElm.width() + 2;
+        var currentHeightPixel = widgetElm.height() + 2;
         var widthUnits = (widget.containerStyle.width || '0%').match(/\%|px/)[0];
 
         // pixel does not exactly equal browser width * percent (because of margin and padding)
         // calculate factor for later usegit st
-        var parenWidth = $element.parent().width();
+        var parentWidth = $element.parent().width();
 
         var headerHeight = 0;
         var header = widgetElm.find('.widget-header.panel-heading');
@@ -109,14 +109,14 @@ angular.module('ui.dashboard')
           headerHeight = (header.outerHeight() || 0);
         }
 
-        var marginRight = parseInt(widgetElm.css('margin-right'));
+        var marginRight = parseInt(widgetElm.css('margin-right') || '0');
 
         // minWidth is used to prevent marquee from drawing less than min width allowed
         var minWidth;
         if (widget.size && widget.size.minWidth) {
           if (widget.size.minWidth.indexOf('%') > -1) {
             // min width is %, calculate based on window width
-            minWidth = parseInt(widget.size.minWidth) * parenWidth / 100 - marginRight;
+            minWidth = parseInt(widget.size.minWidth) * parentWidth / 100 - marginRight;
           } else {
             // min width is in pixels
             minWidth = parseInt(widget.size.minWidth) - marginRight;
@@ -125,6 +125,10 @@ angular.module('ui.dashboard')
           // just default min width to 40 if not set
           minWidth = 40;
         }
+
+        // maxWidth is only set if width is in percentage.
+        // If set to percentage, then max width should be 100% of the viewport
+        var maxWidth = (widthUnits === '%' ? parentWidth - marginRight : Infinity);
 
         // minHeight is used to prevent marquee from drawing less than min height allowed
         var minHeight;
@@ -135,47 +139,80 @@ angular.module('ui.dashboard')
           minHeight = 40 + headerHeight;
         }
 
+        // maxHeight is only used to calculate maxWidth
+        // it's applicable when resizing by N or S borders
+        var maxHeight = Infinity;
+        if (widget.size && widget.size.heightToWidthRatio !== undefined) {
+          maxHeight = (maxWidth + marginRight) * widget.size.heightToWidthRatio + headerHeight + 4;
+        }
+
         // create marquee element for resize action
         var $marquee = angular.element('<div class="widget-resizer-marquee ' + region + '" style="height: ' + currentHeightPixel + 'px; width: ' + currentWidthPixel + 'px;"></div>');
+        $marquee.css('top', '-1px');
+        $marquee.css('left', '-1px');
         widgetElm.append($marquee);
+
+        var calculateHeight = function(width, includeMargins) {
+          if ($scope.widget.size && $scope.widget.size.heightToWidthRatio !== undefined) {
+            if (includeMargins) {
+              return (width + marginRight) * $scope.widget.size.heightToWidthRatio + headerHeight + 4;
+            } else {
+              return width * $scope.widget.size.heightToWidthRatio;
+            }
+          }
+        };
+
+        var calculateWidth = function(height, includeMargins) {
+          if ($scope.widget.size && $scope.widget.size.heightToWidthRatio !== undefined) {
+            if (includeMargins) {
+              return (height - headerHeight - 4) / $scope.widget.size.heightToWidthRatio - marginRight;
+            } else {
+              return height / $scope.widget.size.heightToWidthRatio;
+            }
+          }
+        };
 
         // updates marquee with preview of new width
         var mousemove = function(e) {
           var newWidth, newHeight, top, left;
           switch(region) {
             case 'nw':
-              newWidth = Math.max(minWidth, currentWidthPixel + initX - e.clientX);
-              newHeight = Math.max(minHeight, currentHeightPixel + initY - e.clientY);
+              newWidth = Math.min(maxWidth, Math.max(minWidth, currentWidthPixel + initX - e.clientX));
+              newHeight = calculateHeight(newWidth, true) || Math.max(minHeight, currentHeightPixel + initY - e.clientY);
               left = currentWidthPixel - newWidth - 2;
               top = currentHeightPixel - newHeight - 2;
               break;
             case 'n':
-              newHeight = Math.max(minHeight, currentHeightPixel + initY - e.clientY);
+              newHeight = Math.min(maxHeight, Math.max(minHeight, currentHeightPixel + initY - e.clientY));
+              newWidth = calculateWidth(newHeight, true);
               top = currentHeightPixel - newHeight - 2;
               break;
             case 'ne':
-              newWidth = Math.max(minWidth, currentWidthPixel + e.clientX - initX);
-              newHeight = Math.max(minHeight, currentHeightPixel + initY - e.clientY);
+              newWidth = Math.min(maxWidth, Math.max(minWidth, currentWidthPixel + e.clientX - initX));
+              newHeight = calculateHeight(newWidth, true) || Math.max(minHeight, currentHeightPixel + initY - e.clientY);
               top = currentHeightPixel - newHeight - 2;
               break;
             case 'e':
-              newWidth = Math.max(minWidth, currentWidthPixel + e.clientX - initX);
+              newWidth = Math.min(maxWidth, Math.max(minWidth, currentWidthPixel + e.clientX - initX));
+              newHeight = calculateHeight(newWidth, true);
               break;
             case 'se':
-              newWidth = Math.max(minWidth, currentWidthPixel + e.clientX - initX);
-              newHeight = Math.max(minHeight, currentHeightPixel + e.clientY - initY);
+              newWidth = Math.min(maxWidth, Math.max(minWidth, currentWidthPixel + e.clientX - initX));
+              newHeight = calculateHeight(newWidth, true) || Math.max(minHeight, currentHeightPixel + e.clientY - initY);
               break;
             case 's':
-              newHeight = Math.max(minHeight, currentHeightPixel + e.clientY - initY);
+              newHeight = Math.min(maxHeight, Math.max(minHeight, currentHeightPixel + e.clientY - initY));
+              newWidth = calculateWidth(newHeight, true);
               break;
             case 'sw':
               newWidth = Math.max(minWidth, currentWidthPixel + initX - e.clientX);
-              newHeight = Math.max(minHeight, currentHeightPixel + e.clientY - initY);
+              newHeight = calculateHeight(newWidth, true) || Math.max(minHeight, currentHeightPixel + e.clientY - initY);
               left = currentWidthPixel - newWidth - 2;
               break;
             case 'w':
-              newWidth = Math.max(minWidth, currentWidthPixel + initX - e.clientX);
+              newWidth = Math.min(maxWidth, Math.max(minWidth, currentWidthPixel + initX - e.clientX));
               left = currentWidthPixel - newWidth - 2;
+              newHeight = calculateHeight(newWidth, true);
               break;
           }
           if (top !== undefined) {
@@ -198,29 +235,48 @@ angular.module('ui.dashboard')
           jQuery($window).off('mousemove', mousemove);
 
           var marqueeWidth = parseInt($marquee.width()) + 4;
-          var marqueeHeight = parseInt($marquee.height());
+          var marqueeHeight = parseInt($marquee.height()) + 4;
 
           $marquee.remove();
 
-          var newWidth, newHeight;
+          var newWidth, newHeight, newWidthPixels;
 
-          if (['nw', 'w', 'sw', 'ne', 'e', 'se'].indexOf(region) > -1) {
+          if (marqueeWidth !== currentWidthPixel && ['nw', 'w', 'sw', 'ne', 'e', 'se'].indexOf(region) > -1) {
             // possible width change
+            newWidthPixels = marqueeWidth + marginRight;
             if (widthUnits === '%') {
               // convert new width to percent to call the setWidth function
-              newWidth = (marqueeWidth + marginRight) / parenWidth * 100;
+              newWidth = (marqueeWidth + marginRight) / parentWidth * 100;
             } else {
-              newWidth = marqueeWidth + marginRight;
+              newWidth = newWidthPixels;
             }
           }
-          if (['nw', 'n', 'ne', 'sw', 's', 'se'].indexOf(region) > -1) {
+          if (marqueeHeight !== currentHeightPixel && ['nw', 'n', 'ne', 'sw', 's', 'se'].indexOf(region) > -1) {
             // possible height change
-            newHeight = marqueeHeight - headerHeight;
+            newHeight = marqueeHeight - headerHeight - 2;
           }
+
+          if (newWidthPixels !== undefined && ['w', 'e'].indexOf(region) > -1) {
+            newHeight = calculateHeight(newWidthPixels);
+          }
+
+          if (newHeight !== undefined && ['n', 's'].indexOf(region) > -1) {
+            newWidthPixels = calculateWidth(newHeight);
+            if (newWidthPixels !== undefined) {
+              if (widthUnits === '%') {
+                // convert new width to percent to call the setWidth function
+                newWidth = (marqueeWidth + marginRight) / parentWidth * 100;
+              } else {
+                newWidth = newWidthPixels;
+              }
+            }
+          }
+
           // add to initial unit width
           var obj = {};
           if (newWidth !== undefined) {
             obj.width = widget.setWidth(newWidth, widthUnits);
+            obj.widthPixels = newWidthPixels;
           }
           if (newHeight !== undefined) {
             obj.height = parseInt(widget.setHeight(newHeight));
@@ -269,6 +325,9 @@ angular.module('ui.dashboard')
         var templateString = $scope.makeTemplateString();
         var widgetElement = angular.element(templateString);
 
+        if ($scope.widget.size && $scope.widget.size.contentOverflow) {
+          $scope.widget.contentStyle.overflow = $scope.widget.size.contentOverflow;
+        }
         container.empty();
         container.append(widgetElement);
         return $compile(widgetElement)($scope);
@@ -343,6 +402,12 @@ angular.module('ui.dashboard')
         }
       }
 
+      function applyHeightRatio() {
+        if ($scope.widget.size && $scope.widget.size.heightToWidthRatio !== undefined) {
+          $scope.widget.setHeight($element.width() * $scope.widget.size.heightToWidthRatio);
+        }
+      }
+
       jQuery($window).on('resize', function() {
         $timeout.cancel(resizeTimeoutId);
         // default resize timeout to 100 milliseconds
@@ -350,13 +415,18 @@ angular.module('ui.dashboard')
         resizeTimeoutId = $timeout(function() {
           applyMinWidth();
           applyMinHeight();
+          applyHeightRatio();
+          $scope.$broadcast('widgetResized', {
+            widthPixels: $element.width(),
+            height: $element.height()
+          });
         }, time);
       });
 
       $scope.$on('widgetAdded', function() {
         $timeout(function() {
           applyMinWidth();
-          applyMinHeight();
+          applyHeightRatio();
         }, 0);
       });
     }
