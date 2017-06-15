@@ -409,18 +409,22 @@ angular.module('ui.dashboard')
       }
 
       jQuery($window).on('resize', function() {
-        $timeout.cancel(resizeTimeoutId);
-        // default resize timeout to 100 milliseconds
-        var time = ($scope.widget && $scope.widget.resizeTimeout !== undefined ? $scope.widget.resizeTimeout : 100);
-        resizeTimeoutId = $timeout(function() {
-          applyMinWidth();
-          applyMinHeight();
-          applyHeightRatio();
-          $scope.$broadcast('widgetResized', {
-            widthPixels: $element.width(),
-            height: $element.height()
-          });
-        }, time);
+        // make sure width and height are greather than zero before apply dimension
+        // dragging the tab from one browser to another causes the $element.width() to be 0
+        if ($element.width() > 0 && $element.height() > 0) {
+          $timeout.cancel(resizeTimeoutId);
+          // default resize timeout to 100 milliseconds
+          var time = ($scope.widget && $scope.widget.resizeTimeout !== undefined ? $scope.widget.resizeTimeout : 100);
+          resizeTimeoutId = $timeout(function() {
+            applyMinWidth();
+            applyMinHeight();
+            applyHeightRatio();
+            $scope.$broadcast('widgetResized', {
+              widthPixels: $element.width(),
+              height: $element.height()
+            });
+          }, time);
+        }
       });
 
       $scope.$on('widgetAdded', function() {
