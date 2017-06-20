@@ -813,6 +813,7 @@ angular.module('ui.dashboard')
       $scope.$on('widgetAdded', function() {
         $timeout(function() {
           applyMinWidth();
+          applyMinHeight();
           applyHeightRatio();
         }, 0);
       });
