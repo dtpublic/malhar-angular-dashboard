@@ -428,6 +428,8 @@ describe('Controller: DashboardWidgetCtrl', function() {
 
     it('should run applyMinWidth with default delay', function() {
       injections.$window.innerWidth = 1000;
+      $element.css('width', '1px');
+      $element.css('height', '1px');
       angular.element(injections.$window).triggerHandler('resize');
       $scope.$digest();
       injections.$timeout.flush(100);
@@ -437,6 +439,8 @@ describe('Controller: DashboardWidgetCtrl', function() {
     it('should run applyMinWidth with override delay', function() {
       $scope.widget.resizeTimeout = 50;
       injections.$window.innerWidth = 1000;
+      $element.css('width', '1px');
+      $element.css('height', '1px');
       angular.element(injections.$window).triggerHandler('resize');
       $scope.$digest();
       injections.$timeout.flush(50);
