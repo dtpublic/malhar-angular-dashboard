@@ -50,8 +50,7 @@ angular.module('ui.dashboard')
           item = JSON.stringify(item);
         }
 
-        this.storage.setItem(this.id, item);
-        return true;
+        return this.storage.setItem(this.id, item) || true;
       },
 
       /**

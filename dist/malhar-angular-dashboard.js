@@ -219,14 +219,14 @@ angular.module('ui.dashboard')
          */
         scope.saveDashboard = function (force) {
           if (!scope.options.explicitSave) {
-            scope.dashboardState.save(scope.widgets);
+            return scope.dashboardState.save(scope.widgets);
           } else {
             if (!angular.isNumber(scope.options.unsavedChangeCount)) {
               scope.options.unsavedChangeCount = 0;
             }
             if (force) {
               scope.options.unsavedChangeCount = 0;
-              scope.dashboardState.save(scope.widgets);
+              return scope.dashboardState.save(scope.widgets);
 
             } else {
               ++scope.options.unsavedChangeCount;
@@ -239,9 +239,9 @@ angular.module('ui.dashboard')
          */
         scope.externalSaveDashboard = function(force) {
           if (angular.isDefined(force)) {
-            scope.saveDashboard(force);
+            return scope.saveDashboard(force);
           } else {
-            scope.saveDashboard(true);
+            return scope.saveDashboard(true);
           }
         };
 
@@ -1582,8 +1582,7 @@ angular.module('ui.dashboard')
           item = JSON.stringify(item);
         }
 
-        this.storage.setItem(this.id, item);
-        return true;
+        return this.storage.setItem(this.id, item) || true;
       },
 
       /**
