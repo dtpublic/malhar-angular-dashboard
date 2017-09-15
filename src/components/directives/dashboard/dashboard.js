@@ -300,7 +300,8 @@ angular.module('ui.dashboard')
         scope.options.removeWidget = scope.removeWidget;
         scope.options.openWidgetSettings = scope.openWidgetSettings;
         scope.options.clear = scope.clear;
-        scope.options.resetWidgetsToDefault = scope.resetWidgetsToDefault
+        scope.options.resetWidgetsToDefault = scope.resetWidgetsToDefault;
+        scope.options.currentWidgets = scope.widgets;
 
         // save state
         scope.$on('widgetChanged', function (event) {
