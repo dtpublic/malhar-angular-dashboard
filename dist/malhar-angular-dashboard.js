@@ -518,7 +518,7 @@ angular.module('ui.dashboard')
         var minHeight;
         if (widget.size && widget.size.minHeight) {
           // min width is in pixels
-          minHeight = parseInt(widget.size.minHeight) + headerHeight + 4;
+          minHeight = parseInt(widget.size.minHeight) + headerHeight + 2;
         } else {
           minHeight = 40 + headerHeight;
         }
